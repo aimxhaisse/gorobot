@@ -1,7 +1,7 @@
 include $(GOROOT)/src/Make.inc
 
-DEPS=
+DEPS=../api
 TARG = gorobot
-GOFILES = api.go action.go event.go irc.go gorobot.go config.go
+GOFILES = action.go event.go irc.go gorobot.go config.go
 
 include $(GOROOT)/src/Make.pkg

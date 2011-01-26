@@ -1,6 +1,7 @@
 package gorobot
 
 import (
+	"api"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -15,7 +16,7 @@ var re_event_join	   = regexp.MustCompile("^:([^!]+)![^ ]* JOIN :(.+)")
 var re_event_part	   = regexp.MustCompile("^:([^!]+)![^ ]* PART ([^ ]+).*")
 var re_event_privmsg       = regexp.MustCompile("^:([^!]+)![^ ]* PRIVMSG ([^ ]+) :(.+)")
 
-func ExtractEvent(line string) (*Event) {
+func ExtractEvent(line string) (*api.Event) {
 	if m := re_server_notice.FindStringSubmatch(line); len(m) == 2 {
 		return EventNOTICE(line, m[1], 0)
 	}
@@ -39,46 +40,46 @@ func ExtractEvent(line string) (*Event) {
 	return nil
 }
 
-func EventPING(line string, server string) (*Event) {
-	event := new(Event)
+func EventPING(line string, server string) (*api.Event) {
+	event := new(api.Event)
 	event.Raw = line
-	event.Type = E_PING
+	event.Type = api.E_PING
 	event.Data = server
 	return event
 }
 
-func EventNOTICE(line string, message string, cmd_id int) (*Event) {
-	event := new(Event)
+func EventNOTICE(line string, message string, cmd_id int) (*api.Event) {
+	event := new(api.Event)
 	event.Raw = line
-	event.Type = E_NOTICE
+	event.Type = api.E_NOTICE
 	event.Data = message
 	event.CmdId = cmd_id
 	return event
 }
 
-func EventJOIN(line string, user string, channel string) (*Event) {
-	event := new(Event)
+func EventJOIN(line string, user string, channel string) (*api.Event) {
+	event := new(api.Event)
 	event.Raw = line
-	event.Type = E_JOIN
+	event.Type = api.E_JOIN
 	event.Channel = channel
 	event.Data = channel
 	event.User = user
 	return event
 }
 
-func EventPART(line string, user string, channel string) (*Event) {
-	event := new(Event)
+func EventPART(line string, user string, channel string) (*api.Event) {
+	event := new(api.Event)
 	event.Raw = line
-	event.Type = E_PART
+	event.Type = api.E_PART
 	event.Channel = channel
 	event.User = user
 	return event
 }
 
-func EventPRIVMSG(line string, user string, channel string, msg string) (*Event) {
-	event := new(Event)
+func EventPRIVMSG(line string, user string, channel string, msg string) (*api.Event) {
+	event := new(api.Event)
 	event.Raw = line
-	event.Type = E_PRIVMSG
+	event.Type = api.E_PRIVMSG
 	event.Data = msg
 	event.Channel = channel
 	event.User = user

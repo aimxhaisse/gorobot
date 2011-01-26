@@ -1,6 +1,7 @@
 package gorobot
 
 import (
+	"api"
 	"bufio"
 	"fmt"
 	"net"
@@ -36,16 +37,15 @@ type Server struct {
 
 // IRC Bot
 type Irc struct {
-	DefaultName string
-	Events      chan Event
-	Errors      chan os.Error
-	Servers	    map[string] *Server
+	Events      chan api.Event	// Events are written here
+	Errors      chan os.Error	// Useless for now
+	Servers	    map[string] *Server	// Servers where the bot is connected
 }
 
 // Instanciate a new IRC bot
 func NewIrc() *Irc {
 	b := Irc{
-		Events: make(chan Event),
+		Events: make(chan api.Event),
 		Errors: make(chan os.Error),
 		Servers: make(map[string] *Server),
 	}
@@ -81,7 +81,7 @@ func (irc *Irc) CleanConversations() {
 }
 
 // Extract events from the server
-func reader(srv_name string, socket net.Conn, chev chan Event) {
+func reader(srv_name string, socket net.Conn, chev chan api.Event) {
 	r := bufio.NewReader(socket)
 	for {
 		var err os.Error
@@ -169,11 +169,11 @@ func talkChannel(target string, chin *map[int] chan string, chout chan string, d
 		case <- destroy:
 			destroy <- 42
 			return
-		case say := <- (*chin)[PRIORITY_HIGH]:
+		case say := <- (*chin)[api.PRIORITY_HIGH]:
 			sayToChannel(&after, &ahead, &before, chout, say, target)
-		case say := <- (*chin)[PRIORITY_MEDIUM]:
+		case say := <- (*chin)[api.PRIORITY_MEDIUM]:
 			sayToChannel(&after, &ahead, &before, chout, say, target)
-		case say := <- (*chin)[PRIORITY_LOW]:
+		case say := <- (*chin)[api.PRIORITY_LOW]:
 			sayToChannel(&after, &ahead, &before, chout, say, target)
 		}
 	}
@@ -201,15 +201,16 @@ func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string) {
 		Destroy: make(chan int),
 		Say: make(map[int] chan string),
 	}
-	c.Say[PRIORITY_LOW] = make(chan string)
-	c.Say[PRIORITY_MEDIUM] = make(chan string)
-	c.Say[PRIORITY_HIGH] = make(chan string)
+	c.Say[api.PRIORITY_LOW] = make(chan string)
+	c.Say[api.PRIORITY_MEDIUM] = make(chan string)
+	c.Say[api.PRIORITY_HIGH] = make(chan string)
 	s.Channels[conf.Name] = &c
 	fmt.Printf("Having joined %s on %s\n", conf.Name, irc_server)
 	go talkChannel(conf.Name, &c.Say, s.SendMeRaw, c.Destroy)
 }
 
-func (irc *Irc) Join(ac *Action) {
+// Join a channel with a default configuration
+func (irc *Irc) Join(ac *api.Action) {
 
 	conf := ConfigChannel{
 		Master: false,
@@ -219,7 +220,8 @@ func (irc *Irc) Join(ac *Action) {
 	irc.JoinChannel(conf, ac.Server)
 }
 
-func (irc *Irc) Kick(ac *Action) {
+// Kick someone from an IRC channel
+func (irc *Irc) Kick(ac *api.Action) {
 	c := irc.GetChannel(ac.Server, ac.Channel)
 	s := irc.GetServer(ac.Server)
 
@@ -232,7 +234,8 @@ func (irc *Irc) Kick(ac *Action) {
 	}
 }
 
-func (irc *Irc) Part(ac *Action) {
+// Leave an IRC channel
+func (irc *Irc) Part(ac *api.Action) {
 	s := irc.GetServer(ac.Server)
 	c := irc.GetChannel(ac.Server, ac.Channel)
 
@@ -249,15 +252,16 @@ func (irc *Irc) Part(ac *Action) {
 	}
 }
 
-func (irc *Irc) CreateNewConversation(ac *Action, server *Server) (Conversation) {
+// Create a new conversation, with the same behavior as a channel
+func (irc *Irc) CreateNewConversation(ac *api.Action, server *Server) (Conversation) {
 	conv := Conversation{
 		Say: make(map[int] chan string),
 		Destroy: make(chan int),
 	}
 
-	conv.Say[PRIORITY_LOW] = make(chan string)
-	conv.Say[PRIORITY_MEDIUM] = make(chan string)
-	conv.Say[PRIORITY_HIGH] = make(chan string)
+	conv.Say[api.PRIORITY_LOW] = make(chan string)
+	conv.Say[api.PRIORITY_MEDIUM] = make(chan string)
+	conv.Say[api.PRIORITY_HIGH] = make(chan string)
 	server.Conversations[ac.User] = conv
 
 	go talkChannel(ac.User, &conv.Say, server.SendMeRaw, conv.Destroy)
@@ -265,7 +269,9 @@ func (irc *Irc) CreateNewConversation(ac *Action, server *Server) (Conversation)
 	return conv
 }
 
-func (irc *Irc) Say(ac *Action) {
+// Say something to a channel or to a conversation, create a new conversation
+// if it does not exists yet
+func (irc *Irc) Say(ac *api.Action) {
 	var server = irc.Servers[ac.Server]
 	if server != nil {
 		if len(ac.Channel) > 0 {

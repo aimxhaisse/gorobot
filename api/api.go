@@ -1,4 +1,4 @@
-package gorobot
+package api
 
 import (
 	"netchan"
