@@ -2,7 +2,9 @@
     "Module":  {
         "Interface": "localhost:12345"
     },
+
     "Servers": {
+
         "freenode" : {
             "Host": "irc.freenode.org:6667",
             "Nickname": "M4rc3l",
@@ -14,6 +16,16 @@
                     "Password": "",
                     "Master": true
                 }
+            }
+        },
+
+        "epitech" : {
+            "Host": "irc.rezosup.org:6667",
+            "Nickname": "M4rc3l",
+            "Realname": "Marcel Patoulatchie",
+            "Username": "Marcel",
+            "Password": "",
+            "Channels": {
             }
         }
     }

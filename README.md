@@ -1,9 +1,10 @@
 GoRobot
-======
+===
 
 ## an IRC bot written in Go
 
-Some of the currently supported features:
+## Features:
+
   * Multiple servers
   * Multiple channels
   * Conversations
@@ -15,7 +16,8 @@ Some of the currently supported features:
   * Module to handle shell scripts, through a tiny API
   * Module to Broadcast conversations on a specific IRC channel
 
-Todo:
+## Todo:
+
   * Statistics (activity on a channel, number of people, ...)
   * A prompt to perform administrative tasks?
   * Automatic reconnection on timeout, kicks, ...

@@ -25,8 +25,8 @@ func NewGoRobot(config string) *GoRobot {
 	}
 	robot.Exp = api.InitExport(robot.Config.Module.Interface)
 	robot.Actions = api.ExportActions(robot.Exp)
-	for  _, v := range robot.Config.Servers {
-		robot.Irc.Connect(v)
+	for  k, v := range robot.Config.Servers {
+		robot.Irc.Connect(k, v)
 	}
 	return &robot
 }
@@ -54,6 +54,23 @@ func (robot *GoRobot) autoJoin(s string) {
 	}
 }
 
+// Handle a notice
+func (robot *GoRobot) HandleNotice(s *Server, event *api.Event) {
+	if !s.AuthSent {
+		s.SendMeRaw <- fmt.Sprintf("NICK %s\r\n", s.Config.Nickname)
+		s.SendMeRaw <- fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n",
+		   	s.Config.Username, s.Config.Realname)
+		s.AuthSent = true
+	}
+	switch event.CmdId {
+	case 1:
+		robot.autoJoin(s.Config.Name)
+	case 353:
+		robot.Irc.AddUsersToChannel(s, event)
+	}
+}
+
+
 // Handle an event from a server
 func (robot *GoRobot) HandleEvent(s *Server, event *api.Event) {
 	switch event.Type {
@@ -67,12 +84,7 @@ func (robot *GoRobot) HandleEvent(s *Server, event *api.Event) {
 		s.SendMeRaw <- fmt.Sprintf("PONG :%s\r\n", event.Data)
 		robot.Cron()
 	case api.E_NOTICE :
-		if !s.AuthSent {
-			s.SendMeRaw <- fmt.Sprintf("NICK %s\r\n", s.Config.Nickname)
-			s.SendMeRaw <- fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n",
-				s.Config.Username, s.Config.Realname)
-			s.AuthSent = true
-		}
+		robot.HandleNotice(s, event)
 	case api.E_PRIVMSG :
 		if s.Channels[event.Channel] != nil {
 			event.AdminCmd = s.Channels[event.Channel].Config.Master
@@ -81,9 +93,6 @@ func (robot *GoRobot) HandleEvent(s *Server, event *api.Event) {
 		robot.Irc.UserJoined(event)
 	case api.E_PART :
 		robot.Irc.UserLeft(event)
-	}
-	if event.CmdId == 1 {
-		robot.autoJoin(event.Server)
 	}
 	robot.SendEvent(event)
 }

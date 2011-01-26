@@ -8,7 +8,7 @@ import (
 )
 
 // Events are built from the output of the IRC server, and are sent to modules
-
+// Please keep this is in order of use, as some expression may overlap others
 var re_server_notice       = regexp.MustCompile("^:[^ ]+ NOTICE [^:]+ :(.*)")
 var re_server_message	   = regexp.MustCompile("^:[^ ]+ ([0-9]+) [^:]+ :(.*)")
 var re_server_ping	   = regexp.MustCompile("^PING :(.*)")
