@@ -11,30 +11,27 @@ import (
 
 // IRC Channel
 type Channel struct {
-	Master	bool // master IRC channel can issue admin commands
-	Name	string // name of the channel
-	Say	map[int] chan string // map of channels to talk, each channel has a priority
-	Server	*Server // server when the channel is
-	Destroy	chan int // force the destruction of the IRC channel
+	Config	ConfigChannel		// Channel configuration
+	Say	map[int] chan string	// map of channels to talk, each channel has a priority
+	Server	*Server			// server when the channel is
+	Destroy	chan int		// force the destruction of the IRC channel
 }
 
 // IRC Conversation
 type Conversation struct {
-	LastUpdate	int64 // inactive conversations will be destroyed
+	LastUpdate	int64		// inactive conversations will be destroyed
 	Say		map[int] chan string // map of channels to talk, each channel has a priority
-	Destroy		chan int // force the destruction of the conversation
+	Destroy		chan int	// force the destruction of the conversation
 }
 
 // IRC Server
 type Server struct {
-	BotName		string // name of the bot on the server
+	Config		ConfigServer
 	Channels	map[string] *Channel // IRC channels where the bot is
 	Conversations	map[string] Conversation // opened conversations
-	AuthSent	bool // has the authentication been sent?
-	Host		string // hostname of the server
-	Name		string // alias to hostname
-	SendMeRaw	chan string // channel to send raw commands to the server
-	socket		net.Conn // socket to the server
+	SendMeRaw	chan string	// channel to send raw commands to the server
+	AuthSent	bool		// has the authentication been sent?
+	socket		net.Conn	// socket to the server
 }
 
 // IRC Bot
@@ -46,9 +43,8 @@ type Irc struct {
 }
 
 // Instanciate a new IRC bot
-func NewIrc(defname string) *Irc {
+func NewIrc() *Irc {
 	b := Irc{
-		DefaultName: defname,
 		Events: make(chan Event),
 		Errors: make(chan os.Error),
 		Servers: make(map[string] *Server),
@@ -120,31 +116,27 @@ func writer(socket net.Conn, chsend chan string) {
 }
 
 // Connect to a new server
-func (irc *Irc) Connect(srv_host string, srv_name string) bool {
-	if irc.GetServer(srv_name) != nil {
+func (irc *Irc) Connect(c ConfigServer) bool {
+	if irc.GetServer(c.Name) != nil {
+		fmt.Printf("Already connected to that server [%s]\n", c.Host)
 		return false
 	}
-	fmt.Printf("Connecting to [%s]\n", srv_host)
-	conn, err := net.Dial("tcp", "", srv_host)
+	fmt.Printf("Connecting to [%s]\n", c.Host)
+	conn, err := net.Dial("tcp", "", c.Host)
 	if err != nil {
 		irc.Errors <- err
 		return false
 	}
-
 	srv := Server{
-		BotName: irc.DefaultName,
+		Config: c,
 		Channels: make(map[string] *Channel),
-		Host: srv_host,
-		Name: srv_name,
 		SendMeRaw: make(chan string),
-		socket: conn,
 		Conversations: make(map[string] Conversation),
+		socket: conn,
 	}
-	irc.Servers[srv_name] = &srv
-
-	go reader(srv.Name, srv.socket, irc.Events)
+	irc.Servers[c.Name] = &srv
+	go reader(srv.Config.Name, srv.socket, irc.Events)
 	go writer(srv.socket, srv.SendMeRaw)
-
 	return true
 }
 
@@ -188,40 +180,43 @@ func talkChannel(target string, chin *map[int] chan string, chout chan string, d
 }
 
 // Join a new IRC channel
-func (irc *Irc) JoinChannel(irc_server string, irc_chan string, master bool, password string) {
+func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string) {
 	s := irc.GetServer(irc_server)
-
 	if s == nil {
 		return
-	}
-	if irc.GetChannel(irc_server, irc_chan) != nil {
-		fmt.Printf("Channel %s already exists on %s\n", irc_chan, irc_server)
+	} else if irc.GetChannel(irc_server, conf.Name) != nil {
+		fmt.Printf("Channel %s already exists on %s\n", conf.Name, irc_server)
 		return
 	}
 
-	if len(password) > 0 {
-		s.SendMeRaw <- fmt.Sprintf("JOIN %s %s\r\n", irc_chan, password)
+	if len(conf.Password) > 0 {
+		s.SendMeRaw <- fmt.Sprintf("JOIN %s %s\r\n", conf.Name, conf.Password)
 	} else {
-		s.SendMeRaw <- fmt.Sprintf("JOIN %s\r\n", irc_chan)
+		s.SendMeRaw <- fmt.Sprintf("JOIN %s\r\n", conf.Name)
 	}
 
 	c := Channel{
-		Master: master,
-		Name: irc_chan,
-		Say: make(map[int] chan string),
+		Config: conf,
 		Server: s,
 		Destroy: make(chan int),
+		Say: make(map[int] chan string),
 	}
 	c.Say[PRIORITY_LOW] = make(chan string)
 	c.Say[PRIORITY_MEDIUM] = make(chan string)
 	c.Say[PRIORITY_HIGH] = make(chan string)
-	s.Channels[irc_chan] = &c
-	fmt.Printf("Having joined %s on %s\n", irc_chan, irc_server)
-	go talkChannel(irc_chan, &c.Say, s.SendMeRaw, c.Destroy)
+	s.Channels[conf.Name] = &c
+	fmt.Printf("Having joined %s on %s\n", conf.Name, irc_server)
+	go talkChannel(conf.Name, &c.Say, s.SendMeRaw, c.Destroy)
 }
 
 func (irc *Irc) Join(ac *Action) {
-	irc.JoinChannel(ac.Server, ac.Channel, false, "")
+
+	conf := ConfigChannel{
+		Master: false,
+		Name: ac.Channel,
+	}
+
+	irc.JoinChannel(conf, ac.Server)
 }
 
 func (irc *Irc) Kick(ac *Action) {
@@ -230,9 +225,9 @@ func (irc *Irc) Kick(ac *Action) {
 
 	if c != nil {
 		if len(ac.Data) > 0 {
-			s.SendMeRaw <- fmt.Sprintf("KICK %s %s :%s\r\n", c.Name, ac.User, ac.Data)
+			s.SendMeRaw <- fmt.Sprintf("KICK %s %s :%s\r\n", c.Config.Name, ac.User, ac.Data)
 		} else {
-			s.SendMeRaw <- fmt.Sprintf("KICK %s %s\r\n", c.Name, ac.User)
+			s.SendMeRaw <- fmt.Sprintf("KICK %s %s\r\n", c.Config.Name, ac.User)
 		}
 	}
 }

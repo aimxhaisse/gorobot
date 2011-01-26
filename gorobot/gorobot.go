@@ -7,21 +7,28 @@ import (
 )
 
 type GoRobot struct {
+	Config *Config
 	Irc* Irc
 	Exp *netchan.Exporter
 	Modules map[string] chan Event
 	Actions chan Action
 }
 
-// Creates a new robot from a configuration file
-func NewGoRobot() *GoRobot {
+// Creates a new robot from a configuration file, automatically
+// connect to servers listed in the configuration file
+func NewGoRobot(config string) *GoRobot {
 	robot := GoRobot{
-		Irc: NewIrc("m1ch3ld3uX"),
+		Config: NewConfig(config),
+		Irc: NewIrc(),
 		Modules: make(map[string] chan Event),
-		Exp: InitExport("localhost:12345"),
 	}
+	robot.Exp = InitExport(robot.Config.Module.Interface)
 	robot.Actions = ExportActions(robot.Exp)
-	robot.Irc.Connect("irc.freenode.net:6667", "freenode")
+	fmt.Printf("%d\n", len(robot.Config.Servers))
+	fmt.Printf("%s\n", len(robot.Config.Module.Interface))
+	for  _, v := range robot.Config.Servers {
+		robot.Irc.Connect(v)
+	}
 	return &robot
 }
 
@@ -38,6 +45,16 @@ func (robot *GoRobot) Cron() {
 	robot.Irc.CleanConversations()
 }
 
+// Autojoin channels on a given server
+func (robot *GoRobot) autoJoin(s string) {
+	srv := robot.Irc.GetServer(s)
+	if srv != nil {
+		for _, v := range srv.Config.Channels {
+			robot.Irc.JoinChannel(v, s)
+		}
+	}
+}
+
 func (robot *GoRobot) HandleEvent(s *Server, event *Event) {
 	switch event.Type {
 	case E_PING :
@@ -45,24 +62,20 @@ func (robot *GoRobot) HandleEvent(s *Server, event *Event) {
 		robot.Cron()
 	case E_NOTICE :
 		if !s.AuthSent {
-			s.SendMeRaw <- fmt.Sprintf("NICK %s\r\n", s.BotName)
-			s.SendMeRaw <- fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n", s.BotName, s.BotName)
+			s.SendMeRaw <- fmt.Sprintf("NICK %s\r\n", s.Config.Nickname)
+			s.SendMeRaw <- fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n",
+				s.Config.Username, s.Config.Realname)
 			s.AuthSent = true
 		}
 	case E_PRIVMSG :
 		if s.Channels[event.Channel] != nil {
-			event.AdminCmd = s.Channels[event.Channel].Master
+			event.AdminCmd = s.Channels[event.Channel].Config.Master
 		}
 	}
-
-	robot.SendEvent(event)
 	if event.CmdId == 1 {
-		switch event.Server {
-		case "freenode":
-			robot.Irc.JoinChannel("freenode", "##testpikaplop", true, "")
-		}
-		return
+		robot.autoJoin(event.Server)
 	}
+	robot.SendEvent(event)
 }
 
 func (robot *GoRobot) HandleError(e os.Error) {
@@ -73,6 +86,8 @@ func (robot *GoRobot) NewModule(ac *Action) {
 }
 
 func (robot *GoRobot) HandleAction(ac *Action) {
+	// if the command is RAW, we need to parse it first to be able
+	// to correctly handle it.
 	if ac.Type == A_RAW {
 		new_action := ExtractAction(ac)
 		if new_action != nil {

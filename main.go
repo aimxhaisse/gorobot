@@ -5,6 +5,6 @@ import (
 )
 
 func main() {
-	michel := gorobot.NewGoRobot()
+	michel := gorobot.NewGoRobot("config.json")
 	michel.Run()
 }
