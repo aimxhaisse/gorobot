@@ -48,14 +48,21 @@ func (robot *GoRobot) Cron() {
 func (robot *GoRobot) autoJoin(s string) {
 	srv := robot.Irc.GetServer(s)
 	if srv != nil {
-		for _, v := range srv.Config.Channels {
-			robot.Irc.JoinChannel(v, s)
+		for k, v := range srv.Config.Channels {
+			robot.Irc.JoinChannel(v, s, k)
 		}
 	}
 }
 
+// Handle an event from a server
 func (robot *GoRobot) HandleEvent(s *Server, event *api.Event) {
 	switch event.Type {
+	case api.E_KICK :
+		if s.Config.Nickname == event.Data {
+			robot.Irc.DestroyChannel(event.Server, event.Channel)
+		} else {
+			robot.Irc.UserLeft(event)
+		}
 	case api.E_PING :
 		s.SendMeRaw <- fmt.Sprintf("PONG :%s\r\n", event.Data)
 		robot.Cron()
@@ -70,6 +77,10 @@ func (robot *GoRobot) HandleEvent(s *Server, event *api.Event) {
 		if s.Channels[event.Channel] != nil {
 			event.AdminCmd = s.Channels[event.Channel].Config.Master
 		}
+	case api.E_JOIN :
+		robot.Irc.UserJoined(event)
+	case api.E_PART :
+		robot.Irc.UserLeft(event)
 	}
 	if event.CmdId == 1 {
 		robot.autoJoin(event.Server)

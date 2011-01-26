@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	Module ConfigModule
-	Servers []ConfigServer
+	Servers map[string] ConfigServer
 }
 
 type ConfigModule struct {
@@ -23,7 +23,7 @@ type ConfigServer struct {
 	Realname string
 	Username string
 	Password string
-	Channels []ConfigChannel
+	Channels map[string] ConfigChannel
 }
 
 type ConfigChannel struct {

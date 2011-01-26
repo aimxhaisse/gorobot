@@ -2,19 +2,19 @@
     "Module":  {
         "Interface": "localhost:12345"
     },
-    "Servers": [
-        { "Name": "freenode",
-          "Host": "irc.freenode.org:6667",
-          "Nickname": "M4rc3l",
-          "Realname": "Marcel Patoulatchie",
-          "Username": "Marcel",
-          "Password": "",
-          "Channels": [
-              { "Name":  "##testpikaplop",
-                "Password": "",
-                "Master": true
-              }
-          ]
+    "Servers": {
+        "freenode" : {
+            "Host": "irc.freenode.org:6667",
+            "Nickname": "M4rc3l",
+            "Realname": "Marcel Patoulatchie",
+            "Username": "Marcel",
+            "Password": "",
+            "Channels": {
+                "##testpikaplop":  {
+                    "Password": "",
+                    "Master": true
+                }
+            }
         }
-    ]
+    }
 }

@@ -10,12 +10,20 @@ import (
 	"strings"
 )
 
+type UserMode int
+const (
+	USER_ADMIN = iota
+	USER_VOICED
+	USER_CLASSIC
+)
+
 // IRC Channel
 type Channel struct {
 	Config	ConfigChannel		// Channel configuration
 	Say	map[int] chan string	// map of channels to talk, each channel has a priority
-	Server	*Server			// server when the channel is
+	Server	*Server			// server where the channel is
 	Destroy	chan int		// force the destruction of the IRC channel
+	Users	map[string] UserMode	// List of users on the channel, modes are not currently handled
 }
 
 // IRC Conversation
@@ -142,6 +150,8 @@ func (irc *Irc) Connect(c ConfigServer) bool {
 
 // Say something to a channel, handling excess flood
 func sayToChannel(after *int64, ahead *int64, before *int64, chout chan string, say string, target string) {
+	// "while the timer is less than ten seconds ahead of the current time, parse any
+	// present messages and penalize the client by 2 seconds for each message" (doc irssi)
 	*after = time.Nanoseconds()
 	*ahead -= (*after - *before)
 	if *ahead < 0 {
@@ -162,8 +172,6 @@ func talkChannel(target string, chin *map[int] chan string, chout chan string, d
 	var after int64 = 0
 	var ahead int64 = 0
 	before := time.Nanoseconds()
-	// "while the timer is less than ten seconds ahead of the current time, parse any
-	// present messages and penalize the client by 2 seconds for each message" (doc irssi)
 	for {
 		select {
 		case <- destroy:
@@ -180,19 +188,19 @@ func talkChannel(target string, chin *map[int] chan string, chout chan string, d
 }
 
 // Join a new IRC channel
-func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string) {
+func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string, irc_chan string) {
 	s := irc.GetServer(irc_server)
 	if s == nil {
 		return
-	} else if irc.GetChannel(irc_server, conf.Name) != nil {
-		fmt.Printf("Channel %s already exists on %s\n", conf.Name, irc_server)
+	} else if irc.GetChannel(irc_server, irc_chan) != nil {
+		fmt.Printf("Channel %s already exists on %s\n", irc_chan, irc_server)
 		return
 	}
 
 	if len(conf.Password) > 0 {
-		s.SendMeRaw <- fmt.Sprintf("JOIN %s %s\r\n", conf.Name, conf.Password)
+		s.SendMeRaw <- fmt.Sprintf("JOIN %s %s\r\n", irc_chan, conf.Password)
 	} else {
-		s.SendMeRaw <- fmt.Sprintf("JOIN %s\r\n", conf.Name)
+		s.SendMeRaw <- fmt.Sprintf("JOIN %s\r\n", irc_chan)
 	}
 
 	c := Channel{
@@ -201,6 +209,7 @@ func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string) {
 		Destroy: make(chan int),
 		Say: make(map[int] chan string),
 	}
+	c.Config.Name = irc_chan
 	c.Say[api.PRIORITY_LOW] = make(chan string)
 	c.Say[api.PRIORITY_MEDIUM] = make(chan string)
 	c.Say[api.PRIORITY_HIGH] = make(chan string)
@@ -209,15 +218,29 @@ func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string) {
 	go talkChannel(conf.Name, &c.Say, s.SendMeRaw, c.Destroy)
 }
 
+// A user has joined the channel
+func (irc *Irc) UserJoined(ev *api.Event) {
+	ch := irc.GetChannel(ev.Server, ev.Channel)
+	if ch != nil {
+		ch.Users[ev.User] = USER_CLASSIC
+	}
+}
+
+// A user has left the channel
+func (irc *Irc) UserLeft(ev *api.Event) {
+	ch := irc.GetChannel(ev.Server, ev.Channel)
+	if ch != nil {
+		ch.Users[ev.User] = ch.Users[ev.User], false
+	}
+}
+
 // Join a channel with a default configuration
 func (irc *Irc) Join(ac *api.Action) {
-
 	conf := ConfigChannel{
 		Master: false,
 		Name: ac.Channel,
 	}
-
-	irc.JoinChannel(conf, ac.Server)
+	irc.JoinChannel(conf, ac.Server, ac.Channel)
 }
 
 // Kick someone from an IRC channel
@@ -234,6 +257,18 @@ func (irc *Irc) Kick(ac *api.Action) {
 	}
 }
 
+// Called when the bot leaves a channel or is kicked
+func (irc *Irc) DestroyChannel(server string, channel string) {
+	s := irc.GetServer(server)
+	c := irc.GetChannel(server, channel)
+	if c != nil {
+		c.Destroy <- 42
+		<- c.Destroy
+		cname := c.Config.Name
+		s.Channels[cname] = s.Channels[cname], false
+	}
+}
+
 // Leave an IRC channel
 func (irc *Irc) Part(ac *api.Action) {
 	s := irc.GetServer(ac.Server)
@@ -245,9 +280,7 @@ func (irc *Irc) Part(ac *api.Action) {
 		} else {
 			s.SendMeRaw <- fmt.Sprintf("PART %s\r\n", ac.Channel)
 		}
-		c.Destroy <- 42
-		<- c.Destroy
-		s.Channels[ac.Channel] = s.Channels[ac.Channel], false
+		irc.DestroyChannel(ac.Server, ac.Channel)
 		fmt.Printf("Having left channel %s on %s\n", ac.Channel, ac.Server)
 	}
 }
