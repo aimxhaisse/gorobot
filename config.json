@@ -1,4 +1,12 @@
 {
+    "Logs": {
+        "Enable": true,
+        "Directory": "./logs",
+        "RecordEvents": true,
+        "RecordMemoryUsage": true,
+        "RecordStatistics": true
+    },
+
     "Module":  {
         "Interface": "localhost:12345"
     },
@@ -12,7 +20,7 @@
             "Username": "Marcel",
             "Password": "",
             "Channels": {
-                "##testpikaplop":  {
+                "##testpikaplop": {
                     "Password": "",
                     "Master": true
                 }
@@ -26,6 +34,10 @@
             "Username": "Marcel",
             "Password": "",
             "Channels": {
+                "#nantes": {
+                    "Password": "",
+                    "Master": true
+                }
             }
         }
     }

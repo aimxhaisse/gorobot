@@ -8,8 +8,17 @@ import (
 )
 
 type Config struct {
+	Logs ConfigLogs
 	Module ConfigModule
 	Servers map[string] ConfigServer
+}
+
+type ConfigLogs struct {
+	Enable bool
+	Directory string
+	RecordEvents bool
+	RecordMemoryUsage bool
+	RecordStatistics bool
 }
 
 type ConfigModule struct {

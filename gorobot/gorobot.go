@@ -9,6 +9,7 @@ import (
 
 type GoRobot struct {
 	Config *Config
+	LogMap map[string] *os.File
 	Irc* Irc
 	Exp *netchan.Exporter
 	Modules map[string] chan api.Event
@@ -20,6 +21,7 @@ type GoRobot struct {
 func NewGoRobot(config string) *GoRobot {
 	robot := GoRobot{
 		Config: NewConfig(config),
+		LogMap: make(map[string] *os.File),
 		Irc: NewIrc(),
 		Modules: make(map[string] chan api.Event),
 	}
@@ -37,11 +39,13 @@ func (robot *GoRobot) SendEvent(event *api.Event) {
 			chev <- event
 		} (chev, *event);
 	}
+	robot.LogEvent(event)
 }
 
 // Based on PING events from servers, ugly but enough for now
 func (robot *GoRobot) Cron() {
 	robot.Irc.CleanConversations()
+	robot.LogStatistics()
 }
 
 // Autojoin channels on a given server
@@ -69,7 +73,6 @@ func (robot *GoRobot) HandleNotice(s *Server, event *api.Event) {
 		robot.Irc.AddUsersToChannel(s, event)
 	}
 }
-
 
 // Handle an event from a server
 func (robot *GoRobot) HandleEvent(s *Server, event *api.Event) {

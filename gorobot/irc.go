@@ -17,7 +17,7 @@ type Channel struct {
 	Say	map[int] chan string	// map of channels to talk, each channel has a priority
 	Server	*Server			// server where the channel is
 	Destroy	chan int		// force the destruction of the IRC channel
-	Users	map[string] string	// List of users on the channel, modes are not currently handled
+	Users	int			// number of users on the channel
 }
 
 // IRC Conversation
@@ -201,7 +201,7 @@ func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string, irc_chan stri
 	c := Channel{
 		Config: conf,
 		Server: s,
-		Users: make(map[string] string),
+		Users: 0,
 		Destroy: make(chan int),
 		Say: make(map[int] chan string),
 	}
@@ -218,22 +218,19 @@ func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string, irc_chan stri
 func (irc *Irc) UserJoined(ev *api.Event) {
 	ch := irc.GetChannel(ev.Server, ev.Channel)
 	if ch != nil {
-		ch.Users[ev.User] = ""
+		ch.Users++
 	}
 }
 
-var re_event_userlist = regexp.MustCompile("^:[^ ]+ 353 [^:]+ @ ([^ ]+) :(.*)")
+var re_event_userlist = regexp.MustCompile("^:[^ ]+ 353 [^:]+ . ([^ ]+) :(.*)")
 
 // Add a list of users to a channel
 func (irc *Irc) AddUsersToChannel(srv *Server, ev *api.Event) {
 	if m := re_event_userlist.FindStringSubmatch(ev.Raw); len(m) == 3 {
 		c := irc.GetChannel(ev.Server, m[1])
 		if c != nil {
-			users := strings.Split(m[2], " ", -1)
-			for i := 0; i < len(users); i++ {
-				// todo: extract the user mode
-				c.Users[users[i]] = ""
-			}
+			users := strings.Split(strings.TrimRight(m[2], " "), " ", -1)
+			c.Users += len(users)
 		}
 	}
 }
@@ -242,7 +239,7 @@ func (irc *Irc) AddUsersToChannel(srv *Server, ev *api.Event) {
 func (irc *Irc) UserLeft(ev *api.Event) {
 	ch := irc.GetChannel(ev.Server, ev.Channel)
 	if ch != nil {
-		ch.Users[ev.User] = ch.Users[ev.User], false
+		ch.Users--
 	}
 }
 
