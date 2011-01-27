@@ -14,13 +14,13 @@ GoRobot
   * JSON Configuration
   * No excess flood, even upon high activity
   * Module to handle shell scripts, through a tiny API
-  * Module to Broadcast conversations on a specific IRC channel
+  * Module to offer a graphical interface through network (beginning of a real IRC client :-)
+  * Statistics (activity on a channel, number of people, ...)
 
 ## Todo:
 
-  * Statistics (activity on a channel, number of people, ...)
   * A prompt to perform administrative tasks?
   * Automatic reconnection on timeout, kicks, ...
-  * A GO module which acts as an IRC client? :-)
   * Add new features to the GO API (configuration of modules, ...)
   * Ability to autoload GO modules
+  * Improve the GUI module

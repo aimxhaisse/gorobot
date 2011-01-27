@@ -1,4 +1,5 @@
 {
+
     "Logs": {
         "Enable": true,
         "Directory": "./logs",
@@ -40,5 +41,6 @@
                 }
             }
         }
+
     }
 }
