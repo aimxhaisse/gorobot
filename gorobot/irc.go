@@ -17,7 +17,7 @@ type Channel struct {
 	Say	map[int] chan string	// map of channels to talk, each channel has a priority
 	Server	*Server			// server where the channel is
 	Destroy	chan int		// force the destruction of the IRC channel
-	Users	int			// number of users on the channel
+	Users	map[string] string	// Map of users with their mode
 }
 
 // IRC Conversation
@@ -201,8 +201,8 @@ func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string, irc_chan stri
 	c := Channel{
 		Config: conf,
 		Server: s,
-		Users: 0,
 		Destroy: make(chan int),
+		Users: make(map[string] string),
 		Say: make(map[int] chan string),
 	}
 	c.Config.Name = irc_chan
@@ -218,7 +218,30 @@ func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string, irc_chan stri
 func (irc *Irc) UserJoined(ev *api.Event) {
 	ch := irc.GetChannel(ev.Server, ev.Channel)
 	if ch != nil {
-		ch.Users++
+		if _, ok := ch.Users[ev.User]; ok == false {
+			ch.Users[ev.User] = "";
+		}
+	}
+}
+
+
+// A user has left the channel
+func (irc *Irc) UserLeft(ev *api.Event) {
+	ch := irc.GetChannel(ev.Server, ev.Channel)
+	if ch != nil {
+		ch.Users[ev.User] = ch.Users[ev.User], false
+	}
+}
+
+// A user has left a server, lets remove it from each channel
+func (irc *Irc) UserQuit(ev *api.Event) {
+	s := irc.GetServer(ev.Server)
+	if s != nil {
+		for _, ch := range s.Channels {
+			if _, ok := ch.Users[ev.User]; ok == true {
+				ch.Users[ev.User] = ch.Users[ev.User], false;
+			}
+		}
 	}
 }
 
@@ -226,20 +249,25 @@ var re_event_userlist = regexp.MustCompile("^:[^ ]+ 353 [^:]+ . ([^ ]+) :(.*)")
 
 // Add a list of users to a channel
 func (irc *Irc) AddUsersToChannel(srv *Server, ev *api.Event) {
-	if m := re_event_userlist.FindStringSubmatch(ev.Raw); len(m) == 3 {
-		c := irc.GetChannel(ev.Server, m[1])
-		if c != nil {
-			users := strings.Split(strings.TrimRight(m[2], " "), " ", -1)
-			c.Users += len(users)
-		}
+	m := re_event_userlist.FindStringSubmatch(ev.Raw)
+	if len(m) != 3 {
+		return
 	}
-}
-
-// A user has left the channel
-func (irc *Irc) UserLeft(ev *api.Event) {
-	ch := irc.GetChannel(ev.Server, ev.Channel)
-	if ch != nil {
-		ch.Users--
+	c := irc.GetChannel(ev.Server, m[1])
+	if c == nil {
+		return
+	}
+	users := strings.Split(strings.TrimRight(m[2], " "), " ", -1)
+	for i := 0; i < len(users); i++ {
+		u := users[i]
+		mode := ""
+		if strings.IndexAny(u, "@&~+%") > 0 {
+			u = u[1:]
+			mode = u[0:1]
+		}
+		// don't check if the rank already exists in case the
+		// map is somehow wrong..
+		c.Users[u] = mode
 	}
 }
 

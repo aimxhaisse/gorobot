@@ -16,6 +16,7 @@ var re_event_join	   = regexp.MustCompile("^:([^!]+)![^ ]* JOIN :(.+)")
 var re_event_part	   = regexp.MustCompile("^:([^!]+)![^ ]* PART ([^ ]+).*")
 var re_event_privmsg       = regexp.MustCompile("^:([^!]+)![^ ]* PRIVMSG ([^ ]+) :(.+)")
 var re_event_kick	   = regexp.MustCompile("^:([^!]+)![^ ]* KICK ([^ ]+) ([^ ]+) :(.+)" )
+var re_event_quit	   = regexp.MustCompile("^:([^!]+)![^ ]* QUIT :(.*)")
 
 func ExtractEvent(line string) (*api.Event) {
 	if m := re_server_notice.FindStringSubmatch(line); len(m) == 2 {
@@ -39,6 +40,9 @@ func ExtractEvent(line string) (*api.Event) {
 	}
 	if m := re_event_kick.FindStringSubmatch(line); len(m) == 5 {
 		return EventKICK(line, m[1], m[2], m[3], m[4])
+	}
+	if m := re_event_quit.FindStringSubmatch(line); len(m) == 3 {
+		return EventQUIT(line, m[1], m[2])
 	}
 	fmt.Printf("Ignored message: %s\n", line)
 	return nil
@@ -96,6 +100,15 @@ func EventKICK(line string, user string, channel string, target string, msg stri
 	event.Type = api.E_KICK
 	event.Data = target
 	event.Channel = channel
+	event.User = user
+	return event
+}
+
+func EventQUIT(line string, user string, msg string) (*api.Event) {
+	event := new(api.Event)
+	event.Raw = line
+	event.Type = api.E_QUIT
+	event.Data = msg
 	event.User = user
 	return event
 }

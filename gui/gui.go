@@ -34,7 +34,6 @@ func NewGoRobotGUI() *GoRobotGUI {
 
 	gui.Window.Add(gui.Notebook)
 	gui.Window.SetSizeRequest(400, 300)
-	gui.Window.ShowAll()
 
 	return &gui
 }
@@ -77,7 +76,6 @@ func (gui *GoRobotGUI) HandleEvents() {
 		}
 		gui.Window.ShowAll()
 	}
-
 }
 
 var addr = flag.String("s", "", "address:port of exported netchans")

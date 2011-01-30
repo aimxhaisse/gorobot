@@ -96,6 +96,8 @@ func (robot *GoRobot) HandleEvent(s *Server, event *api.Event) {
 		robot.Irc.UserJoined(event)
 	case api.E_PART :
 		robot.Irc.UserLeft(event)
+	case api.E_QUIT :
+		robot.Irc.UserQuit(event)
 	}
 	robot.SendEvent(event)
 }
