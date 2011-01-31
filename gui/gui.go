@@ -16,8 +16,16 @@ type GoRobotGUI struct {
 }
 
 type GoRobotGUITab struct {
-	Text		*gtk.GtkTextView
 	Frame		*gtk.GtkFrame
+	VBox		*gtk.GtkVBox
+	Text		*gtk.GtkTextView
+	UserInput	*GoRobotGUIInput
+}
+
+type GoRobotGUIInput struct {
+	Input		*gtk.GtkTextView
+	Button		*gtk.GtkButton
+	Box		*gtk.GtkHBox
 }
 
 func NewGoRobotGUI() *GoRobotGUI {
@@ -34,8 +42,21 @@ func NewGoRobotGUI() *GoRobotGUI {
 
 	gui.Window.Add(gui.Notebook)
 	gui.Window.SetSizeRequest(400, 300)
+	gui.Window.ShowAll()
 
 	return &gui
+}
+
+func NewGoRobotGUIInput() (*GoRobotGUIInput) {
+	input := GoRobotGUIInput{
+		Input: gtk.TextView(),
+		Button: gtk.ButtonWithLabel("Send"),
+		Box: gtk.HBox(false, 1),
+	}
+
+	input.Box.Add(input.Input)
+	input.Box.Add(input.Button)
+	return &input
 }
 
 func (gui *GoRobotGUI) GetTab(name string) (*GoRobotGUITab) {
@@ -43,12 +64,15 @@ func (gui *GoRobotGUI) GetTab(name string) (*GoRobotGUITab) {
 	if !ok {
 		tab = new(GoRobotGUITab)
 		tab.Frame = gtk.Frame(name)
+		tab.VBox = gtk.VBox(false, 1)
 		tab.Text = gtk.TextView()
-		tab.Text.SetEditable(false)
-		tab.Text.SetCursorVisible(false)
-		tab.Frame.Add(tab.Text)
+		tab.UserInput = NewGoRobotGUIInput()
+		tab.Frame.Add(tab.VBox)
+		tab.VBox.Add(tab.Text)
+		tab.VBox.Add(tab.UserInput.Box)
 		gui.Notebook.AppendPage(tab.Frame, gtk.Label(name))
 		gui.Tabs[name] = tab
+
 	}
 	return tab
 }

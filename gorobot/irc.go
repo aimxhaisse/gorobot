@@ -211,7 +211,7 @@ func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string, irc_chan stri
 	c.Say[api.PRIORITY_HIGH] = make(chan string)
 	s.Channels[irc_chan] = &c
 	fmt.Printf("Having joined %s on %s\n", conf.Name, irc_server)
-	go talkChannel(conf.Name, &c.Say, s.SendMeRaw, c.Destroy)
+	go talkChannel(c.Config.Name, &c.Say, s.SendMeRaw, c.Destroy)
 }
 
 // A user has joined the channel
@@ -347,9 +347,6 @@ func (irc *Irc) Say(ac *api.Action) {
 		if len(ac.Channel) > 0 {
 			channel := server.Channels[ac.Channel]
 			if channel != nil {
-				if len(ac.User) > 0 {
-					ac.Data = fmt.Sprintf("%s: %s", ac.User, ac.Data)
-				}
 				go func(data string, p int) {
 					channel.Say[p] <- data
 				}(ac.Data, ac.Priority);

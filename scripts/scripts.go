@@ -17,21 +17,15 @@ package main
 
 import (
 	"api"
-	"flag"
-	"log"
 	"regexp"
 	"exec"
 	"os"
 	"fmt"
-	"net"
 	"strings"
-	"strconv"
 )
 
 // avoid characters such as "../" to disallow commands like "!../admin/kick"
 var re_cmd = regexp.MustCompile("^!([a-zA-Z0-9]+)( .*)?")
-var addr = flag.String("s", "", "address:port of exported netchans")
-const ADMIN_PORT = "23456"
 
 func CraftActionSay(e api.Event, output string) (api.Action) {
 	var a api.Action
@@ -44,29 +38,6 @@ func CraftActionSay(e api.Event, output string) (api.Action) {
 	return a
 }
 
-// assumes that output follows the following pattern:
-// SERVER PRIORITY RAW_CMD
-// example: irc.freenode.org PRIVMSG ...
-func CraftActionRaw(output string) (api.Action) {
-	var a api.Action
-	shellapi := strings.Split(output, " ", 3)
-	a.Type = api.A_RAW
-	if len(shellapi) == 3 {
-		a.Server = shellapi[0]
-		a.Priority, _ = strconv.Atoi(shellapi[1])
-		if	a.Priority != api.PRIORITY_LOW &&
-			a.Priority != api.PRIORITY_MEDIUM &&
-			a.Priority != api.PRIORITY_HIGH {
-			a.Priority = api.PRIORITY_LOW
-		}
-		a.Data = shellapi[2]
-	} else {
-		a.Data = output
-		a.Priority = api.PRIORITY_LOW
-	}
-	return a
-}
-
 func FileExists(cmd string) (bool) {
 	stat, err := os.Stat(cmd)
 	if err == nil {
@@ -75,13 +46,14 @@ func FileExists(cmd string) (bool) {
 	return false
 }
 
-func GetCmdPath(cmd string, admin bool) (string) {
-	path := "public/" + cmd + ".cmd"
+// @todo handle Private commands
+func GetCmdPath(config *Config, cmd string, admin bool) (string) {
+	path := fmt.Sprintf("%s/%s.cmd", config.PublicScripts, cmd)
 	if FileExists(path) {
 		return path
 	}
 	if admin {
-		path := "admin/" + cmd + ".cmd"
+		path := fmt.Sprintf("%s/%s.cmd", config.AdminScripts, cmd)
 		if FileExists(path) {
 			return path
 		}
@@ -89,12 +61,11 @@ func GetCmdPath(cmd string, admin bool) (string) {
 	return ""
 }
 
-// "!script param1 param2" will result in the following call:
-// "./public/script.cmd port server channel user param1 param2"
-func ExecCmd(path string, ev api.Event) (string, os.Error) {
+func ExecCmd(config Config, path string, ev api.Event) (string, os.Error) {
 	var result []byte
-	argv := []string{path, ADMIN_PORT, ev.Server, ev.Channel, ev.User}
+	argv := []string{path, config.LocalPort, ev.Server, ev.Channel, ev.User}
 	args := strings.Split(ev.Data, " ", 2)
+
 	if len(args) == 2 {
 		parameters := strings.Split(args[1], " ", -1)
 		argv = append(argv, parameters...)
@@ -117,72 +88,40 @@ func ExecCmd(path string, ev api.Event) (string, os.Error) {
 	}
 	cmd.Wait(0)
 	cmd.Close()
+
 	return string(result), nil
 }
 
-// open the admin port and directly send RAW commands to the michel
-func NetAdmin(chac chan api.Action) os.Error {
-	listener, err := net.Listen("tcp", "0.0.0.0:" + ADMIN_PORT)
-	if err != nil {
-		log.Exit("Can't open admin port\n")
-		return err
-	}
-	for {
-		con, err := listener.Accept()
-		if err == nil {
-			const NBUF = 512
-			var rawcmd []byte
-			var buf [NBUF]byte
-
-			for {
-				n, err := con.Read(buf[0:])
-				rawcmd = append(rawcmd, buf[0:n]...)
-
-				if err != nil {
-					break
-				}
+func TreatEventCmd(config Config, path string, e api.Event, chac chan api.Action) {
+	fmt.Printf("Executing %s\n", path)
+	output, _ := ExecCmd(config, path, e)
+	if len(output) > 0 {
+		msgs := strings.Split(output, "\n", -1)
+		for i := 0; i < len(msgs); i++ {
+			if len(msgs[i]) > 0 {
+				chac <- CraftActionSay(e, msgs[i])
 			}
-			con.Close()
-			s := strings.TrimRight(string(rawcmd), "\r\n")
-			fmt.Printf("New raw action received (%s)\n", s)
-			chac <- CraftActionRaw(s)
-		} else {
-			fmt.Printf("Can't accept new connection\n")
 		}
 	}
-	return nil
+	// if no output, this is probably a command that
+  	// will use the administration port (ADMIN_PORT)
+	// to send a raw command.
 }
 
 func main() {
-	flag.Parse()
-	if *addr == "" {
-		log.Exit("Usage : ./module -s addr:port")
-	}
-	chac, chev := api.ImportFrom(*addr, "scripts")
-	go NetAdmin(chac)
+	config := NewConfig("config.json")
+	chac, chev := api.ImportFrom(config.RobotInterface, config.ModuleName)
+	go NetAdmin(*config, chac)
+
 	for {
 		e := <- chev
 		if e.Type != api.E_PRIVMSG || len(e.Channel) == 0 {
 			continue
 		}
 		if m := re_cmd.FindStringSubmatch(e.Data); len(m) > 0 {
-			path := GetCmdPath(m[1], e.AdminCmd)
+			path := GetCmdPath(config, m[1], e.AdminCmd)
 			if len(path) > 0 {
-				go func(path string, e api.Event) {
-					fmt.Printf("Executing %s\n", path)
-					output, _ := ExecCmd(path, e)
-					if len(output) > 0 {
-						msgs := strings.Split(output, "\n", -1)
-						for i := 0; i < len(msgs); i++ {
-							if len(msgs[i]) > 0 {
-								chac <- CraftActionSay(e, msgs[i])
-							}
-						}
-					}
-					// if no output, this is probably a command that
-  					// will use the administration port (ADMIN_PORT)
-					// to send a raw command.
-				}(path, e)
+				go TreatEventCmd(*config, path, e, chac)
 			}
 		}
 	}
