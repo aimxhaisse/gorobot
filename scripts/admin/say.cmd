@@ -7,7 +7,7 @@ us=$4
 
 if [ $# -lt 7 ]
 then
-    echo "usage: !say server receiver message" | nc -q 0 localhost $po > /dev/null
+    echo "$se 3 PRIVMSG $ch :$us: !say server receiver message" | nc -q 0 localhost $po > /dev/null
     exit
 fi
 

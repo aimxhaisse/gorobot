@@ -7,7 +7,7 @@ us=$4
 
 if [ $# -lt 8 ]
 then
-    echo "$se 3 PRIVMSG $ch :usage: !kick server chan user message" | nc -q 0 localhost $po > /dev/null
+    echo "$se 3 PRIVMSG $ch :$us: !kick server chan user message" | nc -q 0 localhost $po > /dev/null
     exit
 fi
 

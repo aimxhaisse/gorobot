@@ -7,7 +7,7 @@ us=$4
 
 if [ $# -lt 6 ]
 then
-    echo "usage: !part server chan [message]" | nc -q 0 localhost $po > /dev/null
+    echo "$se 3 PRIVMSG $ch :$us: !part server chan [message]" | nc -q 0 localhost $po > /dev/null
     exit
 fi
 
@@ -24,7 +24,7 @@ shift
 
 if [ $# -eq 5 ]
 then
-    echo "$server 3 PART $chan" | nc -q 0 localhost $po > /dev/null
+    echo "$server 1 PART $chan" | nc -q 0 localhost $po > /dev/null
 else
-    echo "$server 3 PART $chan :$@" | nc -q 0 localhost $po > /dev/null
+    echo "$server 1 PART $chan :$@" | nc -q 0 localhost $po > /dev/null
 fi

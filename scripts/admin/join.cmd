@@ -7,7 +7,7 @@ us=$4
 
 if [ $# -lt 6 ]
 then
-    echo "$se 3 PRIVMSG $ch :usage: !join server chan [message]" | nc -q 0 localhost $po > /dev/null
+    echo "$se 3 PRIVMSG $ch :$us: !join server chan [message]" | nc -q 0 localhost $po > /dev/null
     exit
 fi
 
