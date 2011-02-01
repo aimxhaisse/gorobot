@@ -4,16 +4,10 @@ package main
 // !xyz will execute the script located in public/xyz.cmd
 // if public/xyz.cmd doesn't exist and the command was issued by and admin,
 // then admin/xyz.cmd is executed.
+// if the command was issued in private, then private/xyz.cmd is executed
 //
-// scripts can behave into two fashions:
-// - they can write to stdout, which will write to the channel where
-// the cmd was invoked.
-// - they can open the admin port and send IRC commands directly to the
+// scripts can open the admin port and send IRC commands directly to the
 // server.
-
-// @todo:
-// -> clean the code
-// -> when the command is not an executable, the module crashes
 
 import (
 	"api"
@@ -46,8 +40,14 @@ func FileExists(cmd string) (bool) {
 	return false
 }
 
-// @todo handle Private commands
-func GetCmdPath(config *Config, cmd string, admin bool) (string) {
+func GetCmdPath(config *Config, cmd string, admin bool, private bool) (string) {
+	if private {
+		path := fmt.Sprintf("%s/%s.cmd", config.PrivateScripts, cmd)
+		if FileExists(path) {
+			return path
+		}
+		return ""
+	}
 	path := fmt.Sprintf("%s/%s.cmd", config.PublicScripts, cmd)
 	if FileExists(path) {
 		return path
@@ -61,51 +61,19 @@ func GetCmdPath(config *Config, cmd string, admin bool) (string) {
 	return ""
 }
 
-func ExecCmd(config Config, path string, ev api.Event) (string, os.Error) {
-	var result []byte
+func ExecCmd(config Config, path string, ev api.Event) {
+	fmt.Printf("Executing [%s]\n", path)
 	argv := []string{path, config.LocalPort, ev.Server, ev.Channel, ev.User}
 	args := strings.Split(ev.Data, " ", 2)
-
 	if len(args) == 2 {
 		parameters := strings.Split(args[1], " ", -1)
 		argv = append(argv, parameters...)
 	}
-
-	cmd, _ := exec.Run(path, argv,
+	cmd, err := exec.Run(path, argv,
 		[]string{}, "", exec.Pipe, exec.Pipe, exec.Pipe)
-
-	const NBUF = 512
-	var buf [NBUF]byte
-	for {
-		n, err := cmd.Stdout.Read(buf[0:])
-		result = append(result, buf[0:n]...)
-		if err != nil {
-			if err == os.EOF {
-				break
-			}
-			return "", err
-		}
+	if err == nil {
+		cmd.Wait(0)
 	}
-	cmd.Wait(0)
-	cmd.Close()
-
-	return string(result), nil
-}
-
-func TreatEventCmd(config Config, path string, e api.Event, chac chan api.Action) {
-	fmt.Printf("Executing %s\n", path)
-	output, _ := ExecCmd(config, path, e)
-	if len(output) > 0 {
-		msgs := strings.Split(output, "\n", -1)
-		for i := 0; i < len(msgs); i++ {
-			if len(msgs[i]) > 0 {
-				chac <- CraftActionSay(e, msgs[i])
-			}
-		}
-	}
-	// if no output, this is probably a command that
-  	// will use the administration port (ADMIN_PORT)
-	// to send a raw command.
 }
 
 func main() {
@@ -115,13 +83,14 @@ func main() {
 
 	for {
 		e := <- chev
-		if e.Type != api.E_PRIVMSG || len(e.Channel) == 0 {
+
+		if e.Type != api.E_PRIVMSG {
 			continue
 		}
 		if m := re_cmd.FindStringSubmatch(e.Data); len(m) > 0 {
-			path := GetCmdPath(config, m[1], e.AdminCmd)
+			path := GetCmdPath(config, m[1], e.AdminCmd, len(e.Channel) == 0)
 			if len(path) > 0 {
-				go TreatEventCmd(*config, path, e, chac)
+				go ExecCmd(*config, path, e)
 			}
 		}
 	}

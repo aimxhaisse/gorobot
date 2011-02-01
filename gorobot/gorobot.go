@@ -35,9 +35,7 @@ func NewGoRobot(config string) *GoRobot {
 
 func (robot *GoRobot) SendEvent(event *api.Event) {
 	for _, chev := range robot.Modules {
-		go func (chev chan api.Event, event api.Event) {
-			chev <- event
-		} (chev, *event);
+		chev <- *event
 	}
 	robot.LogEvent(event)
 }

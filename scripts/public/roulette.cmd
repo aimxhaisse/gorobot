@@ -1,7 +1,4 @@
-#!/bin/bash
-
-# echo "J'ai plus de balles"
-# exit
+#!/usr/bin/env bash
 
 po=$1
 se=$2
@@ -19,7 +16,7 @@ if [ $count -eq 0 ]; then
     echo "$se 1 KICK $ch $us :*PAN*" | nc -q 0 localhost $po > /dev/null
     rm public/roulette.txt
 else
-    echo "*CLICK*"
+    echo "$se 1 PRIVMSG $ch :*CLICK*" | nc -q 0 localhost $po > /dev/null
     count=$(($count - 1))
     echo $count > public/roulette.txt
 fi

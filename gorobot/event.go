@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 // Events are built from the output of the IRC server, and are sent to modules
@@ -89,7 +90,9 @@ func EventPRIVMSG(line string, user string, channel string, msg string) (*api.Ev
 	event.Raw = line
 	event.Type = api.E_PRIVMSG
 	event.Data = msg
-	event.Channel = channel
+	if strings.Index(channel, "#") == 0 {
+		event.Channel = channel
+	}
 	event.User = user
 	return event
 }
