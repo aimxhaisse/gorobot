@@ -88,7 +88,7 @@ func (robot *GoRobot) LogStatistics() {
 			for cn, c := range s.Channels {
 				file := fmt.Sprintf("%s/%s-%s.stats",
 					robot.Config.Logs.Directory, sn, cn)
-				robot.WriteLog(file, fmt.Sprintf("%d user(s)", c.Users))
+				robot.WriteLog(file, fmt.Sprintf("%d user(s)", len(c.Users)))
 			}
 		}
 	}
