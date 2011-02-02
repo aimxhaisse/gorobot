@@ -9,10 +9,7 @@ import (
 
 type Config struct {
 	ModuleName	string
-	AdminScripts	string
-	PublicScripts	string
-	PrivateScripts	string
-	LocalPort	string
+	HelloWorld	string
 	RobotInterface	string
 }
 
