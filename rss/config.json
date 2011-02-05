@@ -1,0 +1,13 @@
+{
+    "ModuleName": "mod-rss",
+    "RobotInterface": "localhost:12345",
+    "Feeds": {
+        "Hacker News": {
+            "Refresh": 3600,
+            "Url": "http://news.ycombinator.com/rss",
+            "BroadCasts": {
+                "epitech": ["##nantes"]
+            }
+        }
+    }
+}
