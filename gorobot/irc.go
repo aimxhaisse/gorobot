@@ -34,7 +34,6 @@ type Server struct {
 	Channels	map[string] *Channel // IRC channels where the bot is
 	Conversations	map[string] Conversation // opened conversations
 	SendMeRaw	chan string	// channel to send raw commands to the server
-	AuthSent	bool		// has the authentication been sent?
 	socket		net.Conn	// socket to the server
 }
 
@@ -141,6 +140,8 @@ func (irc *Irc) Connect(alias string, c ConfigServer) bool {
 	irc.Servers[alias] = &srv
 	go reader(srv.Config.Name, srv.socket, irc.Events)
 	go writer(srv.socket, srv.SendMeRaw)
+	srv.SendMeRaw <- fmt.Sprintf("NICK %s\r\n", c.Nickname)
+	srv.SendMeRaw <- fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n", c.Username, c.Realname)
 	return true
 }
 
@@ -211,7 +212,7 @@ func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string, irc_chan stri
 	c.Say[botapi.PRIORITY_MEDIUM] = make(chan string)
 	c.Say[botapi.PRIORITY_HIGH] = make(chan string)
 	s.Channels[irc_chan] = &c
-	log.Printf("Having joined %s on %s\n", conf.Name, irc_server)
+	log.Printf("Having joined %s on %s\n", irc_chan, irc_server)
 	go talkChannel(c.Config.Name, &c.Say, s.SendMeRaw, c.Destroy)
 }
 

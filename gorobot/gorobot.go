@@ -59,12 +59,6 @@ func (robot *GoRobot) autoJoin(s string) {
 
 // Handle a notice
 func (robot *GoRobot) HandleNotice(s *Server, event *botapi.Event) {
-	if !s.AuthSent {
-		s.SendMeRaw <- fmt.Sprintf("NICK %s\r\n", s.Config.Nickname)
-		s.SendMeRaw <- fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n",
-		   	s.Config.Username, s.Config.Realname)
-		s.AuthSent = true
-	}
 	switch event.CmdId {
 	case 1:
 		robot.autoJoin(s.Config.Name)
@@ -118,7 +112,7 @@ func (robot *GoRobot) HandleAction(ac *botapi.Action) {
 			*ac = *new_action
 			ac.Priority = p
 		} else {
-			log.Printf("Raw command ignored [%s]\n", ac.Raw)
+			log.Printf("raw command ignored [%s]\n", ac.Raw)
 			return
 		}
 	}

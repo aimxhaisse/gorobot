@@ -13,9 +13,8 @@
     },
 
     "Servers": {
-
         "localhost" : {
-            "Host": "localhost:6667",
+            "Host": "localhost:6669",
             "Nickname": "M4rc3l",
             "Realname": "Marcel Patoulatchie",
             "Username": "Marcel",
@@ -27,10 +26,10 @@
                 },
                 "#hejsan": {
                     "Password": "",
-                    "Master": false
+                    "Master": true
                 }
             }
-        },
-
+        }
     }
+
 }
