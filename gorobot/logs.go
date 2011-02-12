@@ -2,7 +2,7 @@ package gorobot
 
 import (
 	"os"
-	"api"
+	"botapi"
 	"fmt"
 	"time"
 	"runtime"
@@ -28,7 +28,7 @@ func (robot *GoRobot) WriteLog(file string, msg string) {
 }
 
 // Logs a PRIVMSG event in logs/server/[user|channel].log
-func (robot *GoRobot) LogEventPRIVMSG(ev *api.Event) {
+func (robot *GoRobot) LogEventPRIVMSG(ev *botapi.Event) {
 	var file string
 
 	if len(ev.Channel) > 0 {
@@ -41,34 +41,34 @@ func (robot *GoRobot) LogEventPRIVMSG(ev *api.Event) {
 }
 
 // Logs a JOIN event in logs/server-channel.log
-func (robot *GoRobot) LogEventJOIN(ev *api.Event) {
+func (robot *GoRobot) LogEventJOIN(ev *botapi.Event) {
 	file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.Channel)
 	robot.WriteLog(file, fmt.Sprintf("%s has joined %s", ev.User, ev.Channel))
 }
 
 // Logs a PART event in logs/server-channel.log
-func (robot *GoRobot) LogEventPART(ev *api.Event) {
+func (robot *GoRobot) LogEventPART(ev *botapi.Event) {
 	file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.Channel)
 	robot.WriteLog(file, fmt.Sprintf("%s has left %s", ev.User, ev.Channel))
 }
 
 // Logs a KICK event in logs/server-channel.log
-func (robot *GoRobot) LogEventKICK(ev *api.Event) {
+func (robot *GoRobot) LogEventKICK(ev *botapi.Event) {
 	file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.Channel)
 	robot.WriteLog(file, fmt.Sprintf("%s has been kicked from %s by %s", ev.Data, ev.Channel, ev.User))
 }
 
 // Main entry to log events
-func (robot *GoRobot) LogEvent(ev *api.Event) {
+func (robot *GoRobot) LogEvent(ev *botapi.Event) {
 	if robot.Config.Logs.Enable && robot.Config.Logs.RecordEvents {
 		switch ev.Type {
-		case api.E_PRIVMSG:
+		case botapi.E_PRIVMSG:
 			robot.LogEventPRIVMSG(ev)
-		case api.E_JOIN:
+		case botapi.E_JOIN:
 			robot.LogEventJOIN(ev)
-		case api.E_PART:
+		case botapi.E_PART:
 			robot.LogEventPART(ev)
-		case api.E_KICK:
+		case botapi.E_KICK:
 			robot.LogEventKICK(ev)
 		}
 	}

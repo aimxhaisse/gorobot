@@ -6,7 +6,7 @@
             "Refresh": 3600,
             "Url": "http://news.ycombinator.com/rss",
             "BroadCasts": {
-                "epitech": ["##nantes"]
+                "epitech": ["#nantes"]
             }
         }
     }

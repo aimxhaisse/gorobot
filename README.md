@@ -14,13 +14,11 @@ GoRobot
   * JSON Configuration
   * No excess flood, even upon high activity
   * Module to handle shell scripts, through a tiny API
+  * Module to follow RSS feeds
   * Statistics (activity on a channel, number of people, ...)
 
 ## Todo:
 
-  * Module to follow RSS feeds
-  * Module to offer a graphical interface through network (in progress)
-  * A prompt to perform administrative tasks?
   * Automatic reconnection on timeout, kicks, ...
   * Add new features to the GO API (configuration of modules, ...)
   * Ability to autoload GO modules

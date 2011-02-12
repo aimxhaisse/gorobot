@@ -1,7 +1,7 @@
 package gorobot
 
 import (
-	"api"
+	"botapi"
 	"bufio"
 	"fmt"
 	"net"
@@ -39,7 +39,7 @@ type Server struct {
 
 // IRC Bot
 type Irc struct {
-	Events      chan api.Event	// Events are written here
+	Events      chan botapi.Event	// Events are written here
 	Errors      chan os.Error	// Useless for now
 	Servers	    map[string] *Server	// Servers where the bot is connected
 }
@@ -47,7 +47,7 @@ type Irc struct {
 // Instanciate a new IRC bot
 func NewIrc() *Irc {
 	b := Irc{
-		Events: make(chan api.Event),
+		Events: make(chan botapi.Event),
 		Errors: make(chan os.Error),
 		Servers: make(map[string] *Server),
 	}
@@ -83,7 +83,7 @@ func (irc *Irc) CleanConversations() {
 }
 
 // Extract events from the server
-func reader(srv_name string, socket net.Conn, chev chan api.Event) {
+func reader(srv_name string, socket net.Conn, chev chan botapi.Event) {
 	r := bufio.NewReader(socket)
 	for {
 		var err os.Error
@@ -172,11 +172,11 @@ func talkChannel(target string, chin *map[int] chan string, chout chan string, d
 		case <- destroy:
 			destroy <- 42
 			return
-		case say := <- (*chin)[api.PRIORITY_HIGH]:
+		case say := <- (*chin)[botapi.PRIORITY_HIGH]:
 			sayToChannel(&after, &ahead, &before, chout, say, target)
-		case say := <- (*chin)[api.PRIORITY_MEDIUM]:
+		case say := <- (*chin)[botapi.PRIORITY_MEDIUM]:
 			sayToChannel(&after, &ahead, &before, chout, say, target)
-		case say := <- (*chin)[api.PRIORITY_LOW]:
+		case say := <- (*chin)[botapi.PRIORITY_LOW]:
 			sayToChannel(&after, &ahead, &before, chout, say, target)
 		}
 	}
@@ -206,16 +206,16 @@ func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string, irc_chan stri
 		Say: make(map[int] chan string),
 	}
 	c.Config.Name = irc_chan
-	c.Say[api.PRIORITY_LOW] = make(chan string)
-	c.Say[api.PRIORITY_MEDIUM] = make(chan string)
-	c.Say[api.PRIORITY_HIGH] = make(chan string)
+	c.Say[botapi.PRIORITY_LOW] = make(chan string)
+	c.Say[botapi.PRIORITY_MEDIUM] = make(chan string)
+	c.Say[botapi.PRIORITY_HIGH] = make(chan string)
 	s.Channels[irc_chan] = &c
 	fmt.Printf("Having joined %s on %s\n", conf.Name, irc_server)
 	go talkChannel(c.Config.Name, &c.Say, s.SendMeRaw, c.Destroy)
 }
 
 // A user has joined the channel
-func (irc *Irc) UserJoined(ev *api.Event) {
+func (irc *Irc) UserJoined(ev *botapi.Event) {
 	ch := irc.GetChannel(ev.Server, ev.Channel)
 	if ch != nil {
 		if _, ok := ch.Users[ev.User]; ok == false {
@@ -226,7 +226,7 @@ func (irc *Irc) UserJoined(ev *api.Event) {
 
 
 // A user has left the channel
-func (irc *Irc) UserLeft(ev *api.Event) {
+func (irc *Irc) UserLeft(ev *botapi.Event) {
 	ch := irc.GetChannel(ev.Server, ev.Channel)
 	if ch != nil {
 		ch.Users[ev.User] = ch.Users[ev.User], false
@@ -234,7 +234,7 @@ func (irc *Irc) UserLeft(ev *api.Event) {
 }
 
 // A user has left a server, lets remove it from each channel
-func (irc *Irc) UserQuit(ev *api.Event) {
+func (irc *Irc) UserQuit(ev *botapi.Event) {
 	s := irc.GetServer(ev.Server)
 	if s != nil {
 		for _, ch := range s.Channels {
@@ -248,7 +248,7 @@ func (irc *Irc) UserQuit(ev *api.Event) {
 var re_event_userlist = regexp.MustCompile("^:[^ ]+ 353 [^:]+ . ([^ ]+) :(.*)")
 
 // Add a list of users to a channel
-func (irc *Irc) AddUsersToChannel(srv *Server, ev *api.Event) {
+func (irc *Irc) AddUsersToChannel(srv *Server, ev *botapi.Event) {
 	m := re_event_userlist.FindStringSubmatch(ev.Raw)
 	if len(m) != 3 {
 		return
@@ -272,7 +272,7 @@ func (irc *Irc) AddUsersToChannel(srv *Server, ev *api.Event) {
 }
 
 // Join a channel with a default configuration
-func (irc *Irc) Join(ac *api.Action) {
+func (irc *Irc) Join(ac *botapi.Action) {
 	conf := ConfigChannel{
 		Master: false,
 		Name: ac.Channel,
@@ -281,7 +281,7 @@ func (irc *Irc) Join(ac *api.Action) {
 }
 
 // Kick someone from an IRC channel
-func (irc *Irc) Kick(ac *api.Action) {
+func (irc *Irc) Kick(ac *botapi.Action) {
 	c := irc.GetChannel(ac.Server, ac.Channel)
 	s := irc.GetServer(ac.Server)
 
@@ -307,7 +307,7 @@ func (irc *Irc) DestroyChannel(server string, channel string) {
 }
 
 // Leave an IRC channel
-func (irc *Irc) Part(ac *api.Action) {
+func (irc *Irc) Part(ac *botapi.Action) {
 	s := irc.GetServer(ac.Server)
 	c := irc.GetChannel(ac.Server, ac.Channel)
 
@@ -323,15 +323,15 @@ func (irc *Irc) Part(ac *api.Action) {
 }
 
 // Create a new conversation, with the same behavior as a channel
-func (irc *Irc) CreateNewConversation(ac *api.Action, server *Server) (Conversation) {
+func (irc *Irc) CreateNewConversation(ac *botapi.Action, server *Server) (Conversation) {
 	conv := Conversation{
 		Say: make(map[int] chan string),
 		Destroy: make(chan int),
 	}
 
-	conv.Say[api.PRIORITY_LOW] = make(chan string)
-	conv.Say[api.PRIORITY_MEDIUM] = make(chan string)
-	conv.Say[api.PRIORITY_HIGH] = make(chan string)
+	conv.Say[botapi.PRIORITY_LOW] = make(chan string)
+	conv.Say[botapi.PRIORITY_MEDIUM] = make(chan string)
+	conv.Say[botapi.PRIORITY_HIGH] = make(chan string)
 	server.Conversations[ac.User] = conv
 
 	go talkChannel(ac.User, &conv.Say, server.SendMeRaw, conv.Destroy)
@@ -341,7 +341,7 @@ func (irc *Irc) CreateNewConversation(ac *api.Action, server *Server) (Conversat
 
 // Say something to a channel or to a conversation, create a new conversation
 // if it does not exists yet
-func (irc *Irc) Say(ac *api.Action) {
+func (irc *Irc) Say(ac *botapi.Action) {
 	var server = irc.Servers[ac.Server]
 	if server != nil {
 		if len(ac.Channel) > 0 {

@@ -10,7 +10,7 @@ package main
 // server.
 
 import (
-	"api"
+	"botapi"
 	"regexp"
 	"exec"
 	"os"
@@ -21,14 +21,14 @@ import (
 // avoid characters such as "../" to disallow commands like "!../admin/kick"
 var re_cmd = regexp.MustCompile("^!([a-zA-Z0-9]+)( .*)?")
 
-func CraftActionSay(e api.Event, output string) (api.Action) {
-	var a api.Action
+func CraftActionSay(e botapi.Event, output string) (botapi.Action) {
+	var a botapi.Action
 	a.Server = e.Server
 	a.Channel = e.Channel
 	a.User = e.User
 	a.Data = output
-	a.Type = api.A_SAY
-	a.Priority = api.PRIORITY_LOW
+	a.Type = botapi.A_SAY
+	a.Priority = botapi.PRIORITY_LOW
 	return a
 }
 
@@ -61,7 +61,7 @@ func GetCmdPath(config *Config, cmd string, admin bool, private bool) (string) {
 	return ""
 }
 
-func ExecCmd(config Config, path string, ev api.Event) {
+func ExecCmd(config Config, path string, ev botapi.Event) {
 	fmt.Printf("Executing [%s]\n", path)
 	argv := []string{path, config.LocalPort, ev.Server, ev.Channel, ev.User}
 	args := strings.Split(ev.Data, " ", 2)
@@ -78,13 +78,13 @@ func ExecCmd(config Config, path string, ev api.Event) {
 
 func main() {
 	config := NewConfig("config.json")
-	chac, chev := api.ImportFrom(config.RobotInterface, config.ModuleName)
+	chac, chev := botapi.ImportFrom(config.RobotInterface, config.ModuleName)
 	go NetAdmin(*config, chac)
 
 	for {
 		e := <- chev
 
-		if e.Type != api.E_PRIVMSG {
+		if e.Type != botapi.E_PRIVMSG {
 			continue
 		}
 		if m := re_cmd.FindStringSubmatch(e.Data); len(m) > 0 {

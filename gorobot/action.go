@@ -1,7 +1,7 @@
 package gorobot
 
 import(
-	"api"
+	"botapi"
 	"regexp"
 	"strings"
 )
@@ -19,7 +19,7 @@ var re_cmd_privmsg_chan	= regexp.MustCompile("^PRIVMSG ([^ ]+) :(.*)")
 // Constructs an Action of any type from a Raw Action, this extra step is
 // made to ensure that the bot is still aware of what's hapening even with
 // raw actions (ie: a raw action "QUIT" has to remove the server from the bot)
-func ExtractAction(raw_action *api.Action) (*api.Action) {
+func ExtractAction(raw_action *botapi.Action) (*botapi.Action) {
 	if m := re_cmd_kick.FindStringSubmatch(raw_action.Data); len(m) == 4 {
 		return ActionKICK(&raw_action.Server, &m[1], &m[2], &m[3])
 	}
@@ -41,39 +41,39 @@ func ExtractAction(raw_action *api.Action) (*api.Action) {
 	return nil
 }
 
-func ActionKICK(srv *string, channel *string, user *string, msg *string) (*api.Action) {
-	result := new(api.Action)
+func ActionKICK(srv *string, channel *string, user *string, msg *string) (*botapi.Action) {
+	result := new(botapi.Action)
 	result.Server = *srv
 	result.Channel = *channel
 	result.User = *user
 	if msg != nil {
 		result.Data = *msg
 	}
-	result.Type = api.A_KICK
+	result.Type = botapi.A_KICK
 	return result
 }
 
-func ActionJOIN(srv *string, channel *string) (*api.Action) {
-	result := new(api.Action)
+func ActionJOIN(srv *string, channel *string) (*botapi.Action) {
+	result := new(botapi.Action)
 	result.Server = *srv
 	result.Channel = *channel
-	result.Type = api.A_JOIN
+	result.Type = botapi.A_JOIN
 	return result
 }
 
-func ActionPART(srv *string, channel *string, msg *string) (*api.Action) {
-	result := new(api.Action)
+func ActionPART(srv *string, channel *string, msg *string) (*botapi.Action) {
+	result := new(botapi.Action)
 	result.Server = *srv
 	result.Channel = *channel
 	if msg != nil {
 		result.Data = *msg
 	}
-	result.Type = api.A_PART
+	result.Type = botapi.A_PART
 	return result
 }
 
-func ActionPRIVMSG(srv *string, channel *string, msg *string) (*api.Action) {
-	result := new(api.Action)
+func ActionPRIVMSG(srv *string, channel *string, msg *string) (*botapi.Action) {
+	result := new(botapi.Action)
 	result.Server = *srv
 	if strings.Index(*channel, "#") == 0 {
 		result.Channel = *channel
@@ -81,6 +81,6 @@ func ActionPRIVMSG(srv *string, channel *string, msg *string) (*api.Action) {
 		result.User = *channel
 	}
 	result.Data = *msg
-	result.Type = api.A_SAY
+	result.Type = botapi.A_SAY
 	return result
 }

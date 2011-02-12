@@ -1,7 +1,7 @@
 package main
 
 import (
-	"api"
+	"botapi"
 	"http"
 	"xml"
 	"fmt"
@@ -61,11 +61,11 @@ func PopulateFeed(feed *RssFeed) {
 	}
 }
 
-func BroadcastNewItem(feed *ConfigFeed, chac chan api.Action, item *Item) {
-	ac := api.Action {
+func BroadcastNewItem(feed *ConfigFeed, chac chan botapi.Action, item *Item) {
+	ac := botapi.Action {
 		Data: fmt.Sprintf("rss> %s [ %s ]", item.Title, item.Link),
-		Priority: api.PRIORITY_LOW,
-		Type: api.A_SAY,
+		Priority: botapi.PRIORITY_LOW,
+		Type: botapi.A_SAY,
 	}
 
 	for srv, array := range feed.BroadCasts {
@@ -81,7 +81,7 @@ func BroadcastNewItem(feed *ConfigFeed, chac chan api.Action, item *Item) {
 	}
 }
 
-func DrainFeed(feed RssFeed, chac chan api.Action) {
+func DrainFeed(feed RssFeed, chac chan botapi.Action) {
 	for {
 		feedxml := GetXmlFromUrl(feed.Config.Url)
 		if feedxml != nil {
@@ -99,7 +99,7 @@ func DrainFeed(feed RssFeed, chac chan api.Action) {
 
 func main() {
 	config := NewConfig("config.json")
-	chac, chev := api.ImportFrom(config.RobotInterface, config.ModuleName)
+	chac, chev := botapi.ImportFrom(config.RobotInterface, config.ModuleName)
 	feeds := InitFeeds(config)
 
 	for _, feed := range *feeds {

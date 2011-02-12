@@ -1,7 +1,7 @@
 package gorobot
 
 import (
-	"api"
+	"botapi"
 	"os"
 	"netchan"
 	"fmt"
@@ -12,8 +12,8 @@ type GoRobot struct {
 	LogMap map[string] *os.File
 	Irc* Irc
 	Exp *netchan.Exporter
-	Modules map[string] chan api.Event
-	Actions chan api.Action
+	Modules map[string] chan botapi.Event
+	Actions chan botapi.Action
 }
 
 // Creates a new robot from a configuration file, automatically
@@ -23,17 +23,17 @@ func NewGoRobot(config string) *GoRobot {
 		Config: NewConfig(config),
 		LogMap: make(map[string] *os.File),
 		Irc: NewIrc(),
-		Modules: make(map[string] chan api.Event),
+		Modules: make(map[string] chan botapi.Event),
 	}
-	robot.Exp = api.InitExport(robot.Config.Module.Interface)
-	robot.Actions = api.ExportActions(robot.Exp)
+	robot.Exp = botapi.InitExport(robot.Config.Module.Interface)
+	robot.Actions = botapi.ExportActions(robot.Exp)
 	for  k, v := range robot.Config.Servers {
 		robot.Irc.Connect(k, v)
 	}
 	return &robot
 }
 
-func (robot *GoRobot) SendEvent(event *api.Event) {
+func (robot *GoRobot) SendEvent(event *botapi.Event) {
 	for _, chev := range robot.Modules {
 		chev <- *event
 	}
@@ -57,7 +57,7 @@ func (robot *GoRobot) autoJoin(s string) {
 }
 
 // Handle a notice
-func (robot *GoRobot) HandleNotice(s *Server, event *api.Event) {
+func (robot *GoRobot) HandleNotice(s *Server, event *botapi.Event) {
 	if !s.AuthSent {
 		s.SendMeRaw <- fmt.Sprintf("NICK %s\r\n", s.Config.Nickname)
 		s.SendMeRaw <- fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n",
@@ -73,28 +73,28 @@ func (robot *GoRobot) HandleNotice(s *Server, event *api.Event) {
 }
 
 // Handle an event from a server
-func (robot *GoRobot) HandleEvent(s *Server, event *api.Event) {
+func (robot *GoRobot) HandleEvent(s *Server, event *botapi.Event) {
 	switch event.Type {
-	case api.E_KICK :
+	case botapi.E_KICK :
 		if s.Config.Nickname == event.Data {
 			robot.Irc.DestroyChannel(event.Server, event.Channel)
 		} else {
 			robot.Irc.UserLeft(event)
 		}
-	case api.E_PING :
+	case botapi.E_PING :
 		s.SendMeRaw <- fmt.Sprintf("PONG :%s\r\n", event.Data)
 		robot.Cron()
-	case api.E_NOTICE :
+	case botapi.E_NOTICE :
 		robot.HandleNotice(s, event)
-	case api.E_PRIVMSG :
+	case botapi.E_PRIVMSG :
 		if s.Channels[event.Channel] != nil {
 			event.AdminCmd = s.Channels[event.Channel].Config.Master
 		}
-	case api.E_JOIN :
+	case botapi.E_JOIN :
 		robot.Irc.UserJoined(event)
-	case api.E_PART :
+	case botapi.E_PART :
 		robot.Irc.UserLeft(event)
-	case api.E_QUIT :
+	case botapi.E_QUIT :
 		robot.Irc.UserQuit(event)
 	}
 	robot.SendEvent(event)
@@ -103,14 +103,14 @@ func (robot *GoRobot) HandleEvent(s *Server, event *api.Event) {
 func (robot *GoRobot) HandleError(e os.Error) {
 }
 
-func (robot *GoRobot) NewModule(ac *api.Action) {
-	robot.Modules[ac.Data] = api.ExportEvents(robot.Exp, ac.Data)
+func (robot *GoRobot) NewModule(ac *botapi.Action) {
+	robot.Modules[ac.Data] = botapi.ExportEvents(robot.Exp, ac.Data)
 }
 
-func (robot *GoRobot) HandleAction(ac *api.Action) {
+func (robot *GoRobot) HandleAction(ac *botapi.Action) {
 	// if the command is RAW, we need to parse it first to be able
 	// to correctly handle it.
-	if ac.Type == api.A_RAW {
+	if ac.Type == botapi.A_RAW {
 		new_action := ExtractAction(ac)
 		if new_action != nil {
 			p := ac.Priority
@@ -123,15 +123,15 @@ func (robot *GoRobot) HandleAction(ac *api.Action) {
 	}
 
 	switch ac.Type {
-	case api.A_NEWMODULE:
+	case botapi.A_NEWMODULE:
 		robot.NewModule(ac)
-	case api.A_SAY:
+	case botapi.A_SAY:
 		robot.Irc.Say(ac)
-	case api.A_JOIN:
+	case botapi.A_JOIN:
 		robot.Irc.Join(ac)
-	case api.A_PART:
+	case botapi.A_PART:
 		robot.Irc.Part(ac)
-	case api.A_KICK:
+	case botapi.A_KICK:
 		robot.Irc.Kick(ac)
 	}
 }

@@ -14,33 +14,23 @@
 
     "Servers": {
 
-        "freenode" : {
-            "Host": "irc.freenode.org:6667",
+        "localhost" : {
+            "Host": "localhost:6667",
             "Nickname": "M4rc3l",
             "Realname": "Marcel Patoulatchie",
             "Username": "Marcel",
             "Password": "",
             "Channels": {
-                "##testpikaplop": {
+                "#c4stl3": {
                     "Password": "",
-                    "Master": true
+                    "Master": false
+                },
+                "#hejsan": {
+                    "Password": "",
+                    "Master": false
                 }
             }
         },
-
-        "epitech" : {
-            "Host": "irc.rezosup.org:6667",
-            "Nickname": "M4rc3l",
-            "Realname": "Marcel Patoulatchie",
-            "Username": "Marcel",
-            "Password": "",
-            "Channels": {
-                "#poil": {
-                    "Password": "",
-                    "Master": true
-                }
-            }
-        }
 
     }
 }
