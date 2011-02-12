@@ -45,7 +45,7 @@ func ExtractEvent(line string) (*botapi.Event) {
 	if m := re_event_quit.FindStringSubmatch(line); len(m) == 3 {
 		return EventQUIT(line, m[1], m[2])
 	}
-	log.Printf("Ignored message: %s\n", line)
+	log.Printf("ignored message: %s", line)
 	return nil
 }
 
