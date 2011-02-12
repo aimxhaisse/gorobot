@@ -16,6 +16,7 @@ import (
 	"os"
 	"fmt"
 	"strings"
+	"log"
 )
 
 // avoid characters such as "../" to disallow commands like "!../admin/kick"
@@ -62,7 +63,7 @@ func GetCmdPath(config *Config, cmd string, admin bool, private bool) (string) {
 }
 
 func ExecCmd(config Config, path string, ev botapi.Event) {
-	fmt.Printf("Executing [%s]\n", path)
+	log.Printf("Executing [%s]\n", path)
 	argv := []string{path, config.LocalPort, ev.Server, ev.Channel, ev.User}
 	args := strings.Split(ev.Data, " ", 2)
 	if len(args) == 2 {

@@ -5,6 +5,7 @@ import (
 	"os"
 	"netchan"
 	"fmt"
+	"log"
 )
 
 type GoRobot struct {
@@ -117,7 +118,7 @@ func (robot *GoRobot) HandleAction(ac *botapi.Action) {
 			*ac = *new_action
 			ac.Priority = p
 		} else {
-			fmt.Printf("Raw command ignored [%s]\n", ac.Raw)
+			log.Printf("Raw command ignored [%s]\n", ac.Raw)
 			return
 		}
 	}

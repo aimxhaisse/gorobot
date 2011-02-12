@@ -2,9 +2,8 @@ package main
 
 import (
 	"json"
-	"os"
+	"log"
 	"io/ioutil"
-	"fmt"
 )
 
 type Config struct {
@@ -17,14 +16,12 @@ type Config struct {
 func NewConfig(path string) (*Config) {
 	file, e := ioutil.ReadFile(path)
 	if e != nil {
-		fmt.Printf("Configuration error: %v\n", e)
-		os.Exit(1)
+		log.Panic("Configuration error: %v\n", e)
 	}
 	var config Config
 	err := json.Unmarshal(file, &config)
 	if err != nil {
-		fmt.Printf("Configuration error: %s\n", err)
-		os.Exit(1)
+		log.Panic("Configuration error: %s\n", err)
 	}
 	return &config
 }

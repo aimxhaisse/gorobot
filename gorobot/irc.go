@@ -4,6 +4,7 @@ import (
 	"botapi"
 	"bufio"
 	"fmt"
+	"log"
 	"net"
 	"regexp"
 	"os"
@@ -96,7 +97,7 @@ func reader(srv_name string, socket net.Conn, chev chan botapi.Event) {
 		ev := ExtractEvent(line)
 		if ev != nil {
 			ev.Server = srv_name
-			fmt.Printf("\x1b[1;36m%s\x1b[0m\n", line)
+			log.Printf("\x1b[1;36m%s\x1b[0m\n", line)
 			chev <- *ev
 		}
 	}
@@ -110,7 +111,7 @@ func writer(socket net.Conn, chsend chan string) {
 	for {
 		str = <- chsend
 		raw = []byte(str)
-		fmt.Printf("\x1b[1;35m%s\x1b[0m\n", strings.TrimRight(str, "\r\t\n"))
+		log.Printf("\x1b[1;35m%s\x1b[0m\n", strings.TrimRight(str, "\r\t\n"))
 		if _, err := socket.Write(raw); err != nil {
 			return
 		}
@@ -120,10 +121,10 @@ func writer(socket net.Conn, chsend chan string) {
 // Connect to a new server
 func (irc *Irc) Connect(alias string, c ConfigServer) bool {
 	if irc.GetServer(alias) != nil {
-		fmt.Printf("Already connected to that server [%s]\n", c.Host)
+		log.Printf("Already connected to that server [%s]\n", c.Host)
 		return false
 	}
-	fmt.Printf("Connecting to [%s]\n", c.Host)
+	log.Printf("Connecting to [%s]\n", c.Host)
 	conn, err := net.Dial("tcp", "", c.Host)
 	if err != nil {
 		irc.Errors <- err
@@ -188,7 +189,7 @@ func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string, irc_chan stri
 	if s == nil {
 		return
 	} else if irc.GetChannel(irc_server, irc_chan) != nil {
-		fmt.Printf("Channel %s already exists on %s\n", irc_chan, irc_server)
+		log.Printf("Channel %s already exists on %s\n", irc_chan, irc_server)
 		return
 	}
 
@@ -210,7 +211,7 @@ func (irc *Irc) JoinChannel(conf ConfigChannel, irc_server string, irc_chan stri
 	c.Say[botapi.PRIORITY_MEDIUM] = make(chan string)
 	c.Say[botapi.PRIORITY_HIGH] = make(chan string)
 	s.Channels[irc_chan] = &c
-	fmt.Printf("Having joined %s on %s\n", conf.Name, irc_server)
+	log.Printf("Having joined %s on %s\n", conf.Name, irc_server)
 	go talkChannel(c.Config.Name, &c.Say, s.SendMeRaw, c.Destroy)
 }
 
@@ -318,7 +319,7 @@ func (irc *Irc) Part(ac *botapi.Action) {
 			s.SendMeRaw <- fmt.Sprintf("PART %s\r\n", ac.Channel)
 		}
 		irc.DestroyChannel(ac.Server, ac.Channel)
-		fmt.Printf("Having left channel %s on %s\n", ac.Channel, ac.Server)
+		log.Printf("Having left channel %s on %s\n", ac.Channel, ac.Server)
 	}
 }
 

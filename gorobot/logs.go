@@ -4,6 +4,7 @@ import (
 	"os"
 	"botapi"
 	"fmt"
+	"log"
 	"time"
 	"runtime"
 )
@@ -19,7 +20,7 @@ func (robot *GoRobot) WriteLog(file string, msg string) {
 	if !ok {
 		fh, _ = os.Open(file, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0666)
 		if fh == nil {
-			fmt.Printf("Warning: can't create file %s\n", file)
+			log.Printf("Warning: can't create file %s\n", file)
 			return
 		}
 		robot.LogMap[file] = fh

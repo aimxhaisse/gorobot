@@ -1,8 +1,7 @@
 package gorobot
 
 import (
-    "fmt"
-    "os"
+    "log"
     "json"
     "io/ioutil"
 )
@@ -45,14 +44,12 @@ type ConfigChannel struct {
 func NewConfig(path string) (*Config) {
 	file, e := ioutil.ReadFile(path)
 	if e != nil {
-		fmt.Printf("Configuration error: %v\n", e)
-		os.Exit(1)
+		log.Panic("Configuration error: %v\n", e)
 	}
 	var config Config
-	err := json.Unmarshal(file, &config)
-	if err != nil {
-		fmt.Printf("Configuration error: %s\n", err)
-		os.Exit(1)
+	e = json.Unmarshal(file, &config)
+	if e != nil {
+		log.Panic("Configuration error: %v\n", e)
 	}
 	return &config
 }

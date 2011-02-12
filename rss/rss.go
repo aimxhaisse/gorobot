@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"time"
 	"strings"
+	"log"
 )
 
 type RssFeed struct {
@@ -45,7 +46,7 @@ func GetXmlFromUrl(url string) *Feed {
 		var feed Feed
 		err := xml.Unmarshal(r.Body, &feed)
 		if err != nil {
-			fmt.Printf("%s\n", err)
+			log.Printf("%s\n", err)
 		}
 		r.Body.Close();
 		return &feed
@@ -93,7 +94,7 @@ func DrainFeed(feed RssFeed, chac chan botapi.Action) {
 			}
 		}
 		time.Sleep(1e7 * feed.Config.Refresh)
-		fmt.Printf("Feed [%s] drained\n", feed.Name)
+		log.Printf("Feed [%s] drained\n", feed.Name)
 	}
 }
 
