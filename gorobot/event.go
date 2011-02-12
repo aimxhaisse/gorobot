@@ -16,7 +16,7 @@ var re_server_ping	   = regexp.MustCompile("^PING :(.*)")
 var re_event_join	   = regexp.MustCompile("^:([^!]+)![^ ]* JOIN :(.+)")
 var re_event_part	   = regexp.MustCompile("^:([^!]+)![^ ]* PART ([^ ]+).*")
 var re_event_privmsg       = regexp.MustCompile("^:([^!]+)![^ ]* PRIVMSG ([^ ]+) :(.+)")
-var re_event_kick	   = regexp.MustCompile("^:([^!]+)![^ ]* KICK ([^ ]+) ([^ ]+) :(.+)" )
+var re_event_kick	   = regexp.MustCompile("^:([^!]+)![^ ]* KICK ([^ ]+) ([^ ]+) :(.*)" )
 var re_event_quit	   = regexp.MustCompile("^:([^!]+)![^ ]* QUIT :(.*)")
 
 func ExtractEvent(line string) (*botapi.Event) {

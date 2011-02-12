@@ -1,5 +1,7 @@
 {
 
+    "AutoRejoinOnKick": true,
+
     "Logs": {
         "Enable": true,
         "Directory": "./logs",

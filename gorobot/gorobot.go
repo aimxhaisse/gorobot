@@ -29,7 +29,8 @@ func NewGoRobot(config string) *GoRobot {
 	robot.Exp = botapi.InitExport(robot.Config.Module.Interface)
 	robot.Actions = botapi.ExportActions(robot.Exp)
 	for  k, v := range robot.Config.Servers {
-		robot.Irc.Connect(k, v)
+		v.Name = k
+		robot.Irc.Connect(v)
 	}
 	return &robot
 }
@@ -43,59 +44,44 @@ func (robot *GoRobot) SendEvent(event *botapi.Event) {
 
 // Based on PING events from servers, ugly but enough for now
 func (robot *GoRobot) Cron() {
-	robot.Irc.CleanConversations()
 	robot.LogStatistics()
 }
 
 // Autojoin channels on a given server
-func (robot *GoRobot) autoJoin(s string) {
-	srv := robot.Irc.GetServer(s)
-	if srv != nil {
-		for k, v := range srv.Config.Channels {
-			robot.Irc.JoinChannel(v, s, k)
+func (robot *GoRobot) AutoJoin(s string) {
+	serv := robot.Irc.GetServer(s)
+	if serv != nil {
+		for k, _ := range serv.Config.Channels {
+			serv.JoinChannel(k)
 		}
 	}
 }
 
 // Handle a notice
-func (robot *GoRobot) HandleNotice(s *Server, event *botapi.Event) {
+func (robot *GoRobot) HandleNotice(serv *Server, event *botapi.Event) {
 	switch event.CmdId {
 	case 1:
-		robot.autoJoin(s.Config.Name)
-	case 353:
-		robot.Irc.AddUsersToChannel(s, event)
+		robot.AutoJoin(serv.Config.Name)
 	}
 }
 
-// Handle an event from a server
-func (robot *GoRobot) HandleEvent(s *Server, event *botapi.Event) {
+func (robot *GoRobot) HandleEvent(serv *Server, event *botapi.Event) {
 	switch event.Type {
 	case botapi.E_KICK :
-		if s.Config.Nickname == event.Data {
-			robot.Irc.DestroyChannel(event.Server, event.Channel)
-		} else {
-			robot.Irc.UserLeft(event)
+		if serv.Config.Nickname == event.Data && robot.Config.AutoRejoinOnKick {
+			serv.JoinChannel(event.Channel)
 		}
 	case botapi.E_PING :
-		s.SendMeRaw <- fmt.Sprintf("PONG :%s\r\n", event.Data)
+		serv.SendMeRaw[botapi.PRIORITY_HIGH] <- fmt.Sprintf("PONG :%s\r\n", event.Data)
 		robot.Cron()
 	case botapi.E_NOTICE :
-		robot.HandleNotice(s, event)
+		robot.HandleNotice(serv, event)
 	case botapi.E_PRIVMSG :
-		if s.Channels[event.Channel] != nil {
-			event.AdminCmd = s.Channels[event.Channel].Config.Master
+		if _, ok := serv.Config.Channels[event.Channel]; ok == true {
+			event.AdminCmd = serv.Config.Channels[event.Channel].Master
 		}
-	case botapi.E_JOIN :
-		robot.Irc.UserJoined(event)
-	case botapi.E_PART :
-		robot.Irc.UserLeft(event)
-	case botapi.E_QUIT :
-		robot.Irc.UserQuit(event)
 	}
 	robot.SendEvent(event)
-}
-
-func (robot *GoRobot) HandleError(e os.Error) {
 }
 
 func (robot *GoRobot) NewModule(ac *botapi.Action) {
@@ -112,7 +98,7 @@ func (robot *GoRobot) HandleAction(ac *botapi.Action) {
 			*ac = *new_action
 			ac.Priority = p
 		} else {
-			log.Printf("raw command ignored [%s]\n", ac.Raw)
+			log.Printf("raw command ignored [%s]", ac.Raw)
 			return
 		}
 	}
@@ -121,13 +107,21 @@ func (robot *GoRobot) HandleAction(ac *botapi.Action) {
 	case botapi.A_NEWMODULE:
 		robot.NewModule(ac)
 	case botapi.A_SAY:
-		robot.Irc.Say(ac)
+		if serv := robot.Irc.GetServer(ac.Server); serv != nil {
+			serv.Say(ac)
+		}
 	case botapi.A_JOIN:
-		robot.Irc.Join(ac)
+		if serv := robot.Irc.GetServer(ac.Server); serv != nil {
+			serv.JoinChannel(ac.Channel)
+		}
 	case botapi.A_PART:
-		robot.Irc.Part(ac)
+		if serv := robot.Irc.GetServer(ac.Server); serv != nil {
+			serv.LeaveChannel(ac.Channel, ac.Data)
+		}
 	case botapi.A_KICK:
-		robot.Irc.Kick(ac)
+		if serv := robot.Irc.GetServer(ac.Server); serv != nil {
+			serv.KickUser(ac.Channel, ac.User, ac.Data)
+		}
 	}
 }
 
@@ -141,8 +135,6 @@ func (robot *GoRobot) Run() {
 			if srv != nil {
 				robot.HandleEvent(srv, &event)
 			}
-		case err := <-robot.Irc.Errors:
-			robot.HandleError(err)
 		}
 	}
 }

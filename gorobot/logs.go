@@ -83,14 +83,4 @@ func (robot *GoRobot) LogStatistics() {
 		file := fmt.Sprintf("%s/memory.stats", robot.Config.Logs.Directory)
 		robot.WriteLog(file, fmt.Sprintf("%d %d", s.Alloc, s.Sys))
 	}
-	// Channel statistics
-	if robot.Config.Logs.Enable && robot.Config.Logs.RecordStatistics {
-		for sn, s := range robot.Irc.Servers {
-			for cn, c := range s.Channels {
-				file := fmt.Sprintf("%s/%s-%s.stats",
-					robot.Config.Logs.Directory, sn, cn)
-				robot.WriteLog(file, fmt.Sprintf("%d user(s)", len(c.Users)))
-			}
-		}
-	}
 }
