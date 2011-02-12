@@ -44,31 +44,31 @@ func NewServer(conf *ConfigServer, chev chan botapi.Event) *Server {
 func (serv *Server) Init(chev chan botapi.Event) {
 	go reader(serv.Config.Name, serv.Socket, chev)
 	go writer(serv.Socket, serv.SendMeRaw, serv.Destroy)
-	serv.SendMeRaw[botapi.PRIORITY_HIGH] <-	fmt.Sprintf("NICK %s\r\n", serv.Config.Nickname)
-	serv.SendMeRaw[botapi.PRIORITY_HIGH] <-	fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n", serv.Config.Username, serv.Config.Realname)
+	serv.SendRawCommand(fmt.Sprintf("NICK %s\r\n", serv.Config.Nickname), botapi.PRIORITY_HIGH)
+	serv.SendRawCommand(fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n", serv.Config.Username, serv.Config.Realname), botapi.PRIORITY_HIGH)
 }
 
 func (serv *Server) Say(ac *botapi.Action) {
 	if len(ac.Channel) > 0 {
-		serv.SendMeRaw[ac.Priority] <- fmt.Sprintf("PRIVMSG %s :%s\r\n", ac.Channel, ac.Data)
+		serv.SendRawCommand(fmt.Sprintf("PRIVMSG %s :%s\r\n", ac.Channel, ac.Data), ac.Priority)
 	} else {
-		serv.SendMeRaw[ac.Priority] <- fmt.Sprintf("PRIVMSG %s :%s\r\n", ac.User, ac.Data)
+		serv.SendRawCommand(fmt.Sprintf("PRIVMSG %s :%s\r\n", ac.User, ac.Data), ac.Priority)
 	}
 }
 
 func (serv *Server) LeaveChannel(name string, msg string) {
 	if len(msg) > 0 {
-		serv.SendMeRaw[botapi.PRIORITY_HIGH] <- fmt.Sprintf("PART %s :%s\r\n", name, msg)
+		serv.SendRawCommand(fmt.Sprintf("PART %s :%s\r\n", name, msg), botapi.PRIORITY_HIGH)
 	} else {
-		serv.SendMeRaw[botapi.PRIORITY_HIGH] <- fmt.Sprintf("PART %s\r\n", name, msg)
+		serv.SendRawCommand(fmt.Sprintf("PART %s\r\n", name, msg), botapi.PRIORITY_HIGH)
 	}
 }
 
 func (serv *Server) KickUser(channel string, user string, msg string) {
 	if len(msg) > 0 {
-		serv.SendMeRaw[botapi.PRIORITY_HIGH] <- fmt.Sprintf("KICK %s %s :%s\r\n", channel, user, msg)
- 	} else {
-		serv.SendMeRaw[botapi.PRIORITY_HIGH] <- fmt.Sprintf("KICK %s %s\r\n", channel, user)
+		serv.SendRawCommand(fmt.Sprintf("KICK %s %s :%s\r\n", channel, user, msg), botapi.PRIORITY_HIGH)
+ 	} else {		
+		serv.SendRawCommand(fmt.Sprintf("KICK %s %s\r\n", channel, user), botapi.PRIORITY_HIGH)
 	}
 }
 
@@ -83,10 +83,16 @@ func (serv *Server) JoinChannel(name string) {
 	}
 
 	if len(conf.Password) > 0 {
-		serv.SendMeRaw[botapi.PRIORITY_HIGH] <- fmt.Sprintf("JOIN %s %s\r\n", conf.Name, conf.Password)
+		serv.SendRawCommand(fmt.Sprintf("JOIN %s %s\r\n", conf.Name, conf.Password), botapi.PRIORITY_HIGH)
 	} else {
-		serv.SendMeRaw[botapi.PRIORITY_HIGH] <- fmt.Sprintf("JOIN %s\r\n", conf.Name)
+		serv.SendRawCommand(fmt.Sprintf("JOIN %s\r\n", conf.Name), botapi.PRIORITY_HIGH)
 	}
+}
+
+func (serv *Server) SendRawCommand(cmd string, priority int) {
+	go func (cmd string, priority int) {
+		serv.SendMeRaw[priority] <- cmd
+	}(cmd, priority)
 }
 
 // Extract events from the server
