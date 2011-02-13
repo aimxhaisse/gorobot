@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	config := NewConfig("config.json")
+	config := NewConfig("./mod-broadcast.json")
 	chac, chev := botapi.ImportFrom(config.RobotInterface, config.ModuleName)
 
 	// action which will be sent to the robot

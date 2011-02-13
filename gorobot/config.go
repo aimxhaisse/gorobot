@@ -9,6 +9,7 @@ import (
 type Config struct {
 	AutoRejoinOnKick bool
 	CronTimeout int64
+	AutoRunModules bool
 	Logs ConfigLogs
 	Module ConfigModule
 	Servers map[string] *ConfigServer
@@ -24,6 +25,8 @@ type ConfigLogs struct {
 
 type ConfigModule struct {
 	Interface string
+	AutoRunModules bool
+	AutoRun []string
 }
 
 type ConfigServer struct {

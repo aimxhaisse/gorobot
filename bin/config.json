@@ -12,7 +12,9 @@
     },
 
     "Module":  {
-        "Interface": "localhost:12345"
+        "AutoRunModules": true,
+        "Interface": "localhost:12345",
+        "AutoRun": ["./mod-scripts", "./mod-broadcast", "./mod-rss"]
     },
 
     "Servers": {

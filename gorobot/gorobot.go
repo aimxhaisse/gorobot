@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"exec"
 )
 
 type GoRobot struct {
@@ -137,8 +138,27 @@ func ScheduleCron(cron chan int, timeout int64) {
 	}
 }
 
+func (robot *GoRobot) AutoRunModules() {
+	if robot.Config.Module.AutoRunModules {
+		for _, module := range robot.Config.Module.AutoRun {
+			log.Printf("launching %s", module)
+			go func (module string) {
+				cmd, err := exec.Run(module, []string{module}, []string{}, "",
+					exec.DevNull, exec.PassThrough, exec.PassThrough)
+				if err == nil {
+					cmd.Wait(0)
+				} else {
+					log.Printf("can't run module %s: %v", module, err)
+				}
+			}(module)
+		}
+	}
+}
+
 func (robot *GoRobot) Run() {
 	cron := make(chan int)
+
+	robot.AutoRunModules()
 
 	go ScheduleCron(cron, robot.Config.CronTimeout)
 

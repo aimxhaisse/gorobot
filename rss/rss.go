@@ -99,7 +99,7 @@ func DrainFeed(feed RssFeed, chac chan botapi.Action) {
 }
 
 func main() {
-	config := NewConfig("config.json")
+	config := NewConfig("./mod-rss.json")
 	chac, chev := botapi.ImportFrom(config.RobotInterface, config.ModuleName)
 	feeds := InitFeeds(config)
 

@@ -85,7 +85,7 @@ func ExecCmd(config Config, path string, ev botapi.Event) {
 }
 
 func main() {
-	config := NewConfig("config.json")
+	config := NewConfig("./mod-scripts.json")
 	chac, chev := botapi.ImportFrom(config.RobotInterface, config.ModuleName)
 	users := NewUsers()
 
