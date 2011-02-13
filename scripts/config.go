@@ -11,8 +11,11 @@ type Config struct {
 	AdminScripts	string
 	PublicScripts	string
 	PrivateScripts	string
+	AuthenticatedScripts string
 	LocalPort	string
 	RobotInterface	string
+	UsersDatabase	string
+	UsersRefreshTimeout int64
 }
 
 // Returns a new configuration from file pointed by path

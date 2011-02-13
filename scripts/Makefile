@@ -2,6 +2,6 @@ include $(GOROOT)/src/Make.inc
 
 DEPS = ../botapi
 TARG = mod-scripts
-GOFILES = scripts.go config.go netadmin.go
+GOFILES = scripts.go config.go netadmin.go users.go
 
 include $(GOROOT)/src/Make.cmd

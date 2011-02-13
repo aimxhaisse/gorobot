@@ -17,6 +17,7 @@ import (
 	"fmt"
 	"strings"
 	"log"
+	"time"
 )
 
 // avoid characters such as "../" to disallow commands like "!../admin/kick"
@@ -41,7 +42,7 @@ func FileExists(cmd string) (bool) {
 	return false
 }
 
-func GetCmdPath(config *Config, cmd string, admin bool, private bool) (string) {
+func GetCmdPath(config *Config, cmd string, admin bool, private bool, auth bool) (string) {
 	if private {
 		path := fmt.Sprintf("%s/%s.cmd", config.PrivateScripts, cmd)
 		if FileExists(path) {
@@ -52,6 +53,12 @@ func GetCmdPath(config *Config, cmd string, admin bool, private bool) (string) {
 	path := fmt.Sprintf("%s/%s.cmd", config.PublicScripts, cmd)
 	if FileExists(path) {
 		return path
+	}
+	if auth {
+		path := fmt.Sprintf("%s/%s.cmd", config.AuthenticatedScripts, cmd)
+		if FileExists(path) {
+			return path
+		}
 	}
 	if admin {
 		path := fmt.Sprintf("%s/%s.cmd", config.AdminScripts, cmd)
@@ -80,18 +87,45 @@ func ExecCmd(config Config, path string, ev botapi.Event) {
 func main() {
 	config := NewConfig("config.json")
 	chac, chev := botapi.ImportFrom(config.RobotInterface, config.ModuleName)
+	users := NewUsers()
+
+	users.Refresh(config.UsersDatabase)
+	lastRefresh := time.Seconds()
+
 	go NetAdmin(*config, chac)
 
 	for {
 		e := <- chev
 
-		if e.Type != botapi.E_PRIVMSG {
-			continue
+		if ((time.Seconds() - lastRefresh) > config.UsersRefreshTimeout) {
+			lastRefresh = time.Seconds()
+			users.Refresh(config.UsersDatabase)
 		}
-		if m := re_cmd.FindStringSubmatch(e.Data); len(m) > 0 {
-			path := GetCmdPath(config, m[1], e.AdminCmd, len(e.Channel) == 0)
-			if len(path) > 0 {
-				go ExecCmd(*config, path, e)
+
+		switch e.Type {
+		case botapi.E_PART:
+			users.Logout(e.User)
+		case botapi.E_QUIT:
+			users.Logout(e.User)
+		case botapi.E_KICK:
+			users.Logout(e.Data)
+		case botapi.E_NICK:
+			users.Rename(e.User, e.Data)
+		case botapi.E_PRIVMSG:
+			if m := re_cmd.FindStringSubmatch(e.Data); len(m) > 0 {
+				if m[1] == "identify" && len(m) == 3 {
+					args := strings.Split(m[2], " ", -1)
+					if len(args) == 3 {
+						users.Login(e.User, args[1], args[2])
+					}
+				}
+				path := GetCmdPath(config, m[1],
+					e.AdminCmd,
+					len(e.Channel) == 0,
+					users.IsAuthenticated(e.User))
+				if len(path) > 0 {
+					go ExecCmd(*config, path, e)
+				}
 			}
 		}
 	}
