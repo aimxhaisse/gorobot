@@ -6,6 +6,7 @@ import (
 	"netchan"
 	"fmt"
 	"log"
+	"time"
 )
 
 type GoRobot struct {
@@ -28,10 +29,7 @@ func NewGoRobot(config string) *GoRobot {
 	}
 	robot.Exp = botapi.InitExport(robot.Config.Module.Interface)
 	robot.Actions = botapi.ExportActions(robot.Exp)
-	for  k, v := range robot.Config.Servers {
-		v.Name = k
-		robot.Irc.Connect(v)
-	}
+	robot.Irc.Connect(robot.Config.Servers)
 	return &robot
 }
 
@@ -44,7 +42,9 @@ func (robot *GoRobot) SendEvent(event *botapi.Event) {
 
 // Based on PING events from servers, ugly but enough for now
 func (robot *GoRobot) Cron() {
+	log.Printf("running cronjobs")
 	robot.LogStatistics()
+	robot.Irc.AutoReconnect()
 }
 
 // Autojoin channels on a given server
@@ -73,9 +73,10 @@ func (robot *GoRobot) HandleEvent(serv *Server, event *botapi.Event) {
 		}
 	case botapi.E_PING :
 		serv.SendMeRaw[botapi.PRIORITY_HIGH] <- fmt.Sprintf("PONG :%s\r\n", event.Data)
-		robot.Cron()
 	case botapi.E_NOTICE :
 		robot.HandleNotice(serv, event)
+	case botapi.E_DISCONNECT :
+		serv.Disconnect()
 	case botapi.E_PRIVMSG :
 		if _, ok := serv.Config.Channels[event.Channel]; ok == true {
 			event.AdminCmd = serv.Config.Channels[event.Channel].Master
@@ -125,9 +126,26 @@ func (robot *GoRobot) HandleAction(ac *botapi.Action) {
 	}
 }
 
+func ScheduleCron(cron chan int, timeout int64) {
+	if timeout <= 0 {
+		timeout = 60;
+	}
+	timeout = timeout * 1e9
+	for {
+		cron <- 42
+		time.Sleep(timeout)
+	}
+}
+
 func (robot *GoRobot) Run() {
+	cron := make(chan int)
+
+	go ScheduleCron(cron, robot.Config.CronTimeout)
+
 	for {
 		select {
+		case _ = <- cron:
+			robot.Cron()
 		case action := <-robot.Actions:
 			robot.HandleAction(&action)
 		case event := <-robot.Irc.Events:

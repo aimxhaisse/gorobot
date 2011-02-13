@@ -23,18 +23,31 @@ func NewIrc() *Irc {
 	return &b
 }
 
-// Returns nil or the server which alias is srv
-func (irc *Irc) GetServer(srv string) (*Server) {
-	return irc.Servers[srv]
+// Returns nil or the server which alias is serv
+func (irc *Irc) GetServer(serv string) (*Server) {
+	result, ok := irc.Servers[serv]
+	if ok == true && result.Connected == true {
+		return result
+	}
+	return nil
 }
 
 // Connect to a new server
-func (irc *Irc) Connect(conf *ConfigServer) bool {
-	log.Printf("connecting to [%s]\n", conf.Host)
-	if irc.GetServer(conf.Name) != nil {
-		log.Printf("already connected to that server [%s]", conf.Host)
-		return false
+func (irc *Irc) Connect(servers map[string] *ConfigServer) {
+	for  k, conf := range servers {
+		conf.Name = k
+		if irc.GetServer(conf.Name) != nil {
+			log.Printf("already connected to that server [%s]", conf.Host)
+			return
+		}
+		irc.Servers[conf.Name] = NewServer(conf, irc.Events)
 	}
-	irc.Servers[conf.Name] = NewServer(conf, irc.Events)
-	return true
+}
+
+func (irc *Irc) AutoReconnect() {
+	for _, serv := range irc.Servers {
+		if serv.Connected == false {
+			serv.TryReconnect(irc.Events)
+		}
+	}
 }

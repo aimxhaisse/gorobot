@@ -12,6 +12,7 @@ const (
 	E_NOTICE	// Same as PRIVMSG but for notices
 	E_JOIN		// A user joined (origin is the channel, data is the user)
 	E_PART		// A user leaved a chan (same thing)
+	E_DISCONNECT	// The bot has been disconnected
 	E_QUIT		// A user quit (origin is the user)
 	E_NICK		// A user changed nick (origin is old nick, data is the new nick)
 	E_PING		// A ping has been sent by the server

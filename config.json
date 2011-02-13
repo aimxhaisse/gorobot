@@ -1,6 +1,7 @@
 {
 
     "AutoRejoinOnKick": true,
+    "CronTimeout": 60,
 
     "Logs": {
         "Enable": true,
@@ -17,7 +18,7 @@
     "Servers": {
         "localhost" : {
             "FloodControl": false,
-            "Host": "localhost:6669",
+            "Host": "localhost:6667",
             "Nickname": "M4rc3l",
             "Realname": "Marcel Patoulatchie",
             "Username": "Marcel",

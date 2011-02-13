@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	AutoRejoinOnKick bool
+	CronTimeout int64
 	Logs ConfigLogs
 	Module ConfigModule
 	Servers map[string] *ConfigServer
