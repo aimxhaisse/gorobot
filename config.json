@@ -16,6 +16,7 @@
 
     "Servers": {
         "localhost" : {
+            "FloodControl": false,
             "Host": "localhost:6669",
             "Nickname": "M4rc3l",
             "Realname": "Marcel Patoulatchie",

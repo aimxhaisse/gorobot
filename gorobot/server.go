@@ -36,14 +36,14 @@ func NewServer(conf *ConfigServer, chev chan botapi.Event) *Server {
 	serv.SendMeRaw[botapi.PRIORITY_LOW] = make(chan string)
 	serv.SendMeRaw[botapi.PRIORITY_MEDIUM] = make(chan string)
 	serv.SendMeRaw[botapi.PRIORITY_HIGH] = make(chan string)
-	serv.Init(chev)
+	serv.Init(chev, serv.Config.FloodControl)
 	return &serv
 }
 
 // Initialize a new connection to the server
-func (serv *Server) Init(chev chan botapi.Event) {
+func (serv *Server) Init(chev chan botapi.Event, flood_control bool) {
 	go reader(serv.Config.Name, serv.Socket, chev)
-	go writer(serv.Socket, serv.SendMeRaw, serv.Destroy)
+	go writer(serv.Socket, serv.SendMeRaw, serv.Destroy, flood_control)
 	serv.SendRawCommand(fmt.Sprintf("NICK %s\r\n", serv.Config.Nickname), botapi.PRIORITY_HIGH)
 	serv.SendRawCommand(fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n", serv.Config.Username, serv.Config.Realname), botapi.PRIORITY_HIGH)
 }
@@ -114,6 +114,16 @@ func reader(serv_name string, connection net.Conn, chev chan botapi.Event) {
 	}
 }
 
+// Send the raw command to the server, without flood control
+func writerSendNoFloodControl(str string, connection *net.Conn) {
+	raw := []byte(str)
+	log.Printf("\x1b[1;35m%s\x1b[0m", strings.TrimRight(str, "\r\t\n"))
+	if _, err := (*connection).Write(raw); err != nil {
+		// @todo destroy.
+		return
+	}
+}
+
 // Send the raw command to the server
 func writerSend(after *int64, ahead *int64, before *int64, str string, connection *net.Conn) {
 	// "while the timer is less than ten seconds ahead of the current time, parse any
@@ -137,7 +147,7 @@ func writerSend(after *int64, ahead *int64, before *int64, str string, connectio
 }
 
 // Pick raw commands in order of priority
-func writer(connection net.Conn, chin map[int] chan string, destroy chan int) {
+func writer(connection net.Conn, chin map[int] chan string, destroy chan int, flood_control bool) {
 	var after int64 = 0
 	var ahead int64 = 0
 	before := time.Nanoseconds()
@@ -148,11 +158,23 @@ func writer(connection net.Conn, chin map[int] chan string, destroy chan int) {
 			destroy <- 42
 			return
 		case str := <- chin[botapi.PRIORITY_HIGH]:
-			writerSend(&after, &ahead, &before, str, &connection)
+			if flood_control {
+				writerSend(&after, &ahead, &before, str, &connection)
+			} else {
+				writerSendNoFloodControl(str, &connection)
+			}
 		case str := <- chin[botapi.PRIORITY_MEDIUM]:
-			writerSend(&after, &ahead, &before, str, &connection)
+			if flood_control {
+				writerSend(&after, &ahead, &before, str, &connection)
+			} else {
+				writerSendNoFloodControl(str, &connection)
+			}
 		case str := <- chin[botapi.PRIORITY_LOW]:
-			writerSend(&after, &ahead, &before, str, &connection)
+			if flood_control {
+				writerSend(&after, &ahead, &before, str, &connection)
+			} else {
+				writerSendNoFloodControl(str, &connection)
+			}
 		}
 	}
 }

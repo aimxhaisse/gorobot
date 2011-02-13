@@ -28,6 +28,7 @@ type ConfigModule struct {
 type ConfigServer struct {
 	Name string
 	Host string
+	FloodControl bool
 	Nickname string
 	Realname string
 	Username string
