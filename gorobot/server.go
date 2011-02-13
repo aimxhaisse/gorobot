@@ -42,8 +42,9 @@ func NewServer(conf *ConfigServer, chev chan botapi.Event) *Server {
 
 // Initialize a new connection to the server
 func (serv *Server) Init(chev chan botapi.Event, flood_control bool) {
-	go reader(serv.Config.Name, serv.Socket, chev)
-	go writer(serv.Socket, serv.SendMeRaw, flood_control)
+	destroy := make(chan int)
+	go reader(destroy, serv.Config.Name, serv.Socket, chev)
+	go writer(destroy, serv.Socket, serv.SendMeRaw, flood_control)
 	serv.Connected = true
 	serv.SendRawCommand(fmt.Sprintf("NICK %s\r\n", serv.Config.Nickname), botapi.PRIORITY_HIGH)
 	serv.SendRawCommand(fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n", serv.Config.Username, serv.Config.Realname), botapi.PRIORITY_HIGH)
@@ -73,6 +74,7 @@ func (serv *Server) Say(ac *botapi.Action) {
 func (serv *Server) Disconnect() {
 	log.Printf("disconnected from %s (%s)", serv.Config.Name, serv.Config.Host)
 	serv.Connected = false
+	serv.Socket.Close()
 }
 
 func (serv *Server) LeaveChannel(name string, msg string) {
@@ -117,7 +119,7 @@ func (serv *Server) SendRawCommand(cmd string, priority int) {
 }
 
 // Extract events from the server
-func reader(serv_name string, connection net.Conn, chev chan botapi.Event) {
+func reader(destroy chan int, serv_name string, connection net.Conn, chev chan botapi.Event) {
 	r := bufio.NewReader(connection)
 	for {
 		var err os.Error
@@ -127,7 +129,8 @@ func reader(serv_name string, connection net.Conn, chev chan botapi.Event) {
 				Server: serv_name,
 				Type: botapi.E_DISCONNECT,
 			}
-			connection.Close()
+			log.Printf("read error on %s: %v", serv_name, err)
+			destroy <- 0
 			return
 		}
 		line := strings.TrimRight(string(p), "\r\t\n")
@@ -141,18 +144,19 @@ func reader(serv_name string, connection net.Conn, chev chan botapi.Event) {
 }
 
 // Send the raw command to the server, without flood control
-func writerSendNoFloodControl(str string, connection *net.Conn) bool {
+func writerSendNoFloodControl(str string, connection net.Conn) bool {
 	raw := []byte(str)
 	log.Printf("\x1b[1;35m%s\x1b[0m", strings.TrimRight(str, "\r\t\n"))
-	if _, err := (*connection).Write(raw); err != nil {
-		(*connection).Close()
+	if _, err := connection.Write(raw); err != nil {
+		connection.Close()
+		log.Printf("can't write on socket: %v", err)
 		return false
 	}
 	return true
 }
 
 // Send the raw command to the server
-func writerSend(after *int64, ahead *int64, before *int64, str string, connection *net.Conn) bool {
+func writerSendFloodControl(after *int64, ahead *int64, before *int64, str string, connection net.Conn) bool {
 	// "while the timer is less than ten seconds ahead of the current time, parse any
 	// present messages and penalize the client by 2 seconds for each message" (doc irssi)
 	*after = time.Nanoseconds()
@@ -165,8 +169,9 @@ func writerSend(after *int64, ahead *int64, before *int64, str string, connectio
 	}
 	raw := []byte(str)
 	log.Printf("\x1b[1;35m%s\x1b[0m", strings.TrimRight(str, "\r\t\n"))
-	if _, err := (*connection).Write(raw); err != nil {
-		(*connection).Close()
+	if _, err := connection.Write(raw); err != nil {
+		connection.Close()
+		log.Printf("can't write on socket: %v", err)
 		return false
 	}
 	*ahead += 2e9
@@ -174,43 +179,34 @@ func writerSend(after *int64, ahead *int64, before *int64, str string, connectio
 	return true
 }
 
+func writerDispatch(after *int64, ahead *int64, before *int64, str string, connection net.Conn, flood_control bool) bool {
+	if flood_control {
+		return writerSendFloodControl(after, ahead, before, str, connection)
+	}
+	return writerSendNoFloodControl(str, connection)
+}
+
 // Pick raw commands in order of priority
-func writer(connection net.Conn, chin map[int] chan string, flood_control bool) {
+func writer(destroy chan int, connection net.Conn, chin map[int] chan string, flood_control bool) {
 	var after int64 = 0
 	var ahead int64 = 0
 	before := time.Nanoseconds()
 
 	for {
 		select {
+		case <- destroy:
+			return
 		case str := <- chin[botapi.PRIORITY_HIGH]:
-			if flood_control {
-				if !writerSend(&after, &ahead, &before, str, &connection) {
-					return
-				}
-			} else {
-				if !writerSendNoFloodControl(str, &connection) {
-					return
-				}
+			if !writerDispatch(&after, &ahead, &before, str, connection, flood_control) {
+				return
 			}
 		case str := <- chin[botapi.PRIORITY_MEDIUM]:
-			if flood_control {
-				if !writerSend(&after, &ahead, &before, str, &connection) {
-					return
-				}
-			} else {
-				if !writerSendNoFloodControl(str, &connection) {
-					return
-				}
+			if !writerDispatch(&after, &ahead, &before, str, connection, flood_control) {
+				return
 			}
 		case str := <- chin[botapi.PRIORITY_LOW]:
-			if flood_control {
-				if !writerSend(&after, &ahead, &before, str, &connection) {
-					return
-				}
-			} else {
-				if !writerSendNoFloodControl(str, &connection) {
-					return
-				}
+			if !writerDispatch(&after, &ahead, &before, str, connection, flood_control) {
+				return
 			}
 		}
 	}
