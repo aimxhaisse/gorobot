@@ -3,9 +3,6 @@
     "AdminScripts": "./scripts/admin",
     "PublicScripts": "./scripts/public",
     "PrivateScripts": "./scripts/private",
-    "AuthenticatedScripts": "./scripts/authenticated",
-    "UsersDatabase": "users.json",
-    "UsersRefreshTimeout": 3600,
     "RobotInterface": "localhost:12345",
     "LocalPort": "23456"
 }
