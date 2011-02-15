@@ -93,7 +93,8 @@ func DrainFeed(feed RssFeed, chac chan botapi.Action) {
 				}
 			}
 		}
-		time.Sleep(1e7 * feed.Config.Refresh)
+		secs := 1e9 * feed.Config.Refresh
+		time.Sleep(secs)
 		log.Printf("Feed [%s] drained\n", feed.Name)
 	}
 }
