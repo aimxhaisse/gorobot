@@ -62,7 +62,7 @@ type Action struct {
 }
 
 func ImportFrom(hostname string, moduleUUID string) (chan Action, chan Event) {
-	imp, err := netchan.NewImporter("tcp", hostname)
+	imp, err := netchan.Import("tcp", hostname)
 	if err != nil {
 		log.Panic(err)
 	}
@@ -87,10 +87,8 @@ func ImportFrom(hostname string, moduleUUID string) (chan Action, chan Event) {
 }
 
 func InitExport(bindAddr string) (*netchan.Exporter) {
-        exp, err := netchan.NewExporter("tcp", bindAddr)
-	if err != nil {
-		log.Panic(err)
-	}
+        exp := netchan.NewExporter()
+	go exp.ListenAndServe("tcp", bindAddr)
 	return exp
 }
 

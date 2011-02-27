@@ -17,19 +17,15 @@
     },
 
     "Servers": {
-        "localhost" : {
+        "freenode" : {
             "FloodControl": false,
-            "Host": "localhost:6667",
-            "Nickname": "M4rc3l",
-            "Realname": "Marcel Patoulatchie",
-            "Username": "Marcel",
+            "Host": "irc.freenode.org:6667",
+            "Nickname": "m1ch3l",
+            "Realname": "m1ch3l",
+            "Username": "m1ch3l",
             "Password": "",
             "Channels": {
-                "#c4stl3": {
-                    "Password": "",
-                    "Master": false
-                },
-                "#hejsan": {
+                "#kdev-valgrind": {
                     "Password": "",
                     "Master": true
                 }
