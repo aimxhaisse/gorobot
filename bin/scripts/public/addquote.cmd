@@ -18,7 +18,7 @@ function read_db($fp)
     while (!feof($fp)) {
 	$result .= fread($fp, 8192);
     }
-    return unserialize($buffer);
+    return unserialize($result);
 }
 
 function write_db($fp, $newdb)
@@ -33,20 +33,27 @@ function write_db($fp, $newdb)
 }
 
 // try to store a new quote in the serialized file
-if (!isset($argv[5])) {
-    $message = sprintf("%s -> usage: !quote_add quote", $user);
+if ($argc < 7) {
+    $message = sprintf("%s -> usage: !addquote author quote", $user);
 } else {
-    $quote = $argv[5];
+    $author = $argv[5];
+    for ($i = 0; $i <= 5; ++$i)
+	unset($argv[$i]);
+    $quote = implode(" ", $argv);
+
     $fp = fopen("quotes.db", "a+", 0666);
     if ($fp && flock($fp, LOCK_EX)) {
 	$db = read_db($fp);
 	if (!$db)
 	    $db = array();
-	$db[] = array(
-	    'server' => $serv,
-	    'chan' => $chan,
-	    'added_by' => $user,
-	    'quote' => $quote
+	$newid = count($db);
+	$db[$newid] = array(
+	    'date' =>		date(DATE_RFC822),
+	    'server' =>		$serv,
+	    'chan' =>		$chan,
+	    'author' =>		$author,
+	    'added_by' =>	$user,
+	    'quote' =>		$quote
 	    );
 	ftruncate($fp, 0);
 	write_db($fp, $db);
