@@ -1,30 +1,34 @@
-#!/usr/bin/env bash
+#!/usr/bin/env php
+<?php
+// command to leave a channel
 
-po=$1
-se=$2
-ch=$3
-us=$4
+// usage string
+if ($argc < 5)
+    die("!part server channel")
 
-if [ $# -lt 6 ]
-then
-    echo "$se 3 PRIVMSG $ch :$us: !part server chan [message]" | nc -q 0 localhost $po > /dev/null
-    exit
-fi
+$port = $argv[1];
+$serv = $argv[2];
+$chan = $argv[3];
+$user = $argv[4];
 
-server=$5
-chan=$6
-msg=$7
+if ($argc < 7) {
+    $pre = "";
+    $message = sprintf("%s -> usage: !part server channel", $user);
+} else {
+    $message = sprintf("%s -> left channel", $user);
+    $pre = sprintf("%s 3 PART %s\r\n", $argv[5], $argv[6]);
+}
 
-shift
-shift
-shift
-shift
-shift
-shift
-
-if [ $# -eq 5 ]
-then
-    echo "$server 1 PART $chan" | nc -q 0 localhost $po > /dev/null
-else
-    echo "$server 1 PART $chan :$@" | nc -q 0 localhost $po > /dev/null
-fi
+// send the cmd to m1ch3l
+$cmd = $pre . sprintf("%s 1 PRIVMSG %s :%s\r\n", $serv, $chan, $message);
+$sock = fsockopen("localhost", $port);
+if ($sock) {
+    $i = 0;
+    while ($i < strlen($cmd)) {
+        $n = fwrite($sock, $cmd);
+        if ($n == false)
+	    break;
+        $i += $n;
+    }
+    fclose($sock);
+}

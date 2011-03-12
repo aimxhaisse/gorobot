@@ -5,7 +5,7 @@
 // ugly storage, ugly code, that's because I'm ugly
 
 if ($argc < 5)
-    die("don't run me like this\n");
+    die("!addquote author quote");
 
 $port = $argv[1];
 $serv = $argv[2];

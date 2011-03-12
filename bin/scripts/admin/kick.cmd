@@ -1,26 +1,42 @@
-#!/usr/bin/env bash
+#!/usr/bin/env php
+<?php
+// command to kick a user
 
-po=$1
-se=$2
-ch=$3
-us=$4
+// usage string
+if ($argc < 5)
+    die("!kick server channel user message");
 
-if [ $# -lt 8 ]
-then
-    echo "$se 3 PRIVMSG $ch :$us: !kick server chan user message" | nc -q 0 localhost $po > /dev/null
-    exit
-fi
+$port = $argv[1];
+$serv = $argv[2];
+$chan = $argv[3];
+$user = $argv[4];
 
-server=$5
-chan=$6
-dest=$7
+if ($argc < 9) {
+    $message = sprintf("%s -> usage: !kick server channel user message", $user);
+    $pre = "";
+} else {
+    $s = $argv[5];
+    $c = $argv[6];
+    $u = $argv[7];
 
-shift
-shift
-shift
-shift
-shift
-shift
-shift
+    for ($i = 0; $i < 8; ++$i)
+	unset($argv[$i]);
 
-echo "$server 3 KICK $chan $dest :$@" | nc -q 0 localhost $po > /dev/null
+    $m = implode(" ", $argv);
+    $message = sprintf("%s -> mission accomplished (or not)", $user);
+    $pre = sprintf("%s 3 KICK %s %s :%s", $s, $c, $u, $m);
+}
+
+// send the cmd to m1ch3l
+$cmd = $pre . sprintf("%s 1 PRIVMSG %s :%s\r\n", $serv, $chan, $message);
+$sock = fsockopen("localhost", $port);
+if ($sock) {
+    $i = 0;
+    while ($i < strlen($cmd)) {
+        $n = fwrite($sock, $cmd);
+        if ($n == false)
+	    break;
+        $i += $n;
+    }
+    fclose($sock);
+}
