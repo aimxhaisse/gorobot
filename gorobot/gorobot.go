@@ -43,7 +43,6 @@ func (robot *GoRobot) SendEvent(event *botapi.Event) {
 
 // Based on PING events from servers, ugly but enough for now
 func (robot *GoRobot) Cron() {
-	log.Printf("running cronjobs")
 	robot.LogStatistics()
 	robot.Irc.AutoReconnect()
 }
@@ -53,6 +52,7 @@ func (robot *GoRobot) AutoJoin(s string) {
 	serv := robot.Irc.GetServer(s)
 	if serv != nil {
 		for k, _ := range serv.Config.Channels {
+			fmt.Printf("Joining channel")
 			serv.JoinChannel(k)
 		}
 	}
@@ -159,7 +159,6 @@ func (robot *GoRobot) Run() {
 	cron := make(chan int)
 
 	robot.AutoRunModules()
-
 	go ScheduleCron(cron, robot.Config.CronTimeout)
 
 	for {

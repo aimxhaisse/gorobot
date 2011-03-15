@@ -89,6 +89,12 @@ func ImportFrom(hostname string, moduleUUID string) (chan Action, chan Event) {
 func InitExport(bindAddr string) (*netchan.Exporter) {
         exp := netchan.NewExporter()
 	go exp.ListenAndServe("tcp", bindAddr)
+	go func(){
+		for {
+			exp.Drain(-1)
+			time.Sleep(1000000)
+		}
+	}()
 	return exp
 }
 
@@ -98,13 +104,6 @@ func ExportActions(exp *netchan.Exporter) (chan Action) {
 	if err != nil {
 		log.Panic(err)
 	}
-
-	go func(){
-		for {
-			exp.Drain(-1)
-			time.Sleep(1000000)
-		}
-	}()
 	return chac
 }
 
@@ -118,11 +117,5 @@ func ExportEvents(exp *netchan.Exporter, moduleUUID string) (chan Event) {
 			log.Panic(err)
 		}
 	}
-	go func() {
-		for {
-			exp.Drain(-1)
-			time.Sleep(1000000)
-		}
-	}()
 	return chev
 }
