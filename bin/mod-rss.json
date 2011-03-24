@@ -4,7 +4,7 @@
     "Feeds": {
         "Hacker News": {
             "Refresh": 3600,
-            "Url": "http://news.ycombinator.com/rss",
+            "Url": "http://redmine.buffout.org/projects/kvalgrind/activity.atom",
             "BroadCasts": {
                 "localhost": ["#hejsan"]
             }

@@ -92,7 +92,7 @@ func InitExport(bindAddr string) (*netchan.Exporter) {
 	go func(){
 		for {
 			exp.Drain(-1)
-			time.Sleep(1000000)
+			time.Sleep(500000)
 		}
 	}()
 	return exp

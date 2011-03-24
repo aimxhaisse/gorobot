@@ -70,7 +70,6 @@ func (serv *Server) Say(ac *botapi.Action) {
 	}
 }
 
-// @todo destroy channel?
 func (serv *Server) Disconnect() {
 	log.Printf("disconnected from %s (%s)", serv.Config.Name, serv.Config.Host)
 	serv.Connected = false
@@ -123,8 +122,9 @@ func reader(destroy chan int, serv_name string, connection net.Conn, chev chan b
 	r := bufio.NewReader(connection)
 	for {
 		var err os.Error
-		var p []byte
-		if p, err = r.ReadSlice('\n'); err != nil {
+		var line string
+
+		if line, err = r.ReadString('\n'); err != nil {
 			chev <- botapi.Event{
 				Server: serv_name,
 				Type: botapi.E_DISCONNECT,
@@ -132,8 +132,10 @@ func reader(destroy chan int, serv_name string, connection net.Conn, chev chan b
 			log.Printf("read error on %s: %v", serv_name, err)
 			destroy <- 0
 			return
+		} else {
+			fmt.Printf("ERR: %v\n", err)
 		}
-		line := strings.TrimRight(string(p), "\r\t\n")
+		line = strings.TrimRight(line, "\r\t\n")
 		ev := ExtractEvent(line)
 		if ev != nil {
 			ev.Server = serv_name

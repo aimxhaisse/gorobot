@@ -19,8 +19,6 @@ type GoRobot struct {
 	Actions chan botapi.Action
 }
 
-// Creates a new robot from a configuration file, automatically
-// connect to servers listed in the configuration file
 func NewGoRobot(config string) *GoRobot {
 	robot := GoRobot{
 		Config: NewConfig(config),
@@ -36,29 +34,27 @@ func NewGoRobot(config string) *GoRobot {
 
 func (robot *GoRobot) SendEvent(event *botapi.Event) {
 	for _, chev := range robot.Modules {
-		chev <- *event
+		go func (chev chan botapi.Event, event botapi.Event) {
+			chev <- event
+		} (chev, *event)
 	}
 	robot.LogEvent(event)
 }
 
-// Based on PING events from servers, ugly but enough for now
 func (robot *GoRobot) Cron() {
 	robot.LogStatistics()
 	robot.Irc.AutoReconnect()
 }
 
-// Autojoin channels on a given server
 func (robot *GoRobot) AutoJoin(s string) {
 	serv := robot.Irc.GetServer(s)
 	if serv != nil {
 		for k, _ := range serv.Config.Channels {
-			fmt.Printf("Joining channel")
 			serv.JoinChannel(k)
 		}
 	}
 }
 
-// Handle a notice
 func (robot *GoRobot) HandleNotice(serv *Server, event *botapi.Event) {
 	switch event.CmdId {
 	case 1:
@@ -165,9 +161,16 @@ func (robot *GoRobot) Run() {
 		select {
 		case _ = <- cron:
 			robot.Cron()
-		case action := <-robot.Actions:
+		case action, ok := <- robot.Actions:
+			if !ok {
+				log.Printf("action channel closed, bye bye")
+				return
+			}
 			robot.HandleAction(&action)
-		case event := <-robot.Irc.Events:
+		case event, ok := <- robot.Irc.Events:
+			if !ok {
+				log.Printf("event channel closed, bye bye")
+			}
 			srv := robot.Irc.GetServer(event.Server)
 			if srv != nil {
 				robot.HandleEvent(srv, &event)

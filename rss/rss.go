@@ -1,5 +1,8 @@
 package main
 
+// module that only handles atom based feeds for now
+// feel free to improve it
+
 import (
 	"botapi"
 	"http"
@@ -17,12 +20,13 @@ type RssFeed struct {
 }
 
 type Feed struct {
-	Item		[]Item "channel>item"
+	XMLName		xml.Name "http://www.w3.org/2005/Atom feed"
+	Item		[]Item "feed>entry"
 }
 
 type Item struct {
 	Title		string
-	Link		string
+	Link		string "id"
 }
 
 func InitFeeds(config *Config) (*map[string] RssFeed) {
@@ -56,15 +60,18 @@ func GetXmlFromUrl(url string) *Feed {
 }
 
 func PopulateFeed(feed *RssFeed) {
+	fmt.Printf("Fetching...\n")
 	feedxml := GetXmlFromUrl(feed.Config.Url)
 	for _, item := range feedxml.Item {
 		feed.Items[item.Link] = item.Title
+		fmt.Printf("%s > %s\n", item.Link, item.Title)
 	}
+	fmt.Printf("OK\n")
 }
 
 func BroadcastNewItem(feed *ConfigFeed, chac chan botapi.Action, item *Item) {
 	ac := botapi.Action {
-		Data: fmt.Sprintf("rss> %s [ %s ]", item.Title, item.Link),
+		Data: fmt.Sprintf("rss> %s [ %s ]", item.Title, item.Title),
 		Priority: botapi.PRIORITY_LOW,
 		Type: botapi.A_SAY,
 	}

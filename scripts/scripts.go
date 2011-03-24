@@ -84,7 +84,12 @@ func main() {
 	go NetAdmin(*config, chac)
 
 	for {
-		e := <- chev
+		e, ok := <- chev
+
+		if !ok {
+			log.Printf("Channel closed")
+			return
+		}
 
 		switch e.Type {
 		case botapi.E_PRIVMSG:
