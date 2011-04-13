@@ -7,8 +7,11 @@ package.path = package.path .. ";scripts/?.lua"
 require("helper")
 
 math.randomseed(os.time())
-if math.random(0, 7) == 0 then
-   send_command(string.format("KICK %s %s :*PAN*", channel, user))
-else
-   send_message("*CLICK*")
+val = math.random(1, 30)
+
+bite = ''
+for i = 0, val do
+   bite = bite .. '='
 end
+
+send_message(string.format("8%sD", bite))

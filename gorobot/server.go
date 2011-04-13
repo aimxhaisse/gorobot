@@ -30,7 +30,7 @@ func NewServer(conf *ConfigServer, chev chan botapi.Event) *Server {
 	serv.SendMeRaw[botapi.PRIORITY_LOW] = make(chan string)
 	serv.SendMeRaw[botapi.PRIORITY_MEDIUM] = make(chan string)
 	serv.SendMeRaw[botapi.PRIORITY_HIGH] = make(chan string)
-	connection, err := net.Dial("tcp", "", conf.Host)
+	connection, err := net.Dial("tcp", conf.Host)
 	if err != nil {
 		log.Printf("can't connect to %s (%s)", conf.Name, conf.Host)
 		return &serv
@@ -53,7 +53,7 @@ func (serv *Server) Init(chev chan botapi.Event, flood_control bool) {
 
 func (serv *Server) TryReconnect(chev chan botapi.Event) {
 	log.Printf("trying to reconnect to %s (%s)", serv.Config.Name, serv.Config.Host)
-	connection, err := net.Dial("tcp", "", serv.Config.Host)
+	connection, err := net.Dial("tcp", serv.Config.Host)
 	if err != nil {
 		log.Printf("can't reconnect to %s (%s)", serv.Config.Name, serv.Config.Host)
 		return
@@ -132,8 +132,6 @@ func reader(destroy chan int, serv_name string, connection net.Conn, chev chan b
 			log.Printf("read error on %s: %v", serv_name, err)
 			destroy <- 0
 			return
-		} else {
-			fmt.Printf("ERR: %v\n", err)
 		}
 		line = strings.TrimRight(line, "\r\t\n")
 		ev := ExtractEvent(line)

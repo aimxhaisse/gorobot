@@ -18,7 +18,7 @@ func (robot *GoRobot) WriteLog(file string, msg string) {
 	strTime := currentTime.String()
 	fh, ok := robot.LogMap[file]
 	if !ok {
-		fh, _ = os.Open(file, os.O_WRONLY | os.O_CREAT | os.O_APPEND, 0666)
+		fh, _ = os.OpenFile(file, os.O_WRONLY | os.O_CREATE | os.O_APPEND, 0666)
 		if fh == nil {
 			log.Printf("Warning: can't create file %s\n", file)
 			return
