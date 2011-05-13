@@ -69,7 +69,7 @@ func NetAdminReadFromCon(con *net.TCPConn, chac chan botapi.Action) {
 
 // open the admin port and directly send RAW commands to the michel
 func NetAdmin(config Config, chac chan botapi.Action) {
-	a, err := net.ResolveTCPAddr("localhost:" + config.LocalPort)
+	a, err := net.ResolveTCPAddr("tcp", "localhost:" + config.LocalPort)
 	if err != nil {
 		log.Panic("Can't resolve to localhost\n")
 	}
