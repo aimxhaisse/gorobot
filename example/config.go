@@ -7,13 +7,13 @@ import (
 )
 
 type Config struct {
-	ModuleName	string
-	HelloWorld	string
-	RobotInterface	string
+	ModuleName     string
+	HelloWorld     string
+	RobotInterface string
 }
 
 // Returns a new configuration from file pointed by path
-func NewConfig(path string) (*Config) {
+func NewConfig(path string) *Config {
 	file, e := ioutil.ReadFile(path)
 	if e != nil {
 		log.Panic("Configuration error: %v\n", e)

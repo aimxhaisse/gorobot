@@ -1,6 +1,6 @@
 package gorobot
 
-import(
+import (
 	"botapi"
 	"regexp"
 	"strings"
@@ -9,17 +9,17 @@ import(
 // Actions are a way for modules to communicate with the bot, basically
 // they are just sent on a channel and interpreted.
 
-var re_cmd_join	        = regexp.MustCompile("^JOIN ([^ ]+).*")
-var re_cmd_kick		= regexp.MustCompile("^KICK ([^ ]+) ([^ ]+) :(.*)")
-var re_cmd_kick_short	= regexp.MustCompile("^KICK ([^ ]+) ([^ ]+).*")
-var re_cmd_part		= regexp.MustCompile("^PART ([^ ]+) :(.*)")
-var re_cmd_part_short	= regexp.MustCompile("^PART ([^ ]+).*")
-var re_cmd_privmsg_chan	= regexp.MustCompile("^PRIVMSG ([^ ]+) :(.*)")
+var re_cmd_join = regexp.MustCompile("^JOIN ([^ ]+).*")
+var re_cmd_kick = regexp.MustCompile("^KICK ([^ ]+) ([^ ]+) :(.*)")
+var re_cmd_kick_short = regexp.MustCompile("^KICK ([^ ]+) ([^ ]+).*")
+var re_cmd_part = regexp.MustCompile("^PART ([^ ]+) :(.*)")
+var re_cmd_part_short = regexp.MustCompile("^PART ([^ ]+).*")
+var re_cmd_privmsg_chan = regexp.MustCompile("^PRIVMSG ([^ ]+) :(.*)")
 
 // Constructs an Action of any type from a Raw Action, this extra step is
 // made to ensure that the bot is still aware of what's hapening even with
 // raw actions (ie: a raw action "QUIT" has to remove the server from the bot)
-func ExtractAction(raw_action *botapi.Action) (*botapi.Action) {
+func ExtractAction(raw_action *botapi.Action) *botapi.Action {
 	if m := re_cmd_kick.FindStringSubmatch(raw_action.Data); len(m) == 4 {
 		return ActionKICK(&raw_action.Server, &m[1], &m[2], &m[3])
 	}
@@ -41,7 +41,7 @@ func ExtractAction(raw_action *botapi.Action) (*botapi.Action) {
 	return nil
 }
 
-func ActionKICK(srv *string, channel *string, user *string, msg *string) (*botapi.Action) {
+func ActionKICK(srv *string, channel *string, user *string, msg *string) *botapi.Action {
 	result := new(botapi.Action)
 	result.Server = *srv
 	result.Channel = *channel
@@ -53,7 +53,7 @@ func ActionKICK(srv *string, channel *string, user *string, msg *string) (*botap
 	return result
 }
 
-func ActionJOIN(srv *string, channel *string) (*botapi.Action) {
+func ActionJOIN(srv *string, channel *string) *botapi.Action {
 	result := new(botapi.Action)
 	result.Server = *srv
 	result.Channel = *channel
@@ -61,7 +61,7 @@ func ActionJOIN(srv *string, channel *string) (*botapi.Action) {
 	return result
 }
 
-func ActionPART(srv *string, channel *string, msg *string) (*botapi.Action) {
+func ActionPART(srv *string, channel *string, msg *string) *botapi.Action {
 	result := new(botapi.Action)
 	result.Server = *srv
 	result.Channel = *channel
@@ -72,7 +72,7 @@ func ActionPART(srv *string, channel *string, msg *string) (*botapi.Action) {
 	return result
 }
 
-func ActionPRIVMSG(srv *string, channel *string, msg *string) (*botapi.Action) {
+func ActionPRIVMSG(srv *string, channel *string, msg *string) *botapi.Action {
 	result := new(botapi.Action)
 	result.Server = *srv
 	if strings.Index(*channel, "#") == 0 {

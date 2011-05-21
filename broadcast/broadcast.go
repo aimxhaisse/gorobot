@@ -12,12 +12,12 @@ func main() {
 
 	// action which will be sent to the robot
 	a := botapi.Action{
-		Type: botapi.A_SAY,
+		Type:     botapi.A_SAY,
 		Priority: botapi.PRIORITY_LOW,
 	}
 
 	for {
-		e := <- chev
+		e := <-chev
 		// if the event is a message !hej, reply by sending an action
 		if e.Type == botapi.E_PRIVMSG && len(e.Channel) == 0 {
 			for server, targets := range config.Targets {

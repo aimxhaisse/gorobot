@@ -7,16 +7,16 @@ import (
 )
 
 type Config struct {
-	ModuleName	string
-	AdminScripts	string
-	PublicScripts	string
-	PrivateScripts	string
-	LocalPort	string
-	RobotInterface	string
+	ModuleName     string
+	AdminScripts   string
+	PublicScripts  string
+	PrivateScripts string
+	LocalPort      string
+	RobotInterface string
 }
 
 // Returns a new configuration from file pointed by path
-func NewConfig(path string) (*Config) {
+func NewConfig(path string) *Config {
 	file, e := ioutil.ReadFile(path)
 	if e != nil {
 		log.Panic("Configuration error: %v\n", e)

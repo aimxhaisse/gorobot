@@ -10,18 +10,18 @@ func main() {
 
 	// action which will be sent to the robot
 	a := botapi.Action{
-		Type: botapi.A_SAY,
-		Data: config.HelloWorld,
+		Type:     botapi.A_SAY,
+		Data:     config.HelloWorld,
 		Priority: botapi.PRIORITY_LOW,
 	}
 
 	for {
-		e := <- chev
+		e := <-chev
 		// if the event is a message !hej, reply by sending an action
 		if e.Type == botapi.E_PRIVMSG && len(e.Channel) > 0 && e.Data == "!hej" {
 			a.Server = e.Server
 			a.Channel = e.Channel
-			go func (a botapi.Action) { chac <- a } (a);
+			go func(a botapi.Action) { chac <- a }(a)
 		}
 	}
 }

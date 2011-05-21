@@ -8,23 +8,23 @@ import (
 
 // IRC Bot
 type Irc struct {
-	Events      chan botapi.Event	// Events are written here
-	Errors      chan os.Error	// Useless for now
-	Servers	    map[string] *Server	// Servers where the bot is connected
+	Events  chan botapi.Event  // Events are written here
+	Errors  chan os.Error      // Useless for now
+	Servers map[string]*Server // Servers where the bot is connected
 }
 
 // Instanciate a new IRC bot
 func NewIrc() *Irc {
 	b := Irc{
-		Events: make(chan botapi.Event),
-		Errors: make(chan os.Error),
-		Servers: make(map[string] *Server),
+		Events:  make(chan botapi.Event),
+		Errors:  make(chan os.Error),
+		Servers: make(map[string]*Server),
 	}
 	return &b
 }
 
 // Returns nil or the server which alias is serv
-func (irc *Irc) GetServer(serv string) (*Server) {
+func (irc *Irc) GetServer(serv string) *Server {
 	result, ok := irc.Servers[serv]
 	if ok == true && result.Connected == true {
 		return result
@@ -33,8 +33,8 @@ func (irc *Irc) GetServer(serv string) (*Server) {
 }
 
 // Connect to a new server
-func (irc *Irc) Connect(servers map[string] *ConfigServer) {
-	for  k, conf := range servers {
+func (irc *Irc) Connect(servers map[string]*ConfigServer) {
+	for k, conf := range servers {
 		conf.Name = k
 		if irc.GetServer(conf.Name) != nil {
 			log.Printf("already connected to that server [%s]", conf.Host)

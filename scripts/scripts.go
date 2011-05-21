@@ -22,7 +22,7 @@ import (
 // avoid characters such as "../" to disallow commands like "!../admin/kick"
 var re_cmd = regexp.MustCompile("^!([a-zA-Z0-9]+)( .*)?")
 
-func CraftActionSay(e botapi.Event, output string) (botapi.Action) {
+func CraftActionSay(e botapi.Event, output string) botapi.Action {
 	var a botapi.Action
 	a.Server = e.Server
 	a.Channel = e.Channel
@@ -33,7 +33,7 @@ func CraftActionSay(e botapi.Event, output string) (botapi.Action) {
 	return a
 }
 
-func FileExists(cmd string) (bool) {
+func FileExists(cmd string) bool {
 	stat, err := os.Stat(cmd)
 	if err == nil {
 		return stat.IsRegular()
@@ -41,7 +41,7 @@ func FileExists(cmd string) (bool) {
 	return false
 }
 
-func GetCmdPath(config *Config, cmd string, admin bool, private bool) (string) {
+func GetCmdPath(config *Config, cmd string, admin bool, private bool) string {
 	if private {
 		path := fmt.Sprintf("%s/%s.cmd", config.PrivateScripts, cmd)
 		if FileExists(path) {
@@ -84,7 +84,7 @@ func main() {
 	go NetAdmin(*config, chac)
 
 	for {
-		e, ok := <- chev
+		e, ok := <-chev
 
 		if !ok {
 			log.Printf("Channel closed")

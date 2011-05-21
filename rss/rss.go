@@ -14,29 +14,29 @@ import (
 )
 
 type RssFeed struct {
-	Config		ConfigFeed
-	Name		string
-	Items		map[string] string
+	Config ConfigFeed
+	Name   string
+	Items  map[string]string
 }
 
 type Feed struct {
-	XMLName		xml.Name "http://www.w3.org/2005/Atom feed"
-	Item		[]Item "feed>entry"
+	XMLName xml.Name "http://www.w3.org/2005/Atom feed"
+	Item    []Item   "feed>entry"
 }
 
 type Item struct {
-	Title		string
-	Link		string "id"
+	Title string
+	Link  string "id"
 }
 
-func InitFeeds(config *Config) (*map[string] RssFeed) {
-	result := make(map[string] RssFeed)
+func InitFeeds(config *Config) *map[string]RssFeed {
+	result := make(map[string]RssFeed)
 
 	for name, feed := range config.Feeds {
 		result[name] = RssFeed{
 			Config: feed,
-			Name: name,
-			Items: make(map[string] string),
+			Name:   name,
+			Items:  make(map[string]string),
 		}
 	}
 
@@ -52,7 +52,7 @@ func GetXmlFromUrl(url string) *Feed {
 		if err != nil {
 			log.Printf("%s\n", err)
 		}
-		r.Body.Close();
+		r.Body.Close()
 		return &feed
 	}
 
@@ -70,10 +70,10 @@ func PopulateFeed(feed *RssFeed) {
 }
 
 func BroadcastNewItem(feed *ConfigFeed, chac chan botapi.Action, item *Item) {
-	ac := botapi.Action {
-		Data: fmt.Sprintf("rss> %s [ %s ]", item.Title, item.Title),
+	ac := botapi.Action{
+		Data:     fmt.Sprintf("rss> %s [ %s ]", item.Title, item.Title),
 		Priority: botapi.PRIORITY_LOW,
-		Type: botapi.A_SAY,
+		Type:     botapi.A_SAY,
 	}
 
 	for srv, array := range feed.BroadCasts {
@@ -117,6 +117,6 @@ func main() {
 	}
 
 	for {
-		<- chev
+		<-chev
 	}
 }

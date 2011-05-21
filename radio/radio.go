@@ -10,12 +10,12 @@ import (
 
 func IRCSay(msg string, chac chan botapi.Action, config *Config) {
 	for server, channel := range config.Broadcast {
-		ac := botapi.Action {
-		Data: msg,
-		Priority: botapi.PRIORITY_LOW,
-		Type: botapi.A_SAY,
-		Server: server,
-		Channel: channel,
+		ac := botapi.Action{
+			Data:     msg,
+			Priority: botapi.PRIORITY_LOW,
+			Type:     botapi.A_SAY,
+			Server:   server,
+			Channel:  channel,
 		}
 		chac <- ac
 	}
@@ -29,7 +29,7 @@ func MPDWatch(client *mpd.Client, chac chan botapi.Action, config *Config) {
 		current, err := client.Current()
 
 		if err != nil {
-			return;
+			return
 		}
 
 		if len(current["Artist"]) == 0 {
@@ -49,9 +49,9 @@ func MPDWatch(client *mpd.Client, chac chan botapi.Action, config *Config) {
 
 func main() {
 	config := NewConfig("./mod-radio.json")
-	chac, chev := botapi.ImportFrom(config.RobotInterface, config.ModuleName)	
+	chac, chev := botapi.ImportFrom(config.RobotInterface, config.ModuleName)
 
-	go func (chac chan botapi.Action, config *Config) {
+	go func(chac chan botapi.Action, config *Config) {
 		for {
 			log.Printf("Connecting to MPD server")
 			client, err := mpd.Dial(config.MPDServer, config.MPDPassword)
@@ -60,11 +60,11 @@ func main() {
 				MPDWatch(client, chac, config)
 			}
 			log.Printf("Disconnected from MPD server, retrying in 15 seconds")
-			time.Sleep(15 * 1e9);
+			time.Sleep(15 * 1e9)
 		}
-	}(chac, config);
+	}(chac, config)
 
 	for {
-		<- chev
+		<-chev
 	}
 }

@@ -11,20 +11,20 @@ import (
 )
 
 type GoRobot struct {
-	Config *Config
-	LogMap map[string] *os.File
-	Irc* Irc
-	Exp *netchan.Exporter
-	Modules map[string] chan botapi.Event
+	Config  *Config
+	LogMap  map[string]*os.File
+	Irc     *Irc
+	Exp     *netchan.Exporter
+	Modules map[string]chan botapi.Event
 	Actions chan botapi.Action
 }
 
 func NewGoRobot(config string) *GoRobot {
 	robot := GoRobot{
-		Config: NewConfig(config),
-		LogMap: make(map[string] *os.File),
-		Irc: NewIrc(),
-		Modules: make(map[string] chan botapi.Event),
+		Config:  NewConfig(config),
+		LogMap:  make(map[string]*os.File),
+		Irc:     NewIrc(),
+		Modules: make(map[string]chan botapi.Event),
 	}
 	robot.Exp = botapi.InitExport(robot.Config.Module.Interface)
 	robot.Actions = botapi.ExportActions(robot.Exp)
@@ -34,9 +34,9 @@ func NewGoRobot(config string) *GoRobot {
 
 func (robot *GoRobot) SendEvent(event *botapi.Event) {
 	for _, chev := range robot.Modules {
-		go func (chev chan botapi.Event, event botapi.Event) {
+		go func(chev chan botapi.Event, event botapi.Event) {
 			chev <- event
-		} (chev, *event)
+		}(chev, *event)
 	}
 	robot.LogEvent(event)
 }
@@ -64,17 +64,17 @@ func (robot *GoRobot) HandleNotice(serv *Server, event *botapi.Event) {
 
 func (robot *GoRobot) HandleEvent(serv *Server, event *botapi.Event) {
 	switch event.Type {
-	case botapi.E_KICK :
+	case botapi.E_KICK:
 		if serv.Config.Nickname == event.Data && robot.Config.AutoRejoinOnKick {
 			serv.JoinChannel(event.Channel)
 		}
-	case botapi.E_PING :
+	case botapi.E_PING:
 		serv.SendMeRaw[botapi.PRIORITY_HIGH] <- fmt.Sprintf("PONG :%s\r\n", event.Data)
-	case botapi.E_NOTICE :
+	case botapi.E_NOTICE:
 		robot.HandleNotice(serv, event)
-	case botapi.E_DISCONNECT :
+	case botapi.E_DISCONNECT:
 		serv.Disconnect()
-	case botapi.E_PRIVMSG :
+	case botapi.E_PRIVMSG:
 		if _, ok := serv.Config.Channels[event.Channel]; ok == true {
 			event.AdminCmd = serv.Config.Channels[event.Channel].Master
 		}
@@ -125,7 +125,7 @@ func (robot *GoRobot) HandleAction(ac *botapi.Action) {
 
 func ScheduleCron(cron chan int, timeout int64) {
 	if timeout <= 0 {
-		timeout = 60;
+		timeout = 60
 	}
 	timeout = timeout * 1e9
 	for {
@@ -138,7 +138,7 @@ func (robot *GoRobot) AutoRunModules() {
 	if robot.Config.Module.AutoRunModules {
 		for _, module := range robot.Config.Module.AutoRun {
 			log.Printf("launching %s", module)
-			go func (module string) {
+			go func(module string) {
 				cmd, err := exec.Run(module, []string{module}, []string{}, "",
 					exec.DevNull, exec.PassThrough, exec.PassThrough)
 				if err == nil {
@@ -159,15 +159,15 @@ func (robot *GoRobot) Run() {
 
 	for {
 		select {
-		case _ = <- cron:
+		case _ = <-cron:
 			robot.Cron()
-		case action, ok := <- robot.Actions:
+		case action, ok := <-robot.Actions:
 			if !ok {
 				log.Printf("action channel closed, bye bye")
 				return
 			}
 			robot.HandleAction(&action)
-		case event, ok := <- robot.Irc.Events:
+		case event, ok := <-robot.Irc.Events:
 			if !ok {
 				log.Printf("event channel closed, bye bye")
 			}

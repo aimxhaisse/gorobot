@@ -23,14 +23,14 @@ import (
 )
 
 // creates a new botapi.action from what was sent on the admin port
-func NetAdminCraftAction(output string) (botapi.Action) {
+func NetAdminCraftAction(output string) botapi.Action {
 	var a botapi.Action
 	shellapi := strings.Split(output, " ", 3)
 	a.Type = botapi.A_RAW
 	if len(shellapi) == 3 {
 		a.Server = shellapi[0]
 		a.Priority, _ = strconv.Atoi(shellapi[1])
-		if	a.Priority != botapi.PRIORITY_LOW &&
+		if a.Priority != botapi.PRIORITY_LOW &&
 			a.Priority != botapi.PRIORITY_MEDIUM &&
 			a.Priority != botapi.PRIORITY_HIGH {
 			a.Priority = botapi.PRIORITY_LOW
@@ -58,18 +58,18 @@ func NetAdminReadFromCon(con *net.TCPConn, chac chan botapi.Action) {
 		}
 	}
 	con.Close()
-        msgs := strings.Split(string(rawcmd), "\n", -1)
-        for i := 0; i < len(msgs); i++ {
-                if len(msgs[i]) > 0 {
-                        s := strings.TrimRight(msgs[i], " \r\n\t")
-                        chac <- NetAdminCraftAction(s)
-                }
-        }
+	msgs := strings.Split(string(rawcmd), "\n", -1)
+	for i := 0; i < len(msgs); i++ {
+		if len(msgs[i]) > 0 {
+			s := strings.TrimRight(msgs[i], " \r\n\t")
+			chac <- NetAdminCraftAction(s)
+		}
+	}
 }
 
 // open the admin port and directly send RAW commands to the michel
 func NetAdmin(config Config, chac chan botapi.Action) {
-	a, err := net.ResolveTCPAddr("tcp", "localhost:" + config.LocalPort)
+	a, err := net.ResolveTCPAddr("tcp", "localhost:"+config.LocalPort)
 	if err != nil {
 		log.Panic("Can't resolve to localhost\n")
 	}

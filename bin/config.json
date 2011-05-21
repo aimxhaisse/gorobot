@@ -13,41 +13,23 @@
     "Module":  {
         "AutoRunModules": true,
         "Interface": "localhost:12345",
-        "AutoRun": ["./mod-scripts", "./mod-userjoin", "./mod-radio" ]
+        "AutoRun": ["./mod-scripts", "./mod-radio" ]
     },
 
     "Servers": {
-        "freenode" : {
+        "epitech" : {
             "FloodControl": true,
-            "Host": "irc.freenode.org:6667",
+            "Host": "irc.epitech.net:6667",
             "Nickname": "m1ch3l",
             "Realname": "m1ch3l",
             "Username": "m1ch3l",
             "Password": "",
             "Channels": {
-                "#kdev-valgrind": {
+                "#nantes": {
                     "Master": true
                 }
              }	
-	},
-        "1sland" : {
-            "FloodControl": false,
-            "Host": "localhost:6667",
-            "Nickname": "m1ch3l",
-            "Realname": "m1ch3l",
-            "Username": "m1ch3l",
-            "Password": "",
-            "Channels": {
-                "#c4stl3": {
-                    "Password": "11b8a40651d5a70fe1152814febcf4f9",
-                    "Master": false
-                },
-		"#m1ch3l": {
-                    "Password": "m1ch3l",
-		    "Master": true
-		}
-            }
-        }
+	}
     }
 
 }

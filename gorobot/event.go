@@ -10,17 +10,17 @@ import (
 
 // Events are built from the output of the IRC server, and are sent to modules
 // Please keep this is in order of use, as some expression may overlap others
-var re_server_notice       = regexp.MustCompile("^:[^ ]+ NOTICE [^:]+ :(.*)")
-var re_server_message	   = regexp.MustCompile("^:[^ ]+ ([0-9]+) [^:]+ :(.*)")
-var re_server_ping	   = regexp.MustCompile("^PING :(.*)")
-var re_event_join	   = regexp.MustCompile("^:([^!]+)![^ ]* JOIN :(.+)")
-var re_event_part	   = regexp.MustCompile("^:([^!]+)![^ ]* PART ([^ ]+).*")
-var re_event_privmsg       = regexp.MustCompile("^:([^!]+)![^ ]* PRIVMSG ([^ ]+) :(.+)")
-var re_event_kick	   = regexp.MustCompile("^:([^!]+)![^ ]* KICK ([^ ]+) ([^ ]+) :(.*)" )
-var re_event_quit	   = regexp.MustCompile("^:([^!]+)![^ ]* QUIT :(.*)")
-var re_event_nick	   = regexp.MustCompile("^:([^!]+)![^ ]* NICK :(.*)")
+var re_server_notice = regexp.MustCompile("^:[^ ]+ NOTICE [^:]+ :(.*)")
+var re_server_message = regexp.MustCompile("^:[^ ]+ ([0-9]+) [^:]+ :(.*)")
+var re_server_ping = regexp.MustCompile("^PING :(.*)")
+var re_event_join = regexp.MustCompile("^:([^!]+)![^ ]* JOIN :(.+)")
+var re_event_part = regexp.MustCompile("^:([^!]+)![^ ]* PART ([^ ]+).*")
+var re_event_privmsg = regexp.MustCompile("^:([^!]+)![^ ]* PRIVMSG ([^ ]+) :(.+)")
+var re_event_kick = regexp.MustCompile("^:([^!]+)![^ ]* KICK ([^ ]+) ([^ ]+) :(.*)")
+var re_event_quit = regexp.MustCompile("^:([^!]+)![^ ]* QUIT :(.*)")
+var re_event_nick = regexp.MustCompile("^:([^!]+)![^ ]* NICK :(.*)")
 
-func ExtractEvent(line string) (*botapi.Event) {
+func ExtractEvent(line string) *botapi.Event {
 	if m := re_server_notice.FindStringSubmatch(line); len(m) == 2 {
 		return EventNOTICE(line, m[1], 0)
 	}
@@ -53,7 +53,7 @@ func ExtractEvent(line string) (*botapi.Event) {
 	return nil
 }
 
-func EventPING(line string, server string) (*botapi.Event) {
+func EventPING(line string, server string) *botapi.Event {
 	event := new(botapi.Event)
 	event.Raw = line
 	event.Type = botapi.E_PING
@@ -61,7 +61,7 @@ func EventPING(line string, server string) (*botapi.Event) {
 	return event
 }
 
-func EventNOTICE(line string, message string, cmd_id int) (*botapi.Event) {
+func EventNOTICE(line string, message string, cmd_id int) *botapi.Event {
 	event := new(botapi.Event)
 	event.Raw = line
 	event.Type = botapi.E_NOTICE
@@ -70,7 +70,7 @@ func EventNOTICE(line string, message string, cmd_id int) (*botapi.Event) {
 	return event
 }
 
-func EventJOIN(line string, user string, channel string) (*botapi.Event) {
+func EventJOIN(line string, user string, channel string) *botapi.Event {
 	event := new(botapi.Event)
 	event.Raw = line
 	event.Type = botapi.E_JOIN
@@ -80,7 +80,7 @@ func EventJOIN(line string, user string, channel string) (*botapi.Event) {
 	return event
 }
 
-func EventPART(line string, user string, channel string) (*botapi.Event) {
+func EventPART(line string, user string, channel string) *botapi.Event {
 	event := new(botapi.Event)
 	event.Raw = line
 	event.Type = botapi.E_PART
@@ -89,7 +89,7 @@ func EventPART(line string, user string, channel string) (*botapi.Event) {
 	return event
 }
 
-func EventPRIVMSG(line string, user string, channel string, msg string) (*botapi.Event) {
+func EventPRIVMSG(line string, user string, channel string, msg string) *botapi.Event {
 	event := new(botapi.Event)
 	event.Raw = line
 	event.Type = botapi.E_PRIVMSG
@@ -101,7 +101,7 @@ func EventPRIVMSG(line string, user string, channel string, msg string) (*botapi
 	return event
 }
 
-func EventKICK(line string, user string, channel string, target string, msg string) (*botapi.Event) {
+func EventKICK(line string, user string, channel string, target string, msg string) *botapi.Event {
 	event := new(botapi.Event)
 	event.Raw = line
 	event.Type = botapi.E_KICK
@@ -111,7 +111,7 @@ func EventKICK(line string, user string, channel string, target string, msg stri
 	return event
 }
 
-func EventQUIT(line string, user string, msg string) (*botapi.Event) {
+func EventQUIT(line string, user string, msg string) *botapi.Event {
 	event := new(botapi.Event)
 	event.Raw = line
 	event.Type = botapi.E_QUIT
@@ -120,7 +120,7 @@ func EventQUIT(line string, user string, msg string) (*botapi.Event) {
 	return event
 }
 
-func EventNICK(line string, user string, newuser string) (*botapi.Event) {
+func EventNICK(line string, user string, newuser string) *botapi.Event {
 	event := new(botapi.Event)
 	event.Raw = line
 	event.Type = botapi.E_NICK

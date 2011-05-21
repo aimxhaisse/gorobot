@@ -13,18 +13,18 @@ import (
 
 // IRC Server
 type Server struct {
-	Config		ConfigServer
-	SendMeRaw	map[int] chan string	// Channel to send raw commands to the server
-	Socket		net.Conn		// Socket to the server
-	Connected	bool
+	Config    ConfigServer
+	SendMeRaw map[int]chan string // Channel to send raw commands to the server
+	Socket    net.Conn            // Socket to the server
+	Connected bool
 }
 
 // Creates a new connection to a server
 func NewServer(conf *ConfigServer, chev chan botapi.Event) *Server {
 	log.Printf("connecting to %s (%s)\n", conf.Name, conf.Host)
 	serv := Server{
-		Config: *conf,
-		SendMeRaw: make(map[int] chan string),
+		Config:    *conf,
+		SendMeRaw: make(map[int]chan string),
 		Connected: false,
 	}
 	serv.SendMeRaw[botapi.PRIORITY_LOW] = make(chan string)
@@ -87,7 +87,7 @@ func (serv *Server) LeaveChannel(name string, msg string) {
 func (serv *Server) KickUser(channel string, user string, msg string) {
 	if len(msg) > 0 {
 		serv.SendRawCommand(fmt.Sprintf("KICK %s %s :%s\r\n", channel, user, msg), botapi.PRIORITY_HIGH)
- 	} else {		
+	} else {
 		serv.SendRawCommand(fmt.Sprintf("KICK %s %s\r\n", channel, user), botapi.PRIORITY_HIGH)
 	}
 }
@@ -111,7 +111,7 @@ func (serv *Server) JoinChannel(name string) {
 
 func (serv *Server) SendRawCommand(cmd string, priority int) {
 	if serv.Connected == true {
-		go func (cmd string, priority int) {
+		go func(cmd string, priority int) {
 			serv.SendMeRaw[priority] <- cmd
 		}(cmd, priority)
 	}
@@ -127,7 +127,7 @@ func reader(destroy chan int, serv_name string, connection net.Conn, chev chan b
 		if line, err = r.ReadString('\n'); err != nil {
 			chev <- botapi.Event{
 				Server: serv_name,
-				Type: botapi.E_DISCONNECT,
+				Type:   botapi.E_DISCONNECT,
 			}
 			log.Printf("read error on %s: %v", serv_name, err)
 			destroy <- 0
@@ -187,24 +187,24 @@ func writerDispatch(after *int64, ahead *int64, before *int64, str string, conne
 }
 
 // Pick raw commands in order of priority
-func writer(destroy chan int, connection net.Conn, chin map[int] chan string, flood_control bool) {
+func writer(destroy chan int, connection net.Conn, chin map[int]chan string, flood_control bool) {
 	var after int64 = 0
 	var ahead int64 = 0
 	before := time.Nanoseconds()
 
 	for {
 		select {
-		case <- destroy:
+		case <-destroy:
 			return
-		case str := <- chin[botapi.PRIORITY_HIGH]:
+		case str := <-chin[botapi.PRIORITY_HIGH]:
 			if !writerDispatch(&after, &ahead, &before, str, connection, flood_control) {
 				return
 			}
-		case str := <- chin[botapi.PRIORITY_MEDIUM]:
+		case str := <-chin[botapi.PRIORITY_MEDIUM]:
 			if !writerDispatch(&after, &ahead, &before, str, connection, flood_control) {
 				return
 			}
-		case str := <- chin[botapi.PRIORITY_LOW]:
+		case str := <-chin[botapi.PRIORITY_LOW]:
 			if !writerDispatch(&after, &ahead, &before, str, connection, flood_control) {
 				return
 			}

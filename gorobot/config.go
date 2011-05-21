@@ -1,53 +1,53 @@
 package gorobot
 
 import (
-    "log"
-    "json"
-    "io/ioutil"
+	"log"
+	"json"
+	"io/ioutil"
 )
 
 type Config struct {
 	AutoRejoinOnKick bool
-	CronTimeout int64
-	AutoRunModules bool
-	Logs ConfigLogs
-	Module ConfigModule
-	Servers map[string] *ConfigServer
+	CronTimeout      int64
+	AutoRunModules   bool
+	Logs             ConfigLogs
+	Module           ConfigModule
+	Servers          map[string]*ConfigServer
 }
 
 type ConfigLogs struct {
-	Enable bool
-	Directory string
-	RecordEvents bool
+	Enable            bool
+	Directory         string
+	RecordEvents      bool
 	RecordMemoryUsage bool
-	RecordStatistics bool
+	RecordStatistics  bool
 }
 
 type ConfigModule struct {
-	Interface string
+	Interface      string
 	AutoRunModules bool
-	AutoRun []string
+	AutoRun        []string
 }
 
 type ConfigServer struct {
-	Name string
-	Host string
+	Name         string
+	Host         string
 	FloodControl bool
-	Nickname string
-	Realname string
-	Username string
-	Password string
-	Channels map[string] *ConfigChannel
+	Nickname     string
+	Realname     string
+	Username     string
+	Password     string
+	Channels     map[string]*ConfigChannel
 }
 
 type ConfigChannel struct {
-	Name string
+	Name     string
 	Password string
-	Master bool
+	Master   bool
 }
 
 // Returns a new configuration from file pointed by path
-func NewConfig(path string) (*Config) {
+func NewConfig(path string) *Config {
 	file, e := ioutil.ReadFile(path)
 	if e != nil {
 		log.Panic("Configuration error: %v\n", e)

@@ -4,7 +4,6 @@
     "MPDServer": "buffout.org:8000",
     "MPDPassword": "m1ch3l",
     "Broadcast": {
-	"freenode": "#kdev-valgrind",
-	"1sland": "#c4stl3"
+	"epitech": "#nantes"
     }
 }
