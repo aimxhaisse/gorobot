@@ -1,4 +1,4 @@
-package main
+package example
 
 import (
 	"json"
@@ -12,7 +12,7 @@ type Config struct {
 	RobotInterface string
 }
 
-// Returns a new configuration from file pointed by path
+// NewConfig returns a new configuration from file pointed by path
 func NewConfig(path string) *Config {
 	file, e := ioutil.ReadFile(path)
 	if e != nil {

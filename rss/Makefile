@@ -1,4 +1,6 @@
 include $(GOROOT)/src/Make.inc
-TARG=../bin/mod-rss
+
+TARG=gorobot/rss
 GOFILES=rss.go config.go
-include $(GOROOT)/src/Make.cmd
+
+include $(GOROOT)/src/Make.pkg

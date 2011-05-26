@@ -1,4 +1,4 @@
-package main
+package broadcast
 
 import (
 	"json"
@@ -7,12 +7,12 @@ import (
 )
 
 type Config struct {
-	ModuleName     string
-	RobotInterface string
-	Targets        map[string][]string
+	ModuleName     string              // Name of the module registered in the IRC robot
+	RobotInterface string              // Interface of the IRC robot to use for connection
+	Targets        map[string][]string // List of servers/channels-users to broadcast
 }
 
-// Returns a new configuration from file pointed by path
+// NewConfig a new configuration from the file (formatted in JSON) pointed by path
 func NewConfig(path string) *Config {
 	file, e := ioutil.ReadFile(path)
 	if e != nil {

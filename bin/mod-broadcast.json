@@ -1,9 +1,0 @@
-{
-    "RobotInterface": "localhost:12345",
-    "ModuleName": "mod-broadcast",
-    "Targets": {
-        "localhost": [
-            "mxs"
-        ]
-    }
-}

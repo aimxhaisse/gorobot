@@ -1,10 +1,9 @@
-package main
-
-// module that only handles atom based feeds for now
+// package rss implements a module that broadcast atom based feeds for now
 // feel free to improve it
+package rss
 
 import (
-	"botapi"
+	"gorobot/api"
 	"http"
 	"xml"
 	"fmt"
@@ -29,7 +28,7 @@ type Item struct {
 	Link  string "id"
 }
 
-func InitFeeds(config *Config) *map[string]RssFeed {
+func initFeeds(config Config) *map[string]RssFeed {
 	result := make(map[string]RssFeed)
 
 	for name, feed := range config.Feeds {
@@ -43,7 +42,7 @@ func InitFeeds(config *Config) *map[string]RssFeed {
 	return &result
 }
 
-func GetXmlFromUrl(url string) *Feed {
+func getXmlFromUrl(url string) *Feed {
 	r, _, err := http.Get(url)
 
 	if err == nil {
@@ -59,9 +58,9 @@ func GetXmlFromUrl(url string) *Feed {
 	return nil
 }
 
-func PopulateFeed(feed *RssFeed) {
+func populateFeed(feed *RssFeed) {
 	fmt.Printf("Fetching...\n")
-	feedxml := GetXmlFromUrl(feed.Config.Url)
+	feedxml := getXmlFromUrl(feed.Config.Url)
 	for _, item := range feedxml.Item {
 		feed.Items[item.Link] = item.Title
 		fmt.Printf("%s > %s\n", item.Link, item.Title)
@@ -69,11 +68,11 @@ func PopulateFeed(feed *RssFeed) {
 	fmt.Printf("OK\n")
 }
 
-func BroadcastNewItem(feed *ConfigFeed, chac chan botapi.Action, item *Item) {
-	ac := botapi.Action{
+func broadcastNewItem(feed *ConfigFeed, chac chan api.Action, item *Item) {
+	ac := api.Action{
 		Data:     fmt.Sprintf("rss> %s [ %s ]", item.Title, item.Title),
-		Priority: botapi.PRIORITY_LOW,
-		Type:     botapi.A_SAY,
+		Priority: api.PRIORITY_LOW,
+		Type:     api.A_SAY,
 	}
 
 	for srv, array := range feed.BroadCasts {
@@ -89,13 +88,13 @@ func BroadcastNewItem(feed *ConfigFeed, chac chan botapi.Action, item *Item) {
 	}
 }
 
-func DrainFeed(feed RssFeed, chac chan botapi.Action) {
+func drainFeed(feed RssFeed, chac chan api.Action) {
 	for {
-		feedxml := GetXmlFromUrl(feed.Config.Url)
+		feedxml := getXmlFromUrl(feed.Config.Url)
 		if feedxml != nil {
 			for _, item := range feedxml.Item {
 				if _, ok := feed.Items[item.Link]; ok == false {
-					BroadcastNewItem(&feed.Config, chac, &item)
+					broadcastNewItem(&feed.Config, chac, &item)
 					feed.Items[item.Link] = item.Title
 				}
 			}
@@ -106,14 +105,12 @@ func DrainFeed(feed RssFeed, chac chan botapi.Action) {
 	}
 }
 
-func main() {
-	config := NewConfig("./mod-rss.json")
-	chac, chev := botapi.ImportFrom(config.RobotInterface, config.ModuleName)
-	feeds := InitFeeds(config)
+func Rss(chac chan api.Action, chev chan api.Event, config Config) {
+	feeds := initFeeds(config)
 
 	for _, feed := range *feeds {
-		PopulateFeed(&feed)
-		go DrainFeed(feed, chac)
+		populateFeed(&feed)
+		go drainFeed(feed, chac)
 	}
 
 	for {

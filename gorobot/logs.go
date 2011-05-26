@@ -1,16 +1,15 @@
 package gorobot
 
 import (
+	"gorobot/api"
 	"os"
-	"botapi"
 	"fmt"
 	"log"
 	"time"
 	"runtime"
 )
 
-// Writes the string to the log file, create/open the file if not yet open
-func (robot *GoRobot) WriteLog(file string, msg string) {
+func (robot *GoRobot) writeLog(file string, msg string) {
 	currentTime := time.LocalTime()
 	if currentTime == nil {
 		return
@@ -28,8 +27,7 @@ func (robot *GoRobot) WriteLog(file string, msg string) {
 	fh.WriteString(fmt.Sprintf("%s - %s\n", strTime, msg))
 }
 
-// Logs a PRIVMSG event in logs/server/[user|channel].log
-func (robot *GoRobot) LogEventPRIVMSG(ev *botapi.Event) {
+func (robot *GoRobot) logEventPRIVMSG(ev *api.Event) {
 	var file string
 
 	if len(ev.Channel) > 0 {
@@ -38,49 +36,45 @@ func (robot *GoRobot) LogEventPRIVMSG(ev *botapi.Event) {
 		file = fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.User)
 	}
 
-	robot.WriteLog(file, fmt.Sprintf("%s: %s", ev.User, ev.Data))
+	robot.writeLog(file, fmt.Sprintf("%s: %s", ev.User, ev.Data))
 }
 
-// Logs a JOIN event in logs/server-channel.log
-func (robot *GoRobot) LogEventJOIN(ev *botapi.Event) {
+func (robot *GoRobot) logEventJOIN(ev *api.Event) {
 	file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.Channel)
-	robot.WriteLog(file, fmt.Sprintf("%s has joined %s", ev.User, ev.Channel))
+	robot.writeLog(file, fmt.Sprintf("%s has joined %s", ev.User, ev.Channel))
 }
 
-// Logs a PART event in logs/server-channel.log
-func (robot *GoRobot) LogEventPART(ev *botapi.Event) {
+func (robot *GoRobot) logEventPART(ev *api.Event) {
 	file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.Channel)
-	robot.WriteLog(file, fmt.Sprintf("%s has left %s", ev.User, ev.Channel))
+	robot.writeLog(file, fmt.Sprintf("%s has left %s", ev.User, ev.Channel))
 }
 
-// Logs a KICK event in logs/server-channel.log
-func (robot *GoRobot) LogEventKICK(ev *botapi.Event) {
+func (robot *GoRobot) logEventKICK(ev *api.Event) {
 	file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.Channel)
-	robot.WriteLog(file, fmt.Sprintf("%s has been kicked from %s by %s", ev.Data, ev.Channel, ev.User))
+	robot.writeLog(file, fmt.Sprintf("%s has been kicked from %s by %s", ev.Data, ev.Channel, ev.User))
 }
 
-// Main entry to log events
-func (robot *GoRobot) LogEvent(ev *botapi.Event) {
+// LogEvent logs events
+func (robot *GoRobot) LogEvent(ev *api.Event) {
 	if robot.Config.Logs.Enable && robot.Config.Logs.RecordEvents {
 		switch ev.Type {
-		case botapi.E_PRIVMSG:
-			robot.LogEventPRIVMSG(ev)
-		case botapi.E_JOIN:
-			robot.LogEventJOIN(ev)
-		case botapi.E_PART:
-			robot.LogEventPART(ev)
-		case botapi.E_KICK:
-			robot.LogEventKICK(ev)
+		case api.E_PRIVMSG:
+			robot.logEventPRIVMSG(ev)
+		case api.E_JOIN:
+			robot.logEventJOIN(ev)
+		case api.E_PART:
+			robot.logEventPART(ev)
+		case api.E_KICK:
+			robot.logEventKICK(ev)
 		}
 	}
 }
 
-// Periodically called to log some stats
+// LogStatistics is periodically called to log statistics about the memory usage of the IRC robot
 func (robot *GoRobot) LogStatistics() {
-	// Stats about Memory usage
 	if robot.Config.Logs.Enable && robot.Config.Logs.RecordMemoryUsage {
 		s := runtime.MemStats
 		file := fmt.Sprintf("%s/memory.stats", robot.Config.Logs.Directory)
-		robot.WriteLog(file, fmt.Sprintf("%d %d", s.Alloc, s.Sys))
+		robot.writeLog(file, fmt.Sprintf("%d %d", s.Alloc, s.Sys))
 	}
 }

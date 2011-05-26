@@ -1,25 +1,21 @@
-package main
+// Package gorobot/broadcast implements a gorobot module to broacast private conversations
+package broadcast
 
 import (
-	"botapi"
+	"gorobot/api"
 	"fmt"
 	"strings"
 )
 
-func main() {
-	config := NewConfig("./mod-broadcast.json")
-	chac, chev := botapi.ImportFrom(config.RobotInterface, config.ModuleName)
-
-	// action which will be sent to the robot
-	a := botapi.Action{
-		Type:     botapi.A_SAY,
-		Priority: botapi.PRIORITY_LOW,
+// Broadcast listens for private messages and broadcasts them to a list of targets
+func Broadcast(chev chan api.Event, chac chan api.Action, config Config) {
+	a := api.Action{
+		Type:     api.A_SAY,
+		Priority: api.PRIORITY_LOW,
 	}
-
 	for {
 		e := <-chev
-		// if the event is a message !hej, reply by sending an action
-		if e.Type == botapi.E_PRIVMSG && len(e.Channel) == 0 {
+		if e.Type == api.E_PRIVMSG && len(e.Channel) == 0 {
 			for server, targets := range config.Targets {
 				a.Server = server
 				a.Channel = ""

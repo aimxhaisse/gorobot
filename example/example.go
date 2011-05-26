@@ -1,27 +1,26 @@
-package main
+// Package gorobot/example implements an example of a gorobot module
+package example
 
 import (
-	"botapi"
+	"gorobot/api"
 )
 
-func main() {
-	config := NewConfig("./mod-example.json")
-	chac, chev := botapi.ImportFrom(config.RobotInterface, config.ModuleName)
-
+// Example is a gorobot module which responds to the !hej command
+func Example(chac chan api.Action, chev chan api.Event, config Config) {
 	// action which will be sent to the robot
-	a := botapi.Action{
-		Type:     botapi.A_SAY,
+	a := api.Action{
+		Type:     api.A_SAY,
 		Data:     config.HelloWorld,
-		Priority: botapi.PRIORITY_LOW,
+		Priority: api.PRIORITY_LOW,
 	}
 
 	for {
 		e := <-chev
 		// if the event is a message !hej, reply by sending an action
-		if e.Type == botapi.E_PRIVMSG && len(e.Channel) > 0 && e.Data == "!hej" {
+		if e.Type == api.E_PRIVMSG && len(e.Channel) > 0 && e.Data == "!hej" {
 			a.Server = e.Server
 			a.Channel = e.Channel
-			go func(a botapi.Action) { chac <- a }(a)
+			go func(a api.Action) { chac <- a }(a)
 		}
 	}
 }

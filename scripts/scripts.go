@@ -1,6 +1,4 @@
-package main
-
-// this module is able to associate a specific command with a script.
+// package scripts is able to associate an IRC command with a script.
 // !xyz will execute the script located in public/xyz.cmd
 // if public/xyz.cmd doesn't exist and the command was issued by and admin,
 // then admin/xyz.cmd is executed.
@@ -8,9 +6,10 @@ package main
 //
 // scripts can open the admin port and send IRC commands directly to the
 // server.
+package scripts
 
 import (
-	"botapi"
+	"gorobot/api"
 	"regexp"
 	"exec"
 	"os"
@@ -22,18 +21,7 @@ import (
 // avoid characters such as "../" to disallow commands like "!../admin/kick"
 var re_cmd = regexp.MustCompile("^!([a-zA-Z0-9]+)( .*)?")
 
-func CraftActionSay(e botapi.Event, output string) botapi.Action {
-	var a botapi.Action
-	a.Server = e.Server
-	a.Channel = e.Channel
-	a.User = e.User
-	a.Data = output
-	a.Type = botapi.A_SAY
-	a.Priority = botapi.PRIORITY_LOW
-	return a
-}
-
-func FileExists(cmd string) bool {
+func fileExists(cmd string) bool {
 	stat, err := os.Stat(cmd)
 	if err == nil {
 		return stat.IsRegular()
@@ -41,28 +29,28 @@ func FileExists(cmd string) bool {
 	return false
 }
 
-func GetCmdPath(config *Config, cmd string, admin bool, private bool) string {
+func cmdPath(config *Config, cmd string, admin bool, private bool) string {
 	if private {
 		path := fmt.Sprintf("%s/%s.cmd", config.PrivateScripts, cmd)
-		if FileExists(path) {
+		if fileExists(path) {
 			return path
 		}
 		return ""
 	}
 	if admin {
 		path := fmt.Sprintf("%s/%s.cmd", config.AdminScripts, cmd)
-		if FileExists(path) {
+		if fileExists(path) {
 			return path
 		}
 	}
 	path := fmt.Sprintf("%s/%s.cmd", config.PublicScripts, cmd)
-	if FileExists(path) {
+	if fileExists(path) {
 		return path
 	}
 	return ""
 }
 
-func ExecCmd(config Config, path string, ev botapi.Event) {
+func execCmd(config Config, path string, ev botapi.Event) {
 	log.Printf("Executing [%s]\n", path)
 	argv := []string{path, config.LocalPort, ev.Server, ev.Channel, ev.User}
 	args := strings.Split(ev.Data, " ", 2)
@@ -77,8 +65,7 @@ func ExecCmd(config Config, path string, ev botapi.Event) {
 	}
 }
 
-func main() {
-	config := NewConfig("./mod-scripts.json")
+func Scripts(chac chan api.Action, chev, chan api.Event, config Config) {
 	chac, chev := botapi.ImportFrom(config.RobotInterface, config.ModuleName)
 
 	go NetAdmin(*config, chac)
@@ -94,11 +81,11 @@ func main() {
 		switch e.Type {
 		case botapi.E_PRIVMSG:
 			if m := re_cmd.FindStringSubmatch(e.Data); len(m) > 0 {
-				path := GetCmdPath(config, m[1],
+				path := cmdPath(config, m[1],
 					e.AdminCmd,
 					len(e.Channel) == 0)
 				if len(path) > 0 {
-					go ExecCmd(*config, path, e)
+					go execCmd(*config, path, e)
 				}
 			}
 		}

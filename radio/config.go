@@ -1,4 +1,4 @@
-package main
+package radio
 
 import (
 	"json"
@@ -7,14 +7,14 @@ import (
 )
 
 type Config struct {
-	ModuleName     string
-	RobotInterface string
-	MPDServer      string
-	MPDPassword    string
-	Broadcast      map[string]string
+	ModuleName     string // Name of the module
+	RobotInterface string // Address of the gorobot
+	MPDServer      string // Address of the MPD server
+	MPDPassword    string // Password of the MPD server
+	Broadcast      map[string]string // Map of server/channel-users to broadcast music stream
 }
 
-// Returns a new configuration from file pointed by path
+// Returns a new Config from the file pointed by path
 func NewConfig(path string) *Config {
 	file, e := ioutil.ReadFile(path)
 	if e != nil {

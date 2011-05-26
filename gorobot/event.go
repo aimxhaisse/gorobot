@@ -1,7 +1,7 @@
 package gorobot
 
 import (
-	"botapi"
+	"gorobot/api"
 	"log"
 	"regexp"
 	"strconv"
@@ -20,79 +20,79 @@ var re_event_kick = regexp.MustCompile("^:([^!]+)![^ ]* KICK ([^ ]+) ([^ ]+) :(.
 var re_event_quit = regexp.MustCompile("^:([^!]+)![^ ]* QUIT :(.*)")
 var re_event_nick = regexp.MustCompile("^:([^!]+)![^ ]* NICK :(.*)")
 
-func ExtractEvent(line string) *botapi.Event {
+func ExtractEvent(line string) *api.Event {
 	if m := re_server_notice.FindStringSubmatch(line); len(m) == 2 {
-		return EventNOTICE(line, m[1], 0)
+		return newEventNOTICE(line, m[1], 0)
 	}
 	if m := re_server_message.FindStringSubmatch(line); len(m) == 3 {
 		cmd_id, _ := strconv.Atoi(m[1])
-		return EventNOTICE(line, m[2], cmd_id)
+		return newEventNOTICE(line, m[2], cmd_id)
 	}
 	if m := re_server_ping.FindStringSubmatch(line); len(m) == 2 {
-		return EventPING(line, m[1])
+		return newEventPING(line, m[1])
 	}
 	if m := re_event_join.FindStringSubmatch(line); len(m) == 3 {
-		return EventJOIN(line, m[1], m[2])
+		return newEventJOIN(line, m[1], m[2])
 	}
 	if m := re_event_part.FindStringSubmatch(line); len(m) == 3 {
-		return EventPART(line, m[1], m[2])
+		return newEventPART(line, m[1], m[2])
 	}
 	if m := re_event_privmsg.FindStringSubmatch(line); len(m) == 4 {
-		return EventPRIVMSG(line, m[1], m[2], m[3])
+		return newEventPRIVMSG(line, m[1], m[2], m[3])
 	}
 	if m := re_event_kick.FindStringSubmatch(line); len(m) == 5 {
-		return EventKICK(line, m[1], m[2], m[3], m[4])
+		return newEventKICK(line, m[1], m[2], m[3], m[4])
 	}
 	if m := re_event_quit.FindStringSubmatch(line); len(m) == 3 {
-		return EventQUIT(line, m[1], m[2])
+		return newEventQUIT(line, m[1], m[2])
 	}
 	if m := re_event_nick.FindStringSubmatch(line); len(m) == 3 {
-		return EventNICK(line, m[1], m[2])
+		return newEventNICK(line, m[1], m[2])
 	}
 	log.Printf("ignored message: %s", line)
 	return nil
 }
 
-func EventPING(line string, server string) *botapi.Event {
-	event := new(botapi.Event)
+func newEventPING(line string, server string) *api.Event {
+	event := new(api.Event)
 	event.Raw = line
-	event.Type = botapi.E_PING
+	event.Type = api.E_PING
 	event.Data = server
 	return event
 }
 
-func EventNOTICE(line string, message string, cmd_id int) *botapi.Event {
-	event := new(botapi.Event)
+func newEventNOTICE(line string, message string, cmd_id int) *api.Event {
+	event := new(api.Event)
 	event.Raw = line
-	event.Type = botapi.E_NOTICE
+	event.Type = api.E_NOTICE
 	event.Data = message
 	event.CmdId = cmd_id
 	return event
 }
 
-func EventJOIN(line string, user string, channel string) *botapi.Event {
-	event := new(botapi.Event)
+func newEventJOIN(line string, user string, channel string) *api.Event {
+	event := new(api.Event)
 	event.Raw = line
-	event.Type = botapi.E_JOIN
+	event.Type = api.E_JOIN
 	event.Channel = channel
 	event.Data = channel
 	event.User = user
 	return event
 }
 
-func EventPART(line string, user string, channel string) *botapi.Event {
-	event := new(botapi.Event)
+func newEventPART(line string, user string, channel string) *api.Event {
+	event := new(api.Event)
 	event.Raw = line
-	event.Type = botapi.E_PART
+	event.Type = api.E_PART
 	event.Channel = channel
 	event.User = user
 	return event
 }
 
-func EventPRIVMSG(line string, user string, channel string, msg string) *botapi.Event {
-	event := new(botapi.Event)
+func newEventPRIVMSG(line string, user string, channel string, msg string) *api.Event {
+	event := new(api.Event)
 	event.Raw = line
-	event.Type = botapi.E_PRIVMSG
+	event.Type = api.E_PRIVMSG
 	event.Data = msg
 	if strings.Index(channel, "#") == 0 {
 		event.Channel = channel
@@ -101,29 +101,29 @@ func EventPRIVMSG(line string, user string, channel string, msg string) *botapi.
 	return event
 }
 
-func EventKICK(line string, user string, channel string, target string, msg string) *botapi.Event {
-	event := new(botapi.Event)
+func newEventKICK(line string, user string, channel string, target string, msg string) *api.Event {
+	event := new(api.Event)
 	event.Raw = line
-	event.Type = botapi.E_KICK
+	event.Type = api.E_KICK
 	event.Data = target
 	event.Channel = channel
 	event.User = user
 	return event
 }
 
-func EventQUIT(line string, user string, msg string) *botapi.Event {
-	event := new(botapi.Event)
+func newEventQUIT(line string, user string, msg string) *api.Event {
+	event := new(api.Event)
 	event.Raw = line
-	event.Type = botapi.E_QUIT
+	event.Type = api.E_QUIT
 	event.Data = msg
 	event.User = user
 	return event
 }
 
-func EventNICK(line string, user string, newuser string) *botapi.Event {
-	event := new(botapi.Event)
+func newEventNICK(line string, user string, newuser string) *api.Event {
+	event := new(api.Event)
 	event.Raw = line
-	event.Type = botapi.E_NICK
+	event.Type = api.E_NICK
 	event.Data = newuser
 	event.User = user
 	return event

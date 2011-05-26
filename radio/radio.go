@@ -1,19 +1,21 @@
-package main
+// package radio gorobot/radio implements a gorobot module to broadcast the activity
+// of a MDP server
+package radio
 
 import (
-	"fmt"
+	"gorobot/api"
 	"github.com/jteeuwen/go-pkg-mpd"
+	"fmt"
 	"log"
 	"time"
-	"botapi"
 )
 
-func IRCSay(msg string, chac chan botapi.Action, config *Config) {
+func ircSay(msg string, chac chan api.Action, config Config) {
 	for server, channel := range config.Broadcast {
-		ac := botapi.Action{
+		ac := api.Action{
 			Data:     msg,
-			Priority: botapi.PRIORITY_LOW,
-			Type:     botapi.A_SAY,
+			Priority: api.PRIORITY_LOW,
+			Type:     api.A_SAY,
 			Server:   server,
 			Channel:  channel,
 		}
@@ -21,7 +23,7 @@ func IRCSay(msg string, chac chan botapi.Action, config *Config) {
 	}
 }
 
-func MPDWatch(client *mpd.Client, chac chan botapi.Action, config *Config) {
+func mpdWatch(client *mpd.Client, chac chan api.Action, config Config) {
 	str := ""
 	prev := str
 
@@ -38,7 +40,7 @@ func MPDWatch(client *mpd.Client, chac chan botapi.Action, config *Config) {
 		if len(current["Title"]) > 0 {
 			str = fmt.Sprintf("radio m1ch3l: now playing \"%s\" (%s)", current["Title"], current["Artist"])
 			if str != prev {
-				go IRCSay(str, chac, config)
+				go ircSay(str, chac, config)
 				prev = str
 			}
 		}
@@ -47,17 +49,15 @@ func MPDWatch(client *mpd.Client, chac chan botapi.Action, config *Config) {
 	}
 }
 
-func main() {
-	config := NewConfig("./mod-radio.json")
-	chac, chev := botapi.ImportFrom(config.RobotInterface, config.ModuleName)
-
-	go func(chac chan botapi.Action, config *Config) {
+// Radio watches the activity of a MPD server and broadcast changes
+func Radio(chac chan api.Action, chev chan api.Event, config Config) {
+	go func(chac chan api.Action, config Config) {
 		for {
 			log.Printf("Connecting to MPD server")
 			client, err := mpd.Dial(config.MPDServer, config.MPDPassword)
 			if err == nil {
 				log.Printf("MPD: connected")
-				MPDWatch(client, chac, config)
+				mpdWatch(client, chac, config)
 			}
 			log.Printf("Disconnected from MPD server, retrying in 15 seconds")
 			time.Sleep(15 * 1e9)

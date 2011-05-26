@@ -1,5 +1,0 @@
-{
-    "RobotInterface": "localhost:12345",
-    "ModuleName": "mod-example",
-    "HelloWorld": "Hello world!"
-}
