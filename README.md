@@ -35,6 +35,64 @@ ed gorobot.json
 ed rocket.json
 ./gorobot
 ```
+## Commands
+
+### How it works
+
+Commands can be added in folders bin/scripts/{admin,public,private}.
+
+Private commands are executed when talking in private with the bot.
+Public commands are executed on all channels.
+Admin commands are executed 
+
+### Available commands
+
+Private: !spoon
+Public: !chat !non !pokemon !roulette !viewquote !ninja !fax !pwet !boby !matrix !oui !template !statquote ...
+Admin: !addquote !join !kick !part
+
+(mostly lame and useless commands)
+
+### How to add new commands
+
+You can add new commands in whatever language you want. Current ones are
+in PHP or Lua (with some helpers to do the dirty job). Commands are executed
+in the following way:
+
+```sh
+./bin/scripts/xxx/yyy.cmd <port> <server> <channel> <user> <param1> <param2> <...>
+```
+
+Example, "UserA" invokes "!hejsan 42" on the channel #toto42 of freenode:
+
+```sh
+./bin/scripts/xxx/yyy.cmd 2345 freenode #toto42 UserA 42
+```
+
+The port is a local port opened by the module "scripts", it accepts kind of raw IRC commands:
+
+```sh
+<server> <priority> RAW_COMMAND
+```
+
+Server is the server where the command has to be executed, priority is a number (1, 2 or 3)
+indicating the priority of the command. This priority is meaningful on servers having
+a flood control (you may want to kick someone before printing 42 lines).
+
+Example of a bash command:
+
+```sh
+#!/usr/bin/env bash
+
+po=$1
+se=$2
+ch=$3
+us=$4
+
+echo "$se 1 PRIVMSG $us :th3r3 1s n0 sp0on..." | nc localhost $po
+```
+
+Once the command is created, don't forget to chmod it (+x).
 
 ## FAQ
 
