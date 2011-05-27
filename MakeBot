@@ -1,6 +1,0 @@
-include $(GOROOT)/src/Make.inc
-
-TARG = bin/m1ch3l
-GOFILES = m1ch3l.go
-
-include $(GOROOT)/src/Make.cmd

@@ -1,326 +1,0 @@
-go object linux 386 release.r57.1 8294
-  exports automatically generated from
-  config.go in package "radio"
-
-$$  // exports
-    package radio
-	import log "log"
-	import ioutil "io/ioutil"
-	import runtime "runtime"
-	import time "time"
-	import api "gorobot/api"
-	import mpd "github.com/jteeuwen/go-pkg-mpd"
-	import fmt "fmt"
-	import json "json"
-	type "gorobot/api".Action struct { Server string; Channel string; User string; Data string; Priority int; Type "gorobot/api".ActionType; Raw string }
-	type "gorobot/api".ActionType int
-	type "".Config struct { ModuleName string; RobotInterface string; MPDServer string; MPDPassword string; Broadcast map[string] string }
-	func "".ircSay (msg string, chac chan "gorobot/api".Action, config "".Config)
-	import os "os" // indirect
-	type "os".Error interface { String() string }
-	type "github.com/jteeuwen/go-pkg-mpd".Args map[string] string
-	func (this "github.com/jteeuwen/go-pkg-mpd".Args) B (k string) bool
-	func (this "github.com/jteeuwen/go-pkg-mpd".Args) F32 (k string) float32
-	func (this "github.com/jteeuwen/go-pkg-mpd".Args) F64 (k string) float64
-	func (this "github.com/jteeuwen/go-pkg-mpd".Args) I (k string) int
-	func (this "github.com/jteeuwen/go-pkg-mpd".Args) I64 (k string) int64
-	func (this "github.com/jteeuwen/go-pkg-mpd".Args) S (k string) string
-	func (this "github.com/jteeuwen/go-pkg-mpd".Args) U8 (k string) uint8
-	func (this "github.com/jteeuwen/go-pkg-mpd".Args) read (key string) string
-	type "github.com/jteeuwen/go-pkg-mpd".Song struct { File string; Id int; Pos int; Artist string; Album string; Title string; Track int; Time int; LastModified int64 }
-	import net "net" // indirect
-	type "net".Addr interface { Network() string; String() string }
-	type "github.com/jteeuwen/go-pkg-mpd".Output struct { Id int; Name string; Enabled bool }
-	type "github.com/jteeuwen/go-pkg-mpd".Stats struct { Albums int; Artists int; Songs int; Playtime int; Uptime int; DbUpdate int64; DBPlaytime int64 }
-	type "github.com/jteeuwen/go-pkg-mpd".Status struct { State "github.com/jteeuwen/go-pkg-mpd".PlayState; Volume uint8; Playlist int; PlaylistLength int; Song int; SongId int; NextSong int; NextSongId int; CrossFade int; Bitrate int; MixRampDB float32; MixRampDelay float32; Elapsed float32; Single bool; Repeat bool; Random bool; Consume bool; Time []int; Audio []int }
-	type "github.com/jteeuwen/go-pkg-mpd".PlayState uint8
-	type "github.com/jteeuwen/go-pkg-mpd".Client struct { conn "net".Conn; writer *"bufio".Writer; reader *"bufio".Reader; ProtocolVersion string }
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Add (path string) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) AddId (path string, pos int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Clear () "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Close () "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Commands () (v []string, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Count (tag string, term string) (songs int, playtime int, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Crossfade (time int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Current () (? "github.com/jteeuwen/go-pkg-mpd".Args, ? "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Delete (pos int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) DeleteId (id int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) DisableOutput (id int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) EnableOutput (id int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Find (tag string, term string) (list []*"github.com/jteeuwen/go-pkg-mpd".Song, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Kill () "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) List (tag1 string, tag2 string, term string) (list []*"github.com/jteeuwen/go-pkg-mpd".Song, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) ListFiles (path string) (list []string, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) ListInfo (path string) (list []*"github.com/jteeuwen/go-pkg-mpd".Song, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) ListPlaylistFiles (name string) (v []string, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) ListPlaylistSongs (name string) (list []*"github.com/jteeuwen/go-pkg-mpd".Song, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Load (name string) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) LocalAddr () "net".Addr
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Ls (path string) (list []string, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Move (src int, dst int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) MoveId (src int, dst int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Next () "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) NotCommands () (v []string, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Outputs () (list []*"github.com/jteeuwen/go-pkg-mpd".Output, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Pause (toggle bool) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Play (pos int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) PlayId (id int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) PlaylistAdd (name string, path string) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) PlaylistChanges (version int) (list []*"github.com/jteeuwen/go-pkg-mpd".Song, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) PlaylistClear (name string) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) PlaylistDelete (name string, id int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) PlaylistInfo (pos int) (list []*"github.com/jteeuwen/go-pkg-mpd".Song, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) PlaylistMove (name string, id int, pos int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) PlaylistRm (name string) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) PlaylistSearch (tag string, term string) (list []*"github.com/jteeuwen/go-pkg-mpd".Song, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Previous () "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Random (toggle bool) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Read (b []uint8) (n int, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) RemoteAddr () "net".Addr
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Rename (oldname string, newname string) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Repeat (toggle bool) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Save (name string) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Search (tag string, term string) (list []*"github.com/jteeuwen/go-pkg-mpd".Song, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Seek (pos int, time int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) SeekId (id int, time int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) SetReadTimeout (nsec int64) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) SetTimeout (nsec int64) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) SetWriteTimeout (nsec int64) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Shuffle () "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Stats () (s *"github.com/jteeuwen/go-pkg-mpd".Stats, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Status () (s *"github.com/jteeuwen/go-pkg-mpd".Status, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Stop () "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Swap (src int, dst int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) SwapId (src int, dst int) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) TagTypes () (v []string, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Toggle () "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Update (path string) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) UrlHandlers () (v []string, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Volume (vol uint8, relative bool) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) Write (b []uint8) (n int, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) parseError (line string) "os".Error
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) receive () (data "github.com/jteeuwen/go-pkg-mpd".Args, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) receiveList () (data []"github.com/jteeuwen/go-pkg-mpd".Args, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) request (cmd string, arg ...interface { }) (args "github.com/jteeuwen/go-pkg-mpd".Args, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) requestList (cmd string, arg ...interface { }) (args []"github.com/jteeuwen/go-pkg-mpd".Args, err "os".Error)
-	func (this *"github.com/jteeuwen/go-pkg-mpd".Client) send (msg string, args ...interface { }) "os".Error
-	type "net".Conn interface { Close() "os".Error; LocalAddr() "net".Addr; Read(b []uint8) (n int, err "os".Error); RemoteAddr() "net".Addr; SetReadTimeout(nsec int64) "os".Error; SetTimeout(nsec int64) "os".Error; SetWriteTimeout(nsec int64) "os".Error; Write(b []uint8) (n int, err "os".Error) }
-	import bufio "bufio" // indirect
-	type "bufio".Writer struct { err "os".Error; buf []uint8; n int; wr "io".Writer }
-	func (b *"bufio".Writer) Available () int
-	func (b *"bufio".Writer) Buffered () int
-	func (b *"bufio".Writer) Flush () "os".Error
-	func (b *"bufio".Writer) Write (p []uint8) (nn int, err "os".Error)
-	func (b *"bufio".Writer) WriteByte (c uint8) "os".Error
-	func (b *"bufio".Writer) WriteRune (rune int) (size int, err "os".Error)
-	func (b *"bufio".Writer) WriteString (s string) (? int, ? "os".Error)
-	import io "io" // indirect
-	type "io".Writer interface { Write(p []uint8) (n int, err "os".Error) }
-	type "bufio".Reader struct { buf []uint8; rd "io".Reader; r int; w int; err "os".Error; lastByte int; lastRuneSize int }
-	func (b *"bufio".Reader) Buffered () int
-	func (b *"bufio".Reader) Peek (n int) (? []uint8, ? "os".Error)
-	func (b *"bufio".Reader) Read (p []uint8) (n int, err "os".Error)
-	func (b *"bufio".Reader) ReadByte () (c uint8, err "os".Error)
-	func (b *"bufio".Reader) ReadBytes (delim uint8) (line []uint8, err "os".Error)
-	func (b *"bufio".Reader) ReadLine () (line []uint8, isPrefix bool, err "os".Error)
-	func (b *"bufio".Reader) ReadRune () (rune int, size int, err "os".Error)
-	func (b *"bufio".Reader) ReadSlice (delim uint8) (line []uint8, err "os".Error)
-	func (b *"bufio".Reader) ReadString (delim uint8) (line string, err "os".Error)
-	func (b *"bufio".Reader) UnreadByte () "os".Error
-	func (b *"bufio".Reader) UnreadRune () "os".Error
-	func (b *"bufio".Reader) fill ()
-	type "io".Reader interface { Read(p []uint8) (n int, err "os".Error) }
-	func "".mpdWatch (client *"github.com/jteeuwen/go-pkg-mpd".Client, chac chan "gorobot/api".Action, config "".Config)
-	type "gorobot/api".Event struct { AdminCmd bool; Server string; Channel string; User string; Type "gorobot/api".EventType; Data string; Raw string; CmdId int }
-	type "gorobot/api".EventType int
-	func "".Radio (chac chan "gorobot/api".Action, chev chan "gorobot/api".Event, config "".Config)
-	func "".NewConfig (path string) *"".Config
-	var "".initdoneÂ· uint8
-	func "".init ()
-
-$$  // local types
-
-$$
-
-!
-~ E</ ~ E<home ~ E<mxs ~ E<Work ~ E<gorobot ~ E<mods ~ E<radio ~ E<radio.go 7      ~ E<github.com ~ E<jteeuwen ~ E<go-pkg-mpd.a 7     ÿÿÿÿA~ E<gorobot ~ E<api.a 7     ÿÿÿÿA~ E<fmt.a 7     ÿÿÿÿA~ E<log.a 7 	    ÿÿÿÿA~ E<time.a 7 
-    ÿÿÿÿA7 H     ~ E</ ~ E<home ~ E<mxs ~ E<Work ~ E<gorobot ~ E<mods ~ E<radio ~ E<config.go 7 H     ~ E<json.a 7 K    ÿÿÿÿA~ E<log.a 7 L    ÿÿÿÿA~ E<io ~ E<ioutil.a 7 M    ÿÿÿÿA7 e     ~ ="".ircSay ~ =type.func(string, chan gorobot/api.Action, "".Config) Ü    ‘=Ed  0   A~ @"".config ~ =type."".Config a    •   @p    	        Ap    O~ Sruntime.hmap p    S~ ?"".autotmp_0001 a    Xÿÿÿ?~ Sruntime.hiter p       S~ =runtime.mapiterinit ~ =	type.func(map[string] string, *[41]*uint8)      ‘=	W        <W     B   <a    Xÿÿÿ?p    S~ =
-runtime.mapiternext ~ =type.func(*[41]*uint8)      ‘
-=a    Xÿÿÿ?	    Ap    R&    AO     
-   <a    Xÿÿÿ?p    S~ =runtime.mapiter2 ~ =type.func(*[41]*uint8) (string, string)      ‘=~ Sruntime.key a       S~ ?"".server ~ =type.string a    •Pÿÿÿ?!      y      y      ~ Sruntime.val a       S~ ?"".channel a    •Hÿÿÿ?!      y      y      ~ ="".statictmp_0002 -    ;    =   A-    ;$   =Aa    =~ ?"".ac ~ =type.gorobot/api.Action a    •ÿÿÿ?!      p       A	¡      y      a    •ÿÿÿ?p    	       A~ @"".msg a    ‘@!      y      y      a    •Pÿÿÿ?p    !      y      y      p    	       Aa    •Hÿÿÿ?!      y      y      ~ @"".chac ~ =type.chan gorobot/api.Action p    •   @~ Sruntime.hchan p    Sa    •ÿÿÿ?~ Sruntime.elem a       S!      p       A	¡      y      ~ =runtime.chansend1 ~ =type.func(chan<- gorobot/api.Action, gorobot/api.Action)      ‘=W        <£      ~ ="".mpdWatch ~ =type.func(*github%2ecom/jteeuwen/go-pkg-mpd.Client, chan gorobot/api.Action, "".Config) Ü    ‘=E(  ,   A~ =go.string."" a    =~ ? "".str a    •èÿÿÿ ?!      y      y      a    •èÿÿÿ ?~ ?!"".prev a    •àÿÿÿ!?!      y      y      W     P   <W       <~ @""".client ~ =#type.*github%2ecom/jteeuwen/go-pkg-mpd.Client p    ‘"@#~ S$github%2ecom/jteeuwen/go-pkg-mpd.this p    $S~ =%github%2ecom/jteeuwen/go-pkg-mpd.*ClientÂ·Current      %=p       Sa       S~ ?&"".err ~ ='type.os.Error a    •Ôÿÿÿ&?'!      y      y      W !    [   <W !    `   <a !   •Ôÿÿÿ&?'& !   RAO !    Z   <£ "     W !    `   <W %    b   <W %    |   <~ ?("".current ~ =)type.github%2ecom/jteeuwen/go-pkg-mpd.Args p %   •Üÿÿÿ(?)p %   S~ =*go.string."Artist" a %   *=a %      S! %     y %     y %     ~ =+runtime.mapaccess1 ~ =,type.func(map[string] string, string) string  %    ‘+=,a %      Sp %      R& %   AX %    a   <p &   •Üÿÿÿ(?)p &   Sa &   *=a &      S! &     y &     y &     ~ =-go.string."unknown" a &   -=a &      S! &     y &     y &     ~ =.runtime.mapassign1 ~ =/type.func(map[string] string, string, string)  &    ‘.=/W %    |   <W (    ~   <W (      <p (   •Üÿÿÿ(?)p (   S~ =0go.string."Title" a (   0=a (      S! (     y (     y (      (    ‘+=,a (      Sp (      R& (   AS (    }   <p )      AS~ =1runtime.new ~ =type.func(int32) *[2]interface { }  )    ‘1=p )      S~ ?"".autotmp_0021 p )      Aøÿÿÿ?p )      Aüÿÿÿ?p )   ôÿÿÿ?p )   •Üÿÿÿ(?)p )   Sa )   0=a )      S! )     y )     y )      )    ‘+=,a )      Sp )   a )      S! )     y )     y )     ~ =type.uint8 ~ Sruntime.typ p )   “= DS~ =runtime.convT2E ~ =type.func(*uint8, string) interface { }  )    ‘=a )      Sp )   a )   ôÿÿÿ?p )   R	 )   A! )     y )     y )     p )   •Üÿÿÿ(?)~ Sruntime.hmap p )   Sa )   *=a )      S! )     y )     y )      )    ‘+=,a )      Sp )   a )      S! )     y )     y )     p )   “= DS )    ‘=a )      Sp )   a )   ôÿÿÿ?p )   R	 )      A! )     y )     y )     ~ =go.string."radio m1ch3l: now playing \"%s\" (%s)" a )   =~ S	fmt.format a )   	S! )     y )     y )     a )   ôÿÿÿ?~ S
-fmt.a a )      
-S! )     y )     y )     y )     ~ =fmt.Sprintf ~ =type.func(string, ...interface { }) string  )    ‘=a )      Sp )   a )   •èÿÿÿ ?! )     y )     y )     W *    Ô   <W *      <W *    Ö   <W *    é   <p *   •ìÿÿÿ ?	p *   •äÿÿÿ!?& *   	X *    Õ   <a *   •èÿÿÿ ?a *   S! *     y *     y *     a *   •àÿÿÿ!?a *      S! *     y *     y *     ~ =runtime.cmpstring ~ =type.func(string, string) int  *    ‘=p *      S& *   AX *    Õ   <W *    Ó   <a +   •èÿÿÿ ?~ S"".msg a +   S! +     y +     y +     p +   •   @~ S"".chac p +      S~ @"".config ~ =type."".Config a +   •   @~ S"".config a +      S! +     p +   	   A	¡ +     y +     ~ ="".ircSay ~ =type.func(string, chan gorobot/api.Action, "".Config) ™ +   “= D ™ +   0   A ~ =runtime.newproc  +    =“ +    	“ +    	~ =type.string a ,   •èÿÿÿ ?a ,   •àÿÿÿ!?! ,     y ,     y ,     W *      <W (      <~ Stime.ns p 0    Ö~ASp 0      A   S~ =time.Sleep ~ =type.func(int64) os.Error  0    ‘=W     P   <£ 2     ~ ="".Radio ~ =type.func(chan gorobot/api.Action, chan gorobot/api.Event, "".Config) Ü 5   ‘=ED   ,   Ap 6   AS~ =""._func_001 ~ =type.func(uintptr, chan gorobot/api.Action, "".Config) p 6   “= Dp 6      S~ =runtime.closure ~ = type.func(int, func(uintptr, chan gorobot/api.Action, "".Config)) func(chan gorobot/api.Action, "".Config)  A    ‘= p A      S~ @!"".chac ~ ="type.chan gorobot/api.Action p A   ‘!@"~ S#"".chac p A   #S~ @$"".config a A   •   $@~ S%"".config a A      %S! A     p A   	   A	¡ A     y A     p A   ™ A    ™ A   (   A  A    =“ A    	“ A    	W C      <W C    !  <~ @&"".chev ~ ='type.chan gorobot/api.Event p D   •   &@'~ S(runtime.hchan p D   (S~ =)runtime.chanrecv1 ~ =*type.func(<-chan gorobot/api.Event) gorobot/api.Event  D    ‘)=*W C      <£ F     ~ =+"".NewConfig ~ =,type.func(string) *"".Config Ü Y   ‘+=,Eð      A~ @-"".path a Z   ‘-@~ S.io/ioutil.filename a Z   .S! Z     y Z     y Z     ~ =/io/ioutil.ReadFile ~ =0type.func(string) ([]uint8, os.Error)  Z    ‘/=0a Z      S~ ?1"".file ~ =type.[]uint8 a Z   •Ôÿÿÿ1?! Z     y Z     y Z     y Z     a Z      S~ ?"".e ~ =type.os.Error a Z   •Ìÿÿÿ?! Z     y Z     y Z     W [    6  <W [    d  <a [   •Ìÿÿÿ?& [   RAO [    5  <p \      AS~ =runtime.new ~ =type.func(int32) *[2]interface { }  \    ‘=p \      S~ ?"".autotmp_0077 p \      Aøÿÿÿ?p \      Aüÿÿÿ?p \   ôÿÿÿ?~ =type.uint8 ~ Sruntime.typ p \   “= DS~ =	go.string."Configuration error: %v\n" a \   	=~ S
-runtime.elem a \      
-S! \     y \     y \     ~ =runtime.convT2E ~ =type.func(*uint8, string) interface { }  \    ‘=a \      Sp \   a \   ôÿÿÿ?p \   R	 \   A! \     y \     y \     a \   •Ìÿÿÿ?a \   
-S! \     y \     y \     ~ =runtime.convI2E ~ =type.func(os.Error) interface { }  \    ‘=a \      Sp \   a \   ôÿÿÿ?p \   R	 \      A! \     y \     y \     a \   ôÿÿÿ?~ Slog.v a \   S! \     y \     y \     y \     ~ =log.Panic ~ =type.func(...interface { })  \    ‘=W [    d  <p ^   $   AS~ =type.func(int32) *"".Config  ^    ‘=p ^      S~ =type.*"".Config p _   “= DS~ ?"".&config p _   ¼ÿÿÿ?p _      
-S~ =type.func(*uint8, *"".Config) interface { }  _    ‘=a _      Sp _   p _   ~ Sjson.v a _      SÐ _     	 _      A	 _      Ap _      A	¡ _     y _     ! _     a _   •Ôÿÿÿ1?~ Sjson.data a _   S! _     y _     y _     y _     ~ =json.Unmarshal ~ =type.func([]uint8, interface { }) os.Error  _    ‘=a _      Sp _   p _   ~ ?"".err a _   •Äÿÿÿ?! _     y _     y _     W `    †  <W `    ´  <a `   •Äÿÿÿ?& `   RAO `    …  <p a      AS a    ‘=p a      S~ ?"".autotmp_0079 p a      Aèÿÿÿ?p a      Aìÿÿÿ?p a   äÿÿÿ?~ =type.string p a   “= DS~ =go.string."Configuration error: %s\n" a a   =a a      
-S! a     y a     y a      a    ‘=a a      Sp a   a a   äÿÿÿ?p a   R	 a   A! a     y a     y a     a a   •Äÿÿÿ?a a   
-S! a     y a     y a      a    ‘=a a      Sp a   a a   äÿÿÿ?p a   R	 a      A! a     y a     y a     a a   äÿÿÿ?a a   S! a     y a     y a     y a      a    ‘=W `    ´  <p c   ¼ÿÿÿ?~ @""..noname p c      @£ c     ~ =runtime.throwreturn  d    =£ d     ~ = "".init ~ =!type.func() Ü d   ‘ =!   A~ =""".initdoneÂ· s d   ‘"=	W d    ½  <W d    È  <% d   	AO d    ¼  <W d    Á  <W d    Æ  <p d   	% d   	   AX d    À  <£ d     W d    Æ  <~ =#runtime.throwinit  d    ‘#=!W d    È  <o d      A‘"=~ =$io/ioutil.init  d    ‘$=!~ =%json.init  d    ‘%=!~ =&time.init  d    ‘&=!~ ='log.init  d    ‘'=!~ =(fmt.init  d    ‘(=!~ =)gorobot/api.init  d    ‘)=!~ =*github%2ecom/jteeuwen/go-pkg-mpd.init  d    ‘*=!o d      A‘"=£ d     £ d     ~ =+""._func_001 ~ =,type.func(uintptr, chan gorobot/api.Action, "".Config) Ü 6   ‘+=,E¸   ,   AW 7    Ö  <W 7    6  <p 8      AS~ =-type.func(int32) *[0]interface { }  8    ‘=-p 8      S~ ?."".autotmp_0120 p 8   Aøÿÿÿ.?p 8   Aüÿÿÿ.?p 8   ôÿÿÿ.?~ =/go.string."Connecting to MPD server" a 8   /=~ S0log.format a 8   0S! 8     y 8     y 8     a 8   ôÿÿÿ.?a 8      S! 8     y 8     y 8     y 8     ~ =1log.Printf ~ =type.func(string, ...interface { })  8    ‘1=~ @"".config ~ =type."".Config a 9   •   @p 9   	 9      A~ Sgithub%2ecom/jteeuwen/go-pkg-mpd.address a 9   S! 9     y 9     y 9     p 9   	 9      A~ Sgithub%2ecom/jteeuwen/go-pkg-mpd.password a 9      S! 9     y 9     y 9     ~ =github%2ecom/jteeuwen/go-pkg-mpd.Dial ~ =type.func(string, string) (*github%2ecom/jteeuwen/go-pkg-mpd.Client, os.Error)  9    ‘=~ Sgithub%2ecom/jteeuwen/go-pkg-mpd.c p 9      S~ ?	"".client ~ =
-type.*github%2ecom/jteeuwen/go-pkg-mpd.Client p 9   •Ìÿÿÿ	?
-~ Sgithub%2ecom/jteeuwen/go-pkg-mpd.err a 9      S~ =type.os.Error a 9   •Äÿÿÿ?! 9     y 9     y 9     W :    ÿ  <W :       <a :   •Äÿÿÿ?& :   RAX :    þ  <p ;      AS~ =runtime.new  ;    ‘=-p ;      S~ ?"".autotmp_0122 p ;   Aèÿÿÿ?p ;   Aìÿÿÿ?p ;   äÿÿÿ?~ =go.string."MPD: connected" a ;   =a ;   0S! ;     y ;     y ;     a ;   äÿÿÿ?~ Slog.v a ;      S! ;     y ;     y ;     y ;      ;    ‘1=p <   •Ìÿÿÿ	?
-~ S"".client p <   S~ @"".chac ~ =type.chan gorobot/api.Action p <   •   @~ S"".chac p <      Sa <   •   @~ S"".config a <      S! <     p <   	   A	¡ <     y <     ~ ="".mpdWatch ~ =type.func(*github%2ecom/jteeuwen/go-pkg-mpd.Client, chan gorobot/api.Action, "".Config)  <    ‘=W :       <p >      AS >    ‘=-p >      S~ ?"".autotmp_0124 p >   AØÿÿÿ?p >   AÜÿÿÿ?p >   Ôÿÿÿ?~ =go.string."Disconnected from MPD server, retrying in 15 seconds" a >   =a >   0S! >     y >     y >     a >   Ôÿÿÿ?a >      S! >     y >     y >     y >      >    ‘1=~ Stime.ns p ?    Ö~ASp ?      A   S~ =time.Sleep ~ =type.func(int64) os.Error  ?    ‘=W 7    Ö  <£ 6     ~ ="".statictmp_0002 5    ;=0   A~ =type.uint8 5 d   ‘"=   A~ =type.*runtime.ChanType - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =ž¦A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ = go.string."chan api.Action" - d   ;   ==  D~ =!weak.type.*chan gorobot/api.Action - d   ;   == !D~ ="type.gorobot/api.Action - d   ;    == "D- d   ;$   =   A5 d   ;
-=(   A~ =#type.map[string] string ~ =$type.*runtime.MapType - d   ;#== $D- d   ;   #==    #D- d   ;   #=   A- d   ;   #=èúA- d   ;   #=   A- d   ;   #=   A- d   ;   #=   A- d   ;   #=   A~ =%go.string."map[string] string" - d   ;   #== %D~ =&weak.type.*map[string] string - d   ;   #== &D~ ='type.string - d   ;    #== 'D- d   ;$   #== 'D5 d   ;
-#=(   A~ =(type.*"".Config ~ =)type.*runtime.PtrType - d   ;(== )D- d   ;   (==    (D- d   ;   (=   A- d   ;   (=ë«<8A- d   ;   (=   A- d   ;   (=   A- d   ;   (=   A- d   ;   (=   A~ =*go.string."*radio.Config" - d   ;   (== *D~ =+weak.type.**"".Config - d   ;   (== +D- d   ;    (== D5 d   ;(=$   A~ =,type.*runtime.StructType - d   ;== ,D- d   ;   ==    D- d   ;   =$   A- d   ;   =s	êñA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =-go.string."radio.Config" - d   ;   == -D- d   ;   == (D- d   ;    == ,   D- d   ;$   =   A- d   ;(   =   A~ =.go.string."ModuleName" - d   ;,   == .D- d   ;0   =A- d   ;4   == 'D- d   ;8   =A- d   ;<   =A~ =/go.string."RobotInterface" - d   ;@   == /D- d   ;D   =A- d   ;H   == 'D- d   ;L   =A- d   ;P   =   A~ =0go.string."MPDServer" - d   ;T   == 0D- d   ;X   =A- d   ;\   == 'D- d   ;`   =A- d   ;d   =   A~ =1go.string."MPDPassword" - d   ;h   == 1D- d   ;l   =A- d   ;p   == 'D- d   ;t   =A- d   ;x   =   A~ =go.string."Broadcast" - d   ;|   == D- d   ;€   =A- d   ;„   == #D- d   ;ˆ   =A- d   ;Œ   =    A- d   ;   ==    D~ =go.string."Config" - d   ;   == D~ =go.importpath."". ~ =type."".Config - d   ;”   == D- d   ;˜   == ¤   D- d   ;œ   =A- d   ;    =A5 d   ;=¤   A~ =type.func(string, chan gorobot/api.Action, "".Config) ~ =type.*runtime.FuncType - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =¯ë¢¥A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(string, chan api.Action, radio.Config)" - d   ;   == D~ =weak.type.*func(string, chan gorobot/api.Action, "".Config) - d   ;   == D- d   ;    =A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == H   D- d   ;4   =A- d   ;8   =A- d   ;<   == 'D- d   ;@   == D- d   ;D   == D5 d   ;
-=H   A~ =	type.[]*uint8 ~ =
-type.*runtime.SliceType - d   ;	== 
-D- d   ;   	==    	D- d   ;   	=   A- d   ;   	=…ÍüA- d   ;   	=   A- d   ;   	=   A- d   ;   	=   A- d   ;   	=   A~ =go.string."[]*uint8" - d   ;   	== D~ =weak.type.*[]*uint8 - d   ;   	== D~ =type.*uint8 - d   ;    	== D5 d   ;
-	=$   A~ =type.[41]*uint8 ~ =type.*runtime.ArrayType - d   ;== D- d   ;   ==    D- d   ;   =¤   A- d   ;   =Yè[A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."[41]*uint8" - d   ;   == D~ =weak.type.*[41]*uint8 - d   ;   == D- d   ;    == D- d   ;$   == 	D- d   ;(   =)   A5 d   ;
-=,   A~ =type.*[41]*uint8 - d   ;== )D- d   ;   ==    D- d   ;   =   A- d   ;   =gJû:A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."*[41]*uint8" - d   ;   == D~ =weak.type.**[41]*uint8 - d   ;   == D- d   ;    == D5 d   ;
-=$   A~ =type.func(map[string] string, *[41]*uint8) - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =7vQA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(map[string] string, *[41]*uint8)" - d   ;   == D~ =weak.type.*func(map[string] string, *[41]*uint8) - d   ;   == D- d   ;    =A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == D   D- d   ;4   =A- d   ;8   =A- d   ;<   == #D- d   ;@   == D5 d   ;
-=D   A~ =type.func(*[41]*uint8) - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =ô‘?¡A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(*[41]*uint8)" - d   ;   == D~ =weak.type.*func(*[41]*uint8) - d   ;   == D- d   ;    =A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == @   D- d   ;4   =A- d   ;8   =A- d   ;<   == D5 d   ;
-=@   A~ =type.func(*[41]*uint8) (string, string) - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =¹’%†A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(*[41]*uint8) (string, string)" - d   ;   == D~ =weak.type.*func(*[41]*uint8) (string, string) - d   ;   == D- d   ;    =A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == @   D- d   ;4   =   A- d   ;8   =   A- d   ;<   == D- d   ;@   == 'D- d   ;D   == 'D5 d   ;
-=H   A~ =type.chan<- gorobot/api.Action - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =ÇEJA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."chan<- api.Action" - d   ;   == D~ = weak.type.*chan<- gorobot/api.Action - d   ;   ==  D- d   ;    == "D- d   ;$   =   A5 d   ;
-=(   A~ =!type.func(chan<- gorobot/api.Action, gorobot/api.Action) - d   ;!== D- d   ;   !==    !D- d   ;   !=   A- d   ;   !=ÞC¡¨A- d   ;   !=   A- d   ;   !=   A- d   ;   !=   A- d   ;   !=   A~ ="go.string."func(chan<- api.Action, api.Action)" - d   ;   !== "D~ =#weak.type.*func(chan<- gorobot/api.Action, gorobot/api.Action) - d   ;   !== #D- d   ;    !=A- d   ;$   !== <   !D- d   ;(   !=   A- d   ;,   !=   A- d   ;0   !== D   !D- d   ;4   !=A- d   ;8   !=A- d   ;<   !== D~ =$type.gorobot/api.Action - d   ;@   !== $D5 d   ;
-!=D   A~ =%type.func(*github%2ecom/jteeuwen/go-pkg-mpd.Client, chan gorobot/api.Action, "".Config) - d   ;%== D- d   ;   %==    %D- d   ;   %=   A- d   ;   %=kZaçA- d   ;   %=   A- d   ;   %=   A- d   ;   %=   A- d   ;   %=   A~ =&go.string."func(*mpd.Client, chan api.Action, radio.Config)" - d   ;   %== &D~ ='weak.type.*func(*github%2ecom/jteeuwen/go-pkg-mpd.Client, chan gorobot/api.Action, "".Config) - d   ;   %== 'D- d   ;    %=A- d   ;$   %== <   %D- d   ;(   %=   A- d   ;,   %=   A- d   ;0   %== H   %D- d   ;4   %=A- d   ;8   %=A~ =(type.*github%2ecom/jteeuwen/go-pkg-mpd.Client - d   ;<   %== (D~ =)type.chan gorobot/api.Action - d   ;@   %== )D- d   ;D   %== D5 d   ;
-%=H   A~ =*type.func(map[string] string, string) string - d   ;*== D- d   ;   *==    *D- d   ;   *=   A- d   ;   *=r¿QåA- d   ;   *=   A- d   ;   *=   A- d   ;   *=   A- d   ;   *=   A~ =+go.string."func(map[string] string, string) string" - d   ;   *== +D~ =,weak.type.*func(map[string] string, string) string - d   ;   *== ,D- d   ;    *=A- d   ;$   *== <   *D- d   ;(   *=   A- d   ;,   *=   A- d   ;0   *== D   *D- d   ;4   *=   A- d   ;8   *=   A~ =-type.map[string] string - d   ;<   *== -D~ =.type.string - d   ;@   *== .D- d   ;D   *== .D5 d   ;
-*=H   A~ =/type.func(map[string] string, string, string) - d   ;/== D- d   ;   /==    /D- d   ;   /=   A- d   ;   /=`j-(A- d   ;   /=   A- d   ;   /=   A- d   ;   /=   A- d   ;   /=   A~ =0go.string."func(map[string] string, string, string)" - d   ;   /== 0D~ =1weak.type.*func(map[string] string, string, string) - d   ;   /== 1D- d   ;    /=A- d   ;$   /== <   /D- d   ;(   /=   A- d   ;,   /=   A- d   ;0   /== H   /D- d   ;4   /=A- d   ;8   /=A- d   ;<   /== -D- d   ;@   /== .D- d   ;D   /== .D5 d   ;
-/=H   A~ =type.interface { } ~ =type.*runtime.InterfaceType - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =ô¤BóA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."interface { }" - d   ;   == D~ =weak.type.*interface { } - d   ;   == D- d   ;    == ,   D- d   ;$   =A- d   ;(   =A5 d   ;
-=,   A~ =type.[]interface { } - d   ;== 
-D- d   ;   ==    D- d   ;   =   A- d   ;   =6ûýlA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."[]interface { }" - d   ;   == D~ =weak.type.*[]interface { } - d   ;   == D- d   ;    == D5 d   ;
-=$   A~ =type.[2]interface { } - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =‚&·¯A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =	go.string."[2]interface { }" - d   ;   == 	D~ =
-weak.type.*[2]interface { } - d   ;   == 
-D- d   ;    == D- d   ;$   == D- d   ;(   =   A5 d   ;
-=,   A~ =type.*[2]interface { } ~ =type.*runtime.PtrType - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =_¨QA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."*[2]interface { }" - d   ;   == D~ =weak.type.**[2]interface { } - d   ;   == D- d   ;    == D5 d   ;
-=$   A~ =type.func(int32) *[2]interface { } ~ =type.*runtime.FuncType - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =ÝÕŽ‘A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(int32) *[2]interface { }" - d   ;   == D~ =weak.type.*func(int32) *[2]interface { } - d   ;   == D- d   ;    =A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == @   D- d   ;4   =   A- d   ;8   =   A~ =type.int32 - d   ;<   == D- d   ;@   == D5 d   ;
-=D   A~ =type.func(*uint8, string) interface { } - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =ï¤)¤A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(*uint8, string) interface { }" - d   ;   == D~ =weak.type.*func(*uint8, string) interface { } - d   ;   == D- d   ;    =A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == D   D- d   ;4   =   A- d   ;8   =   A~ =type.*uint8 - d   ;<   == D- d   ;@   == .D- d   ;D   == D5 d   ;
-=H   A~ =type.func(string, ...interface { }) string - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =@¨úšA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(string, ...interface { }) string" - d   ;   == D~ =weak.type.*func(string, ...interface { }) string - d   ;   == D- d   ;    =   A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == D   D- d   ;4   =   A- d   ;8   =   A- d   ;<   == .D- d   ;@   == D- d   ;D   == .D5 d   ;
-=H   A~ =type.func(string, string) int - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =6ÌA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(string, string) int" - d   ;   == D~ =weak.type.*func(string, string) int - d   ;   == D- d   ;    =A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == D   D- d   ;4   =   A- d   ;8   =   A- d   ;<   == .D- d   ;@   == .D~ =type.int - d   ;D   == D5 d   ;
-=H   A~ =type.func(int64) os.Error - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =°JçA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ = go.string."func(int64) os.Error" - d   ;   ==  D~ =!weak.type.*func(int64) os.Error - d   ;   == !D- d   ;    =A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == @   D- d   ;4   =   A- d   ;8   =   A~ ="type.int64 - d   ;<   == "D~ =#type.os.Error - d   ;@   == #D5 d   ;
-=D   A~ =$type.chan gorobot/api.Event ~ =%type.*runtime.ChanType - d   ;$== %D- d   ;   $==    $D- d   ;   $=   A- d   ;   $=!3JA- d   ;   $=   A- d   ;   $=   A- d   ;   $=   A- d   ;   $=   A~ =&go.string."chan api.Event" - d   ;   $== &D~ ='weak.type.*chan gorobot/api.Event - d   ;   $== 'D~ =(type.gorobot/api.Event - d   ;    $== (D- d   ;$   $=   A5 d   ;
-$=(   A~ =)type.func(chan gorobot/api.Action, chan gorobot/api.Event, "".Config) - d   ;)== D- d   ;   )==    )D- d   ;   )=   A- d   ;   )=a¥ÛA- d   ;   )=   A- d   ;   )=   A- d   ;   )=   A- d   ;   )=   A~ =*go.string."func(chan api.Action, chan api.Event, radio.Config)" - d   ;   )== *D~ =+weak.type.*func(chan gorobot/api.Action, chan gorobot/api.Event, "".Config) - d   ;   )== +D- d   ;    )=A- d   ;$   )== <   )D- d   ;(   )=   A- d   ;,   )=   A- d   ;0   )== H   )D- d   ;4   )=A- d   ;8   )=A~ =,type.chan gorobot/api.Action - d   ;<   )== ,D- d   ;@   )== $D~ =-type."".Config - d   ;D   )== -D5 d   ;
-)=H   A~ =.type.func(uintptr, chan gorobot/api.Action, "".Config) - d   ;.== D- d   ;   .==    .D- d   ;   .=   A- d   ;   .=ºâÔA- d   ;   .=   A- d   ;   .=   A- d   ;   .=   A- d   ;   .=   A~ =/go.string."func(uintptr, chan api.Action, radio.Config)" - d   ;   .== /D~ =0weak.type.*func(uintptr, chan gorobot/api.Action, "".Config) - d   ;   .== 0D- d   ;    .=A- d   ;$   .== <   .D- d   ;(   .=   A- d   ;,   .=   A- d   ;0   .== H   .D- d   ;4   .=A- d   ;8   .=A~ =1type.uintptr - d   ;<   .== 1D- d   ;@   .== ,D- d   ;D   .== -D5 d   ;
-.=H   A~ =type.func(chan gorobot/api.Action, "".Config) - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =ñÅ—CA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(chan api.Action, radio.Config)" - d   ;   == D~ =weak.type.*func(chan gorobot/api.Action, "".Config) - d   ;   == D- d   ;    =A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == D   D- d   ;4   =A- d   ;8   =A- d   ;<   == ,D- d   ;@   == -D5 d   ;
-=D   A~ =type.func(int, func(uintptr, chan gorobot/api.Action, "".Config)) func(chan gorobot/api.Action, "".Config) - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =?ºA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(int, func(uintptr, chan api.Action, radio.Config)) func(chan api.Action, radio.Config)" - d   ;   == D~ =weak.type.*func(int, func(uintptr, chan gorobot/api.Action, "".Config)) func(chan gorobot/api.Action, "".Config) - d   ;   == D- d   ;    =A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == D   D- d   ;4   =   A- d   ;8   =   A- d   ;<   == D- d   ;@   == .D- d   ;D   == D5 d   ;
-=H   A~ =type.<-chan gorobot/api.Event - d   ;== %D- d   ;   ==    D- d   ;   =   A- d   ;   =]Ç#A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."<-chan api.Event" - d   ;   == D~ =	weak.type.*<-chan gorobot/api.Event - d   ;   == 	D- d   ;    == (D- d   ;$   =   A5 d   ;
-=(   A~ =
-type.func(<-chan gorobot/api.Event) gorobot/api.Event - d   ;
-== D- d   ;   
-==    
-D- d   ;   
-=   A- d   ;   
-=Ãž/ÖA- d   ;   
-=   A- d   ;   
-=   A- d   ;   
-=   A- d   ;   
-=   A~ =go.string."func(<-chan api.Event) api.Event" - d   ;   
-== D~ =weak.type.*func(<-chan gorobot/api.Event) gorobot/api.Event - d   ;   
-== D- d   ;    
-=A- d   ;$   
-== <   
-D- d   ;(   
-=   A- d   ;,   
-=   A- d   ;0   
-== @   
-D- d   ;4   
-=   A- d   ;8   
-=   A- d   ;<   
-== D- d   ;@   
-== (D5 d   ;
-
-=D   A~ =type.func(string) *"".Config - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =•ø„A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(string) *radio.Config" - d   ;   == D~ =weak.type.*func(string) *"".Config - d   ;   == D- d   ;    =A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == @   D- d   ;4   =   A- d   ;8   =   A~ =type.string - d   ;<   == D~ =type.*"".Config - d   ;@   == D5 d   ;
-=D   A~ =type.[]uint8 ~ =type.*runtime.SliceType - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =ß~.8A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."[]uint8" - d   ;   == D~ =weak.type.*[]uint8 - d   ;   == D~ =type.uint8 - d   ;    == D5 d   ;
-=$   A~ =type.func(string) ([]uint8, os.Error) ~ =type.*runtime.FuncType - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =Ã$I•A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(string) ([]uint8, os.Error)" - d   ;   == D~ =weak.type.*func(string) ([]uint8, os.Error) - d   ;   == D- d   ;    =A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == @   D- d   ;4   =   A- d   ;8   =   A- d   ;<   == D- d   ;@   == D- d   ;D   == #D5 d   ;
-=H   A~ =type.func(os.Error) interface { } - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =%äA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(os.Error) interface { }" - d   ;   == D~ =weak.type.*func(os.Error) interface { } - d   ;   == D- d   ;    =A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == @   D- d   ;4   =   A- d   ;8   =   A- d   ;<   == #D~ =type.interface { } - d   ;@   == D5 d   ;
-=D   A~ =type.func(...interface { }) - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =qËA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ = go.string."func(...interface { })" - d   ;   ==  D~ =!weak.type.*func(...interface { }) - d   ;   == !D- d   ;    =   A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == @   D- d   ;4   =A- d   ;8   =A~ ="type.[]interface { } - d   ;<   == "D5 d   ;
-=@   A~ =#type.func(int32) *"".Config - d   ;#== D- d   ;   #==    #D- d   ;   #=   A- d   ;   #=5üA- d   ;   #=   A- d   ;   #=   A- d   ;   #=   A- d   ;   #=   A~ =$go.string."func(int32) *radio.Config" - d   ;   #== $D~ =%weak.type.*func(int32) *"".Config - d   ;   #== %D- d   ;    #=A- d   ;$   #== <   #D- d   ;(   #=   A- d   ;,   #=   A- d   ;0   #== @   #D- d   ;4   #=   A- d   ;8   #=   A~ =&type.int32 - d   ;<   #== &D- d   ;@   #== D5 d   ;
-#=D   A~ ='type.func(*uint8, *"".Config) interface { } - d   ;'== D- d   ;   '==    'D- d   ;   '=   A- d   ;   '=Tç·¸A- d   ;   '=   A- d   ;   '=   A- d   ;   '=   A- d   ;   '=   A~ =(go.string."func(*uint8, *radio.Config) interface { }" - d   ;   '== (D~ =)weak.type.*func(*uint8, *"".Config) interface { } - d   ;   '== )D- d   ;    '=A- d   ;$   '== <   'D- d   ;(   '=   A- d   ;,   '=   A- d   ;0   '== D   'D- d   ;4   '=   A- d   ;8   '=   A~ =*type.*uint8 - d   ;<   '== *D- d   ;@   '== D- d   ;D   '== D5 d   ;
-'=H   A~ =+type.func([]uint8, interface { }) os.Error - d   ;+== D- d   ;   +==    +D- d   ;   +=   A- d   ;   +=0Ýk~A- d   ;   +=   A- d   ;   +=   A- d   ;   +=   A- d   ;   +=   A~ =,go.string."func([]uint8, interface { }) os.Error" - d   ;   +== ,D~ =-weak.type.*func([]uint8, interface { }) os.Error - d   ;   +== -D- d   ;    +=A- d   ;$   +== <   +D- d   ;(   +=   A- d   ;,   +=   A- d   ;0   +== D   +D- d   ;4   +=   A- d   ;8   +=   A- d   ;<   +== D- d   ;@   +== D~ =.type.os.Error - d   ;D   +== .D5 d   ;
-+=H   A~ =/type.func() - d   ;/== D- d   ;   /==    /D- d   ;   /=   A- d   ;   /=ö¼‚öA- d   ;   /=   A- d   ;   /=   A- d   ;   /=   A- d   ;   /=   A~ =0go.string."func()" - d   ;   /== 0D~ =1weak.type.*func() - d   ;   /== 1D- d   ;    /=A- d   ;$   /== <   /D- d   ;(   /=A- d   ;,   /=A- d   ;0   /== <   /D- d   ;4   /=A- d   ;8   /=A5 d   ;
-/=<   A~ =type.[0]interface { } ~ =type.*runtime.ArrayType - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =â$KAA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."[0]interface { }" - d   ;   == D~ =weak.type.*[0]interface { } - d   ;   == D- d   ;    == D- d   ;$   == "D- d   ;(   =A5 d   ;
-=,   A~ =type.*[0]interface { } ~ =type.*runtime.PtrType - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =`´ƒ_A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."*[0]interface { }" - d   ;   == D~ =weak.type.**[0]interface { } - d   ;   == D- d   ;    == D5 d   ;
-=$   A~ =	type.func(int32) *[0]interface { } - d   ;	== D- d   ;   	==    	D- d   ;   	=   A- d   ;   	=rJÙ‰A- d   ;   	=   A- d   ;   	=   A- d   ;   	=   A- d   ;   	=   A~ =
-go.string."func(int32) *[0]interface { }" - d   ;   	== 
-D~ =weak.type.*func(int32) *[0]interface { } - d   ;   	== D- d   ;    	=A- d   ;$   	== <   	D- d   ;(   	=   A- d   ;,   	=   A- d   ;0   	== @   	D- d   ;4   	=   A- d   ;8   	=   A- d   ;<   	== &D- d   ;@   	== D5 d   ;
-	=D   A~ =type.func(string, ...interface { }) - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =SmµÈA- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(string, ...interface { })" - d   ;   == D~ =weak.type.*func(string, ...interface { }) - d   ;   == D- d   ;    =   A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == D   D- d   ;4   =A- d   ;8   =A- d   ;<   == D- d   ;@   == "D5 d   ;
-=D   A~ =type.func(string, string) (*github%2ecom/jteeuwen/go-pkg-mpd.Client, os.Error) - d   ;== D- d   ;   ==    D- d   ;   =   A- d   ;   =˜N+A- d   ;   =   A- d   ;   =   A- d   ;   =   A- d   ;   =   A~ =go.string."func(string, string) (*mpd.Client, os.Error)" - d   ;   == D~ =weak.type.*func(string, string) (*github%2ecom/jteeuwen/go-pkg-mpd.Client, os.Error) - d   ;   == D- d   ;    =A- d   ;$   == <   D- d   ;(   =   A- d   ;,   =   A- d   ;0   == D   D- d   ;4   =   A- d   ;8   =   A~ =type.string - d   ;<   == D- d   ;@   == D~ =type.*github%2ecom/jteeuwen/go-pkg-mpd.Client - d   ;D   == D- d   ;H   == .D5 d   ;
-=L   A~ =go.importpath.log. ~ =go.string."log" - d   ;==    D- d   ;   =   A5 d   ;
-=   A~ =go.importpath.io/ioutil. ~ =go.string."io/ioutil" - d   ;==    D- d   ;   =	   A5 d   ;
-=   A~ =go.importpath.runtime. ~ =go.string."runtime" - d   ;==    D- d   ;   =   A5 d   ;
-=   A~ =go.importpath.time. ~ =go.string."time" - d   ;==    D- d   ;   =   A5 d   ;
-=   A~ =go.importpath.gorobot/api. ~ =go.string."gorobot/api" - d   ;==    D- d   ;   =   A5 d   ;
-=   A~ =go.importpath.github%2ecom/jteeuwen/go-pkg-mpd. ~ =go.string."github.com/jteeuwen/go-pkg-mpd" - d   ;==    D- d   ;   =   A5 d   ;
-=   A~ = go.importpath.fmt. ~ =!go.string."fmt" - d   ; ==    !D- d   ;    =   A5 d   ;
- =   A~ ="go.importpath.json. ~ =#go.string."json" - d   ;"==    #D- d   ;   "=   A5 d   ;
-"=   A~ =$go.string."" -    ;$==    $D-    ;   $=A-    ;   $=A5    ;
-$=	   A~ =%go.string."Artist" - %   ;%==    %D- %   ;   %=   A- %   ;   %= Artist  - %   ;   %=A5 %   ;
-%=   A~ =&go.string."unknown" - &   ;&==    &D- &   ;   &=   A- &   ;   &= unknown - &   ;   &=A5 &   ;
-&=   A~ ='go.string."Title" - (   ;'==    'D- (   ;   '=   A- (   ;   '= Title   - (   ;   '=A5 (   ;
-'=   A~ =(go.string."radio m1ch3l: now playing \"%s\" (%s)" - )   ;(==    (D- )   ;   (=#   A- )   ;   (= radio m1- )   ;   (= ch3l: no- )   ;   (= w playin- )   ;    (= g "%s" (- )   ;(   (= %s)     - )   ;+   (=A5 )   ;
-(=,   A~ =)go.string."Configuration error: %v\n" - \   ;)==    )D- \   ;   )=   A- \   ;   )= Configur- \   ;   )= ation er- \   ;   )= ror: %v
-- \   ;    )=A5 \   ;
-)=!   A~ =*go.string."Configuration error: %s\n" - a   ;*==    *D- a   ;   *=   A- a   ;   *= Configur- a   ;   *= ation er- a   ;   *= ror: %s
-- a   ;    *=A5 a   ;
-*=!   A~ =+go.string."Connecting to MPD server" - 8   ;+==    +D- 8   ;   +=   A- 8   ;   += Connecti- 8   ;   += ng to MP- 8   ;   += D server- 8   ;    +=A5 8   ;
-+=!   A~ =,go.string."MPD: connected" - ;   ;,==    ,D- ;   ;   ,=   A- ;   ;   ,= MPD: con- ;   ;   ,= nected  - ;   ;   ,=A5 ;   ;
-,=   A~ =-go.string."Disconnected from MPD server, retrying in 15 seconds" - >   ;-==    -D- >   ;   -=4   A- >   ;   -= Disconne- >   ;   -= cted fro- >   ;   -= m MPD se- >   ;    -= rver, re- >   ;(   -= trying i- >   ;0   -= n 15 sec- >   ;8   -= onds    - >   ;<   -=A5 >   ;
--==   A~ =.go.string."chan api.Action" - d   ;.==    .D- d   ;   .=   A- d   ;   .= chan api- d   ;   .= .Action - d   ;   .=A5 d   ;
-.=   A~ =/go.string."map[string] string" - d   ;/==    /D- d   ;   /=   A- d   ;   /= map[stri- d   ;   /= ng] stri- d   ;   /= ng      - d   ;   /=A5 d   ;
-/=   A~ =0go.string."*radio.Config" - d   ;0==    0D- d   ;   0=   A- d   ;   0= *radio.C- d   ;   0= onfig   - d   ;   0=A5 d   ;
-0=   A~ =1go.string."radio.Config" - d   ;1==    1D- d   ;   1=   A- d   ;   1= radio.Co- d   ;   1= nfig    - d   ;   1=A5 d   ;
-1=   A~ =go.string."ModuleName" - d   ;==    D- d   ;   =
-   A- d   ;   = ModuleNa- d   ;   = me      - d   ;   =A5 d   ;
-=   A~ =go.string."RobotInterface" - d   ;==    D- d   ;   =   A- d   ;   = RobotInt- d   ;   = erface  - d   ;   =A5 d   ;
-=   A~ =go.string."MPDServer" - d   ;==    D- d   ;   =	   A- d   ;   = MPDServe- d   ;   = r       - d   ;   =A5 d   ;
-=   A~ =go.string."MPDPassword" - d   ;==    D- d   ;   =   A- d   ;   = MPDPassw- d   ;   = ord     - d   ;   =A5 d   ;
-=   A~ =go.string."Broadcast" - d   ;==    D- d   ;   =	   A- d   ;   = Broadcas- d   ;   = t       - d   ;   =A5 d   ;
-=   A~ =go.string."Config" - d   ;==    D- d   ;   =   A- d   ;   = Config  - d   ;   =A5 d   ;
-=   A~ =go.string."func(string, chan api.Action, radio.Config)" - d   ;==    D- d   ;   =+   A- d   ;   = func(str- d   ;   = ing, cha- d   ;   = n api.Ac- d   ;    = tion, ra- d   ;(   = dio.Conf- d   ;0   = ig)     - d   ;3   =A5 d   ;
-=4   A~ =go.string."[]*uint8" - d   ;==    D- d   ;   =   A- d   ;   = []*uint8- d   ;   =A5 d   ;
-=   A~ =	go.string."[41]*uint8" - d   ;	==    	D- d   ;   	=
-   A- d   ;   	= [41]*uin- d   ;   	= t8      - d   ;   	=A5 d   ;
-	=   A~ =
-go.string."*[41]*uint8" - d   ;
-==    
-D- d   ;   
-=   A- d   ;   
-= *[41]*ui- d   ;   
-= nt8     - d   ;   
-=A5 d   ;
-
-=   A~ =go.string."func(map[string] string, *[41]*uint8)" - d   ;==    D- d   ;   =%   A- d   ;   = func(map- d   ;   = [string]- d   ;   =  string,- d   ;    =  *[41]*u- d   ;(   = int8)   - d   ;-   =A5 d   ;
-=.   A~ =go.string."func(*[41]*uint8)" - d   ;==    D- d   ;   =   A- d   ;   = func(*[4- d   ;   = 1]*uint8- d   ;   = )       - d   ;   =A5 d   ;
-=   A~ =go.string."func(*[41]*uint8) (string, string)" - d   ;==    D- d   ;   ="   A- d   ;   = func(*[4- d   ;   = 1]*uint8- d   ;   = ) (strin- d   ;    = g, strin- d   ;(   = g)      - d   ;*   =A5 d   ;
-=+   A~ =go.string."chan<- api.Action" - d   ;==    D- d   ;   =   A- d   ;   = chan<- a- d   ;   = pi.Actio- d   ;   = n       - d   ;   =A5 d   ;
-=   A~ =go.string."func(chan<- api.Action, api.Action)" - d   ;==    D- d   ;   =#   A- d   ;   = func(cha- d   ;   = n<- api.- d   ;   = Action, - d   ;    = api.Acti- d   ;(   = on)     - d   ;+   =A5 d   ;
-=,   A~ =go.string."func(*mpd.Client, chan api.Action, radio.Config)" - d   ;==    D- d   ;   =0   A- d   ;   = func(*mp- d   ;   = d.Client- d   ;   = , chan a- d   ;    = pi.Actio- d   ;(   = n, radio- d   ;0   = .Config)- d   ;8   =A5 d   ;
-=9   A~ =go.string."func(map[string] string, string) string" - d   ;==    D- d   ;   ='   A- d   ;   = func(map- d   ;   = [string]- d   ;   =  string,- d   ;    =  string)- d   ;(   =  string - d   ;/   =A5 d   ;
-=0   A~ =go.string."func(map[string] string, string, string)" - d   ;==    D- d   ;   =(   A- d   ;   = func(map- d   ;   = [string]- d   ;   =  string,- d   ;    =  string,- d   ;(   =  string)- d   ;0   =A5 d   ;
-=1   A~ =go.string."interface { }" - d   ;==    D- d   ;   =   A- d   ;   = interfac- d   ;   = e { }   - d   ;   =A5 d   ;
-=   A~ =go.string."[]interface { }" - d   ;==    D- d   ;   =   A- d   ;   = []interf- d   ;   = ace { } - d   ;   =A5 d   ;
-=   A~ =go.string."[2]interface { }" - d   ;==    D- d   ;   =   A- d   ;   = [2]inter- d   ;   = face { }- d   ;   =A5 d   ;
-=   A~ =go.string."*[2]interface { }" - d   ;==    D- d   ;   =   A- d   ;   = *[2]inte- d   ;   = rface { - d   ;   = }       - d   ;   =A5 d   ;
-=   A~ =go.string."func(int32) *[2]interface { }" - d   ;==    D- d   ;   =   A- d   ;   = func(int- d   ;   = 32) *[2]- d   ;   = interfac- d   ;    = e { }   - d   ;%   =A5 d   ;
-=&   A~ =go.string."func(*uint8, string) interface { }" - d   ;==    D- d   ;   ="   A- d   ;   = func(*ui- d   ;   = nt8, str- d   ;   = ing) int- d   ;    = erface {- d   ;(   =  }      - d   ;*   =A5 d   ;
-=+   A~ =go.string."func(string, ...interface { }) string" - d   ;==    D- d   ;   =%   A- d   ;   = func(str- d   ;   = ing, ...- d   ;   = interfac- d   ;    = e { }) s- d   ;(   = tring   - d   ;-   =A5 d   ;
-=.   A~ =go.string."func(string, string) int" - d   ;==    D- d   ;   =   A- d   ;   = func(str- d   ;   = ing, str- d   ;   = ing) int- d   ;    =A5 d   ;
-=!   A~ =go.string."func(int64) os.Error" - d   ;==    D- d   ;   =   A- d   ;   = func(int- d   ;   = 64) os.E- d   ;   = rror    - d   ;   =A5 d   ;
-=   A~ =go.string."chan api.Event" - d   ;==    D- d   ;   =   A- d   ;   = chan api- d   ;   = .Event  - d   ;   =A5 d   ;
-=   A~ =go.string."func(chan api.Action, chan api.Event, radio.Config)" - d   ;==    D- d   ;   =3   A- d   ;   = func(cha- d   ;   = n api.Ac- d   ;   = tion, ch- d   ;    = an api.E- d   ;(   = vent, ra- d   ;0   = dio.Conf- d   ;8   = ig)     - d   ;;   =A5 d   ;
-=<   A~ =go.string."func(uintptr, chan api.Action, radio.Config)" - d   ;==    D- d   ;   =,   A- d   ;   = func(uin- d   ;   = tptr, ch- d   ;   = an api.A- d   ;    = ction, r- d   ;(   = adio.Con- d   ;0   = fig)    - d   ;4   =A5 d   ;
-=5   A~ =go.string."func(chan api.Action, radio.Config)" - d   ;==    D- d   ;   =#   A- d   ;   = func(cha- d   ;   = n api.Ac- d   ;   = tion, ra- d   ;    = dio.Conf- d   ;(   = ig)     - d   ;+   =A5 d   ;
-=,   A~ = go.string."func(int, func(uintptr, chan api.Action, radio.Config)) func(chan api.Action, radio.Config)" - d   ; ==     D- d   ;    =[   A- d   ;    = func(int- d   ;    = , func(u- d   ;    = intptr, - d   ;     = chan api- d   ;(    = .Action,- d   ;0    =  radio.C- d   ;8    = onfig)) - d   ;@    = func(cha- d   ;H    = n api.Ac- d   ;P    = tion, ra- d   ;X    = dio.Conf- d   ;`    = ig)     - d   ;c    =A5 d   ;
- =d   A~ =!go.string."<-chan api.Event" - d   ;!==    !D- d   ;   !=   A- d   ;   != <-chan a- d   ;   != pi.Event- d   ;   !=A5 d   ;
-!=   A~ ="go.string."func(<-chan api.Event) api.Event" - d   ;"==    "D- d   ;   "=    A- d   ;   "= func(<-c- d   ;   "= han api.- d   ;   "= Event) a- d   ;    "= pi.Event- d   ;(   "=A5 d   ;
-"=)   A~ =#go.string."func(string) *radio.Config" - d   ;#==    #D- d   ;   #=   A- d   ;   #= func(str- d   ;   #= ing) *ra- d   ;   #= dio.Conf- d   ;    #= ig      - d   ;"   #=A5 d   ;
-#=#   A~ =$go.string."[]uint8" - d   ;$==    $D- d   ;   $=   A- d   ;   $= []uint8 - d   ;   $=A5 d   ;
-$=   A~ =%go.string."func(string) ([]uint8, os.Error)" - d   ;%==    %D- d   ;   %=    A- d   ;   %= func(str- d   ;   %= ing) ([]- d   ;   %= uint8, o- d   ;    %= s.Error)- d   ;(   %=A5 d   ;
-%=)   A~ =&go.string."func(os.Error) interface { }" - d   ;&==    &D- d   ;   &=   A- d   ;   &= func(os.- d   ;   &= Error) i- d   ;   &= nterface- d   ;    &=  { }    - d   ;$   &=A5 d   ;
-&=%   A~ ='go.string."func(...interface { })" - d   ;'==    'D- d   ;   '=   A- d   ;   '= func(...- d   ;   '= interfac- d   ;   '= e { })  - d   ;   '=A5 d   ;
-'=   A~ =(go.string."func(int32) *radio.Config" - d   ;(==    (D- d   ;   (=   A- d   ;   (= func(int- d   ;   (= 32) *rad- d   ;   (= io.Confi- d   ;    (= g       - d   ;!   (=A5 d   ;
-(="   A~ =)go.string."func(*uint8, *radio.Config) interface { }" - d   ;)==    )D- d   ;   )=)   A- d   ;   )= func(*ui- d   ;   )= nt8, *ra- d   ;   )= dio.Conf- d   ;    )= ig) inte- d   ;(   )= rface { - d   ;0   )= }       - d   ;1   )=A5 d   ;
-)=2   A~ =*go.string."func([]uint8, interface { }) os.Error" - d   ;*==    *D- d   ;   *=%   A- d   ;   *= func([]u- d   ;   *= int8, in- d   ;   *= terface - d   ;    *= { }) os.- d   ;(   *= Error   - d   ;-   *=A5 d   ;
-*=.   A~ =+go.string."func()" - d   ;+==    +D- d   ;   +=   A- d   ;   += func()  - d   ;   +=A5 d   ;
-+=   A~ =,go.string."[0]interface { }" - d   ;,==    ,D- d   ;   ,=   A- d   ;   ,= [0]inter- d   ;   ,= face { }- d   ;   ,=A5 d   ;
-,=   A~ =-go.string."*[0]interface { }" - d   ;-==    -D- d   ;   -=   A- d   ;   -= *[0]inte- d   ;   -= rface { - d   ;   -= }       - d   ;   -=A5 d   ;
--=   A~ =.go.string."func(int32) *[0]interface { }" - d   ;.==    .D- d   ;   .=   A- d   ;   .= func(int- d   ;   .= 32) *[0]- d   ;   .= interfac- d   ;    .= e { }   - d   ;%   .=A5 d   ;
-.=&   A~ =/go.string."func(string, ...interface { })" - d   ;/==    /D- d   ;   /=   A- d   ;   /= func(str- d   ;   /= ing, ...- d   ;   /= interfac- d   ;    /= e { })  - d   ;&   /=A5 d   ;
-/='   A~ =0go.string."func(string, string) (*mpd.Client, os.Error)" - d   ;0==    0D- d   ;   0=,   A- d   ;   0= func(str- d   ;   0= ing, str- d   ;   0= ing) (*m- d   ;    0= pd.Clien- d   ;(   0= t, os.Er- d   ;0   0= ror)    - d   ;4   0=A5 d   ;
-0=5   A~ =1go.string."log" - d   ;1==    1D- d   ;   1=   A- d   ;   1= log     - d   ;   1=A5 d   ;
-1=   A~ =go.string."io/ioutil" - d   ;==    D- d   ;   =	   A- d   ;   = io/iouti- d   ;   = l       - d   ;   =A5 d   ;
-=   A~ =go.string."runtime" - d   ;==    D- d   ;   =   A- d   ;   = runtime - d   ;   =A5 d   ;
-=   A~ =go.string."time" - d   ;==    D- d   ;   =   A- d   ;   = time    - d   ;   =A5 d   ;
-=   A~ =go.string."gorobot/api" - d   ;==    D- d   ;   =   A- d   ;   = gorobot/- d   ;   = api     - d   ;   =A5 d   ;
-=   A~ =go.string."github.com/jteeuwen/go-pkg-mpd" - d   ;==    D- d   ;   =   A- d   ;   = github.c- d   ;   = om/jteeu- d   ;   = wen/go-p- d   ;    = kg-mpd  - d   ;&   =A5 d   ;
-='   A~ =go.string."fmt" - d   ;==    D- d   ;   =   A- d   ;   = fmt     - d   ;   =A5 d   ;
-=   A~ =go.string."json" - d   ;==    D- d   ;   =   A- d   ;   = json    - d   ;   =A5 d   ;
-=   AM      
