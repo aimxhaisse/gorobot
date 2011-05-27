@@ -57,7 +57,7 @@ Admin: !addquote !join !kick !part
 
 You can add new commands in whatever language you want. Current ones are
 in PHP or Lua (with some helpers to do the dirty job). Commands are executed
-in the following way:
+like this:
 
 ```sh
 ./bin/scripts/xxx/yyy.cmd <port> <server> <channel> <user> <param1> <param2> <...>
@@ -69,7 +69,7 @@ Example, "UserA" invokes "!hejsan 42" on the channel #toto42 of freenode:
 ./bin/scripts/xxx/yyy.cmd 2345 freenode #toto42 UserA 42
 ```
 
-The port is a local port opened by the module "scripts", it accepts kind of raw IRC commands:
+The port is a local port opened by the module "scripts", it accepts raw IRC commands in the following way:
 
 ```sh
 <server> <priority> RAW_COMMAND
@@ -77,7 +77,7 @@ The port is a local port opened by the module "scripts", it accepts kind of raw 
 
 Server is the server where the command has to be executed, priority is a number (1, 2 or 3)
 indicating the priority of the command. This priority is meaningful on servers having
-a flood control (you may want to kick someone before printing 42 lines).
+flood control (you may want to kick someone before printing 42 lines).
 
 Example of a bash command:
 
