@@ -5,14 +5,11 @@ GoRobot
 
 ## Features:
 
-  * Multiple servers
-  * Multiple channels
-  * Conversations
+  * Multiple servers, multiple channels, conversations, flood control
   * Administration via a specific set of IRC channels
   * Go modules, which can connect to the bot through netchans (one can dynamically add new modules through network)
   * Simple API to write GO modules
-  * JSON Configuration
-  * Flood control
+  * JSON configuration
   * Module to handle shell scripts, through a tiny API
   * Module to follow RSS feeds
   * Module to follow MPD stream
@@ -43,12 +40,14 @@ Commands can be added in folders bin/scripts/{admin,public,private}.
 
 Private commands are executed when talking in private with the bot.
 Public commands are executed on all channels.
-Admin commands are executed 
+Admin commands are executed on master channels (see gorobot.json).
 
 ### Available commands
 
 Private: !spoon
+
 Public: !chat !non !pokemon !roulette !viewquote !ninja !fax !pwet !boby !matrix !oui !template !statquote ...
+
 Admin: !addquote !join !kick !part
 
 (mostly lame and useless commands)
