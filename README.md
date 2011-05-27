@@ -23,10 +23,16 @@ GoRobot
   * bin/ stores binaries once compiled (bot and mods), shell scripts for commands, config files
   * api/ stores sources of the go API (used by mods to dialog with gorobot)
   * bot/ stores sources for the IRC robot
-  * mods/ stores sources for modules (each module is a package, to run a module add it to the mods.go file
+  * mods/ stores sources for modules (each module is a package, to run a module add it to the rocket)
   * rocket/ stores sources for a launcher of modules
 
 ## Installation
+
+> make install
+> cd bin
+> ed gorobot.json
+> ed rocket.json
+> ./gorobot
 
 ## FAQ
 
