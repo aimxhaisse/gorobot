@@ -3,7 +3,7 @@
 package rss
 
 import (
-	"gorobot/api"
+	"github.com/aimxhaisse/gorobot/api"
 	"http"
 	"xml"
 	"fmt"

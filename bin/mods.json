@@ -1,0 +1,11 @@
+{
+
+    "Scripts" : {
+	"ModuleName": "mod-scripts",
+	"AdminScripts": "./scripts/admin",
+	"PublicScripts": "./scripts/public",
+	"PrivateScripts": "./scripts/private",
+	"RobotInterface": "localhost:12345",
+	"LocalPort": "23456"
+    }
+}

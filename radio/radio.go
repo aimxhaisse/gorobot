@@ -3,7 +3,7 @@
 package radio
 
 import (
-	"gorobot/api"
+	"github.com/aimxhaisse/gorobot/api"
 	"github.com/jteeuwen/go-pkg-mpd"
 	"fmt"
 	"log"

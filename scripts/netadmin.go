@@ -1,4 +1,4 @@
-package main
+package scripts
 
 // Shell module can open the administration to send IRC commands using
 // the following format:
@@ -15,37 +15,37 @@ package main
 // echo "freenode 1 PRIVMSG aimxhaisse :kenavo" | nc -q 0 localhost $port > /dev/null
 
 import (
-	"botapi"
+	"gorobot/api"
 	"log"
 	"net"
 	"strings"
 	"strconv"
 )
 
-// creates a new botapi.action from what was sent on the admin port
-func NetAdminCraftAction(output string) botapi.Action {
-	var a botapi.Action
+// creates a new api.action from what was sent on the admin port
+func netAdminCraftAction(output string) api.Action {
+	var a api.Action
 	shellapi := strings.Split(output, " ", 3)
-	a.Type = botapi.A_RAW
+	a.Type = api.A_RAW
 	if len(shellapi) == 3 {
 		a.Server = shellapi[0]
 		a.Priority, _ = strconv.Atoi(shellapi[1])
-		if a.Priority != botapi.PRIORITY_LOW &&
-			a.Priority != botapi.PRIORITY_MEDIUM &&
-			a.Priority != botapi.PRIORITY_HIGH {
-			a.Priority = botapi.PRIORITY_LOW
+		if a.Priority != api.PRIORITY_LOW &&
+			a.Priority != api.PRIORITY_MEDIUM &&
+			a.Priority != api.PRIORITY_HIGH {
+			a.Priority = api.PRIORITY_LOW
 		}
 		a.Data = shellapi[2]
 	} else {
 		a.Data = output
-		a.Priority = botapi.PRIORITY_LOW
+		a.Priority = api.PRIORITY_LOW
 	}
 	return a
 }
 
 // shell commands can send several commands in the same connection
 // (using \r\n)
-func NetAdminReadFromCon(con *net.TCPConn, chac chan botapi.Action) {
+func netAdminReadFromCon(con *net.TCPConn, chac chan api.Action) {
 	const NBUF = 512
 	var rawcmd []byte
 	var buf [NBUF]byte
@@ -62,13 +62,13 @@ func NetAdminReadFromCon(con *net.TCPConn, chac chan botapi.Action) {
 	for i := 0; i < len(msgs); i++ {
 		if len(msgs[i]) > 0 {
 			s := strings.TrimRight(msgs[i], " \r\n\t")
-			chac <- NetAdminCraftAction(s)
+			chac <- netAdminCraftAction(s)
 		}
 	}
 }
 
 // open the admin port and directly send RAW commands to the michel
-func NetAdmin(config Config, chac chan botapi.Action) {
+func netAdmin(config Config, chac chan api.Action) {
 	a, err := net.ResolveTCPAddr("tcp", "localhost:"+config.LocalPort)
 	if err != nil {
 		log.Panic("Can't resolve to localhost\n")
@@ -80,7 +80,7 @@ func NetAdmin(config Config, chac chan botapi.Action) {
 	for {
 		con, err := listener.AcceptTCP()
 		if err == nil {
-			NetAdminReadFromCon(con, chac)
+			netAdminReadFromCon(con, chac)
 		}
 	}
 }

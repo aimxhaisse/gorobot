@@ -1,7 +1,7 @@
 include $(GOROOT)/src/Make.inc
 
-DEPS = ../botapi
-TARG = ../bin/mod-scripts
+DEPS = ../api
+TARG = gorobot/scripts
 GOFILES = scripts.go config.go netadmin.go
 
-include $(GOROOT)/src/Make.cmd
+include $(GOROOT)/src/Make.pkg

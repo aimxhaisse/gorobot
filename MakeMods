@@ -1,0 +1,6 @@
+include $(GOROOT)/src/Make.inc
+
+TARG = bin/mods
+GOFILES = mods.go
+
+include $(GOROOT)/src/Make.cmd

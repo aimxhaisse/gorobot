@@ -1,7 +1,7 @@
-include $(GOROOT)/src/Make.inc
+all:
+	make -f MakeBot $@
+	make -f MakeMods $@
 
-DEPS = gorobot scripts rss example broadcast radio
-TARG = bin/m1ch3l
-GOFILES = main.go
-
-include $(GOROOT)/src/Make.cmd
+clean:
+	make -f MakeBot $@
+	make -f MakeMods $@

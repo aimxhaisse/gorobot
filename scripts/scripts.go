@@ -29,7 +29,7 @@ func fileExists(cmd string) bool {
 	return false
 }
 
-func cmdPath(config *Config, cmd string, admin bool, private bool) string {
+func cmdPath(config Config, cmd string, admin bool, private bool) string {
 	if private {
 		path := fmt.Sprintf("%s/%s.cmd", config.PrivateScripts, cmd)
 		if fileExists(path) {
@@ -50,7 +50,7 @@ func cmdPath(config *Config, cmd string, admin bool, private bool) string {
 	return ""
 }
 
-func execCmd(config Config, path string, ev botapi.Event) {
+func execCmd(config Config, path string, ev api.Event) {
 	log.Printf("Executing [%s]\n", path)
 	argv := []string{path, config.LocalPort, ev.Server, ev.Channel, ev.User}
 	args := strings.Split(ev.Data, " ", 2)
@@ -65,12 +65,10 @@ func execCmd(config Config, path string, ev botapi.Event) {
 	}
 }
 
-func Scripts(chac chan api.Action, chev, chan api.Event, config Config) {
-	chac, chev := botapi.ImportFrom(config.RobotInterface, config.ModuleName)
-
-	go NetAdmin(*config, chac)
-
+func Scripts(chac chan api.Action, chev chan api.Event, config Config) {
+	go netAdmin(config, chac)
 	for {
+		log.Printf("Loop")
 		e, ok := <-chev
 
 		if !ok {
@@ -79,13 +77,14 @@ func Scripts(chac chan api.Action, chev, chan api.Event, config Config) {
 		}
 
 		switch e.Type {
-		case botapi.E_PRIVMSG:
+		case api.E_PRIVMSG:
+			log.Printf("Got a message")
 			if m := re_cmd.FindStringSubmatch(e.Data); len(m) > 0 {
 				path := cmdPath(config, m[1],
 					e.AdminCmd,
 					len(e.Channel) == 0)
 				if len(path) > 0 {
-					go execCmd(*config, path, e)
+					go execCmd(config, path, e)
 				}
 			}
 		}

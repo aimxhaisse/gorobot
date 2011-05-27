@@ -2,7 +2,7 @@
 package broadcast
 
 import (
-	"gorobot/api"
+	"github.com/aimxhaisse/gorobot/api"
 	"fmt"
 	"strings"
 )

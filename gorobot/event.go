@@ -1,7 +1,7 @@
 package gorobot
 
 import (
-	"gorobot/api"
+	"github.com/aimxhaisse/gorobot/api"
 	"log"
 	"regexp"
 	"strconv"
