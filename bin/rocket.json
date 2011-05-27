@@ -1,0 +1,20 @@
+{
+    "Scripts" : {
+	"ModuleName": "mod-scripts",
+	"AdminScripts": "./scripts/admin",
+	"PublicScripts": "./scripts/public",
+	"PrivateScripts": "./scripts/private",
+	"RobotInterface": "localhost:12345",
+	"LocalPort": "23456"
+    },
+    "Radio" : {
+	"RobotInterface": "localhost:12345",
+	"ModuleName": "mod-radio",
+	"MPDServer": "buffout.org:8000",
+	"MPDPassword": "m1ch3l",
+	"Broadcast": {
+	    "freenode": "#kdev-valgrind",
+	    "1sland": "#c4stl3"
+	}
+    }
+}
