@@ -1,7 +1,21 @@
+include $(GOROOT)/src/Make.inc
+
+.PHONY: all install clean
+
 all:
-	make -f MakeBot $@
-	make -f MakeMods $@
+	gomake -C api
+	gomake -C bot
+	gomake -C mods
+	gomake -C rocket
+
+install: all
+	gomake -C api
+	gomake -C bot
+	gomake -C mods
+	gomake -C rocket
 
 clean:
-	make -f MakeBot $@
-	make -f MakeMods $@
+	gomake -C api
+	gomake -C bot
+	gomake -C mods
+	gomake -C rocket
