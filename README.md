@@ -28,7 +28,13 @@ GoRobot
 
 ## Installation
 
-> make install && cd bin && ed gorobot.json && ed rocket.json && ./gorobot
+```sh
+make install
+cd bin
+ed gorobot.json
+ed rocket.json
+./gorobot
+```
 
 ## FAQ
 
