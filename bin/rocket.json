@@ -14,7 +14,7 @@
 	"MPDServer": "buffout.org:8000",
 	"MPDPassword": "m1ch3l",
 	"Broadcast": {
-	    "freenode": "aimxhaisse"
+	    "freenode": "#kdev-valgrind"
 	}
     },
 
@@ -22,13 +22,20 @@
 	"RobotInterface": "localhost:12345",
 	"ModuleName": "mod-rss",
 	"Feeds": {
-            "LinuxFr": {
+            "kdev-valgrind-git": {
 		"Refresh": 120,
-		"Url": "https://linuxfr.org/news.atom",
+		"Url": "http://git.buffout.org/?p=kdev-valgrind.git;a=atom",
 		"BroadCasts": {
-                    "freenode": ["aimxhaisse"]
+                    "freenode": ["#kdev-valgrind"]
 		}
-            }
+            },
+	    "kdev-valgrind-redminee": {
+		"Refresh": 120,
+		"Url": "http://redmine.buffout.org/projects/kvalgrind/activity.atom?show_changesets=1&show_documents=1&show_files=1&show_issues=1&show_messages=1&show_time_entries=1&show_wiki_edits=1",
+		"BroadCasts": {
+                    "freenode": ["#kdev-valgrind"]
+		}
+	    }
 	}
     },
 
