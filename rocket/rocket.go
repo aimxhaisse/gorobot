@@ -6,6 +6,8 @@ import (
 	"gorobot/api"
 	"gorobot/mods/scripts"
 	"gorobot/mods/radio"
+	"gorobot/mods/rss"
+	"gorobot/mods/broadcast"
 	"io/ioutil"
 	"log"
 	"json"
@@ -15,6 +17,8 @@ import (
 type Config struct {
 	Scripts		scripts.Config
 	Radio		radio.Config
+	Rss		rss.Config
+	Broadcast	broadcast.Config
 }
 
 // Returns a new configuration from file pointed by path
@@ -45,6 +49,18 @@ func main() {
 		chac, chev := api.ImportFrom(config.Radio.RobotInterface, config.Radio.ModuleName)
 		radio.Radio(chac, chev, config.Radio);
 	}()
+
+	// module rss
+	go func() {
+		chac, chev := api.ImportFrom(config.Rss.RobotInterface, config.Rss.ModuleName)
+		rss.Rss(chac, chev, config.Rss);
+	}()	
+
+	// module broadcast
+	go func() {
+		chac, chev := api.ImportFrom(config.Broadcast.RobotInterface, config.Broadcast.ModuleName)
+		broadcast.Broadcast(chac, chev, config.Broadcast);
+	}()	
 
 	// add you own
 

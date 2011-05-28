@@ -7,14 +7,36 @@
 	"RobotInterface": "localhost:12345",
 	"LocalPort": "23456"
     },
+
     "Radio" : {
 	"RobotInterface": "localhost:12345",
 	"ModuleName": "mod-radio",
 	"MPDServer": "buffout.org:8000",
 	"MPDPassword": "m1ch3l",
 	"Broadcast": {
-	    "freenode": "#kdev-valgrind",
-	    "1sland": "#c4stl3"
+	    "freenode": "aimxhaisse"
+	}
+    },
+
+    "Rss" : {
+	"RobotInterface": "localhost:12345",
+	"ModuleName": "mod-rss",
+	"Feeds": {
+            "LinuxFr": {
+		"Refresh": 120,
+		"Url": "https://linuxfr.org/news.atom",
+		"BroadCasts": {
+                    "freenode": ["aimxhaisse"]
+		}
+            }
+	}
+    },
+
+    "Broadcast" : {
+	"RobotInterface": "localhost:12345",
+	"ModuleName": "mod-broadcast",
+	"Targets": {
+            "freenode": ["aimxhaisse"]
 	}
     }
 }

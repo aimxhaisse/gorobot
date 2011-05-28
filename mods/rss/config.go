@@ -9,7 +9,6 @@ import (
 
 type Config struct {
 	ModuleName     string
-	RssTailPath    string
 	RobotInterface string
 	Feeds          map[string]ConfigFeed
 }

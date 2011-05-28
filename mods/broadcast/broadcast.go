@@ -8,7 +8,7 @@ import (
 )
 
 // Broadcast listens for private messages and broadcasts them to a list of targets
-func Broadcast(chev chan api.Event, chac chan api.Action, config Config) {
+func Broadcast(chac chan api.Action, chev chan api.Event, config Config) {
 	a := api.Action{
 		Type:     api.A_SAY,
 		Priority: api.PRIORITY_LOW,

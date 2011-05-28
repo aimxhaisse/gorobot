@@ -1,7 +1,6 @@
 {
     "AutoRejoinOnKick": true,
     "CronTimeout": 60,
-
     "Logs": {
         "Enable": true,
         "Directory": "./logs",
@@ -9,13 +8,11 @@
         "RecordMemoryUsage": true,
         "RecordStatistics": true
     },
-
     "Module":  {
         "AutoRunModules": true,
         "Interface": "localhost:12345",
         "AutoRun": ["./rocket"]
     },
-
     "Servers": {
         "freenode" : {
             "FloodControl": true,
@@ -25,11 +22,23 @@
             "Username": "m1ch3l",
             "Password": "",
             "Channels": {
-                "#kdev-valgrind2": {
+                "#kdev-valgrind": {
+                    "Master": true
+                }
+	    }
+	},
+	"quakenet" : {
+            "FloodControl": true,
+            "Host": "irc.quakenet.org:6667",
+            "Nickname": "m1ch3l",
+            "Realname": "m1ch3l",
+            "Username": "m1ch3l",
+            "Password": "",
+            "Channels": {
+                "#coolface": {
                     "Master": true
                 }
 	    }
 	}
     }
-
 }
