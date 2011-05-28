@@ -38,9 +38,9 @@ ed rocket.json
 
 Commands can be added in folders bin/scripts/{admin,public,private}.
 
-Private commands are executed when talking in private with the bot.
-Public commands are executed on all channels.
-Admin commands are executed on master channels (see gorobot.json).
+  * Private commands are executed when talking in private with the bot.
+  * Public commands are executed on all channels.
+  * Admin commands are executed on master channels (see gorobot.json).
 
 ### Available commands
 

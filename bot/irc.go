@@ -8,7 +8,7 @@ import (
 
 // IRC Bot
 type Irc struct {
-	Events  chan api.Event  // Events are written here
+	Events  chan api.Event     // Events are written here
 	Errors  chan os.Error      // Useless for now
 	Servers map[string]*Server // Servers where the bot is connected
 }

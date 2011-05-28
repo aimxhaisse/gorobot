@@ -13,10 +13,10 @@ import (
 
 // IRC Server
 type Server struct {
-	Config    ConfigServer	// Configuration of the server
+	Config    ConfigServer        // Configuration of the server
 	SendMeRaw map[int]chan string // Channel to send raw commands to the server
 	Socket    net.Conn            // Socket to the server
-	Connected bool // Whether we are connected or not to the server
+	Connected bool                // Whether we are connected or not to the server
 }
 
 // NewServer creates a new IRC server and connects to it

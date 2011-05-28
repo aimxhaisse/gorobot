@@ -19,3 +19,6 @@ clean:
 	gomake -C mods $@
 	gomake -C rocket $@
 	gomake -C bot $@
+
+fmt:
+	gofmt -w=1 .

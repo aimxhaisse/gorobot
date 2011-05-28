@@ -15,10 +15,10 @@ import (
 )
 
 type Config struct {
-	Scripts		scripts.Config
-	Radio		radio.Config
-	Rss		rss.Config
-	Broadcast	broadcast.Config
+	Scripts   scripts.Config
+	Radio     radio.Config
+	Rss       rss.Config
+	Broadcast broadcast.Config
 }
 
 // Returns a new configuration from file pointed by path
@@ -41,26 +41,26 @@ func main() {
 	// module scripts
 	go func() {
 		chac, chev := api.ImportFrom(config.Scripts.RobotInterface, config.Scripts.ModuleName)
-		scripts.Scripts(chac, chev, config.Scripts);
+		scripts.Scripts(chac, chev, config.Scripts)
 	}()
 
 	// module radio
 	go func() {
 		chac, chev := api.ImportFrom(config.Radio.RobotInterface, config.Radio.ModuleName)
-		radio.Radio(chac, chev, config.Radio);
+		radio.Radio(chac, chev, config.Radio)
 	}()
 
 	// module rss
 	go func() {
 		chac, chev := api.ImportFrom(config.Rss.RobotInterface, config.Rss.ModuleName)
-		rss.Rss(chac, chev, config.Rss);
-	}()	
+		rss.Rss(chac, chev, config.Rss)
+	}()
 
 	// module broadcast
 	go func() {
 		chac, chev := api.ImportFrom(config.Broadcast.RobotInterface, config.Broadcast.ModuleName)
-		broadcast.Broadcast(chac, chev, config.Broadcast);
-	}()	
+		broadcast.Broadcast(chac, chev, config.Broadcast)
+	}()
 
 	// add you own
 

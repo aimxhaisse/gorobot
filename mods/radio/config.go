@@ -7,10 +7,10 @@ import (
 )
 
 type Config struct {
-	ModuleName     string // Name of the module
-	RobotInterface string // Address of the gorobot
-	MPDServer      string // Address of the MPD server
-	MPDPassword    string // Password of the MPD server
+	ModuleName     string            // Name of the module
+	RobotInterface string            // Address of the gorobot
+	MPDServer      string            // Address of the MPD server
+	MPDPassword    string            // Password of the MPD server
 	Broadcast      map[string]string // Map of server/channel-users to broadcast music stream
 }
 
