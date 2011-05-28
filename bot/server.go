@@ -1,7 +1,7 @@
 package gorobot
 
 import (
-	"github.com/aimxhaisse/gorobot/api"
+	"gorobot/api"
 	"net"
 	"log"
 	"fmt"

@@ -26,6 +26,7 @@ GoRobot
 ## Installation
 
 ```sh
+git clone git://github.com/aimxhaisse/gorobot.git gorobot && cd gorobot
 make install
 cd bin
 ed gorobot.json
