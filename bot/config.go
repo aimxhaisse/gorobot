@@ -1,4 +1,4 @@
-package gorobot
+package main
 
 import (
 	"log"

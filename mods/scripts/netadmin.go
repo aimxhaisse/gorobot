@@ -15,7 +15,7 @@ package scripts
 // echo "freenode 1 PRIVMSG aimxhaisse :kenavo" | nc -q 0 localhost $port > /dev/null
 
 import (
-	"gorobot/api"
+	"github.com/aimxhaisse/gorobot/api"
 	"log"
 	"net"
 	"strings"
@@ -25,7 +25,7 @@ import (
 // creates a new api.action from what was sent on the admin port
 func netAdminCraftAction(output string) api.Action {
 	var a api.Action
-	shellapi := strings.Split(output, " ", 3)
+	shellapi := strings.Split(output, " ")
 	a.Type = api.A_RAW
 	if len(shellapi) == 3 {
 		a.Server = shellapi[0]
@@ -58,7 +58,7 @@ func netAdminReadFromCon(con *net.TCPConn, chac chan api.Action) {
 		}
 	}
 	con.Close()
-	msgs := strings.Split(string(rawcmd), "\n", -1)
+	msgs := strings.Split(string(rawcmd), "\n")
 	for i := 0; i < len(msgs); i++ {
 		if len(msgs[i]) > 0 {
 			s := strings.TrimRight(msgs[i], " \r\n\t")

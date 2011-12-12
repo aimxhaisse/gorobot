@@ -9,7 +9,7 @@
 package scripts
 
 import (
-	"gorobot/api"
+	"github.com/aimxhaisse/gorobot/api"
 	"regexp"
 	"exec"
 	"os"
@@ -51,17 +51,23 @@ func cmdPath(config Config, cmd string, admin bool, private bool) string {
 }
 
 func execCmd(config Config, path string, ev api.Event) {
-	log.Printf("Executing [%s]\n", path)
-	argv := []string{path, config.LocalPort, ev.Server, ev.Channel, ev.User}
-	args := strings.Split(ev.Data, " ", 2)
-	if len(args) == 2 {
-		parameters := strings.Split(args[1], " ", -1)
-		argv = append(argv, parameters...)
+        log.Printf("Executing [%s]\n", path)
+
+        in_params := strings.Split(ev.Data, " ")
+
+        command := exec.Command(path,
+                config.LocalPort,
+                ev.Server,
+                ev.Channel,
+                ev.User)
+
+        for _, v := range in_params[1:] {
+                command.Args = append(command.Args, v)
 	}
-	cmd, err := exec.Run(path, argv,
-		[]string{}, "", exec.Pipe, exec.Pipe, exec.Pipe)
-	if err == nil {
-		cmd.Wait(0)
+
+        err := command.Run()
+        if err == nil {
+                command.Wait()
 	}
 }
 

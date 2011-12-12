@@ -1,9 +1,9 @@
-package gorobot
+package main
 
 import (
-	"gorobot/api"
-	"os"
+	"github.com/aimxhaisse/gorobot/api"
 	"netchan"
+	"os"
 	"fmt"
 	"log"
 	"time"
@@ -139,10 +139,10 @@ func (robot *GoRobot) AutoRunModules() {
 		for _, module := range robot.Config.Module.AutoRun {
 			log.Printf("launching %s", module)
 			go func(module string) {
-				cmd, err := exec.Run(module, []string{module}, []string{}, "",
-					exec.DevNull, exec.PassThrough, exec.PassThrough)
+				cmd := exec.Command(module)
+				err := cmd.Run()
 				if err == nil {
-					cmd.Wait(0)
+					cmd.Wait()
 				} else {
 					log.Printf("can't run module %s: %v", module, err)
 				}

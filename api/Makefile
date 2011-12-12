@@ -1,6 +1,6 @@
 include $(GOROOT)/src/Make.inc
 
-TARG = gorobot/api
+TARG = github.com/aimxhaisse/gorobot/api
 GOFILES = api.go
 
 include $(GOROOT)/src/Make.pkg

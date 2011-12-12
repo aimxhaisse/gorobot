@@ -1,8 +1,8 @@
-// Package gorobot/example implements an example of a gorobot module
+// Package github.com/aimxhaisse/gorobot/example implements an example of a gorobot module
 package example
 
 import (
-	"gorobot/api"
+	"github.com/aimxhaisse/gorobot/api"
 )
 
 // Example is a gorobot module which responds to the !hej command

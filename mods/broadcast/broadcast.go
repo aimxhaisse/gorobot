@@ -1,8 +1,8 @@
-// Package gorobot/broadcast implements a gorobot module to broacast private conversations
+// Package github.com/aimxhaisse/gorobot/broadcast implements a gorobot module to broacast private conversations
 package broadcast
 
 import (
-	"gorobot/api"
+	"github.com/aimxhaisse/gorobot/api"
 	"fmt"
 	"strings"
 )

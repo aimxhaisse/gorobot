@@ -1,15 +1,13 @@
-package gorobot
+package main
 
 import (
-	"gorobot/api"
+	"github.com/aimxhaisse/gorobot/api"
 	"log"
-	"os"
 )
 
 // IRC Bot
 type Irc struct {
 	Events  chan api.Event     // Events are written here
-	Errors  chan os.Error      // Useless for now
 	Servers map[string]*Server // Servers where the bot is connected
 }
 
@@ -17,7 +15,6 @@ type Irc struct {
 func NewIrc() *Irc {
 	b := Irc{
 		Events:  make(chan api.Event),
-		Errors:  make(chan os.Error),
 		Servers: make(map[string]*Server),
 	}
 	return &b
