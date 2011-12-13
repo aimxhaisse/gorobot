@@ -4,7 +4,7 @@ package radio
 
 import (
 	"github.com/jteeuwen/go-pkg-mpd"
-	"gorobot/api"
+	"github.com/aimxhaisse/gorobot/api"
 	"fmt"
 	"log"
 	"time"
