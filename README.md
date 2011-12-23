@@ -3,6 +3,16 @@ GoRobot
 
 ## an IRC bot written in Go
 
+GoRobot is an IRC robot aiming at being highly modular without any
+need to disconnect.  To meet that purpose, it is composed of two
+binaries :
+
+  * grobot, the core server which maintains connections
+  * grocket, a module composed of submodules that connects to grobot
+
+Communication is made with the use of netchan, thus they don't need to
+be on the same computer. There can be several grockets for one grobot.
+
 ## Features:
 
   * Multiple servers, multiple channels, conversations, flood control
@@ -13,31 +23,40 @@ GoRobot
   * Module to handle shell scripts, through a tiny API
   * Module to follow RSS feeds
   * Module to follow MPD stream
-  * Statistics (activity on a channel, number of people, ...)
+  * Statistics (activity on a channel, memory usage, ...)
 
 ## What are these folders?
 
-  * bin/ stores binaries once compiled (bot and mods), shell scripts for commands, config files
+  * bin/ stores binaries once compiled (grobot and grocket)
   * api/ stores sources of the go API (used by mods to dialog with gorobot)
-  * bot/ stores sources for the IRC robot
-  * mods/ stores sources for modules (each module is a package, to run a module add it to the rocket)
-  * rocket/ stores sources for a launcher of modules
+  * grobot/ stores sources for the IRC robot
+  * mods/ stores sources for modules (each module is a package, to run a module add it to the grocket)
+  * grocket/ stores sources for a launcher of modules
+  * grobot.json is the default configuration file for grobot
+  * grocket.json is the default configuration file for grobot
 
 ## Installation
 
 ```sh
 git clone git://github.com/aimxhaisse/gorobot.git gorobot && cd gorobot
-make install
-cd bin
-ed gorobot.json
-ed rocket.json
-./gorobot
+./build install
+
+ed grobot.json
+ed grocket.json
+
+# in one term
+grobot
+
+# in another term
+grocket
 ```
 ## Commands
 
 ### How it works
 
-Commands can be added in folders bin/scripts/{admin,public,private}.
+Commands are implemented in the mods/scripts module automatically launched by grocket.
+
+Commands can be added in folders scripts/{admin,public,private}.
 
   * Private commands are executed when talking in private with the bot.
   * Public commands are executed on all channels.
@@ -50,8 +69,6 @@ Private: !spoon
 Public: !chat !non !pokemon !roulette !viewquote !ninja !fax !pwet !boby !matrix !oui !template !statquote ...
 
 Admin: !addquote !join !kick !part
-
-(mostly lame and useless commands)
 
 ### How to add new commands
 
@@ -84,30 +101,12 @@ Example of a bash command:
 ```sh
 #!/usr/bin/env bash
 
-po=$1
-se=$2
-ch=$3
-us=$4
+port=$1
+serv=$2
+chan=$3
+user=$4
 
-echo "$se 1 PRIVMSG $us :th3r3 1s n0 sp0on..." | nc localhost $po
+echo "$serv 1 PRIVMSG $user :th3r3 1s n0 sp0on..." | nc localhost $po
 ```
 
 Once the command is created, don't forget to chmod it (+x).
-
-## FAQ
-
-### Can I add a new command?
-
-Yes.
-
-### Can I create a new module?
-
-Yes.
-
-### Can I restart modules without restarting the bot?
-
-Yes.
-
-### Is there a documentation with real answers?
-
-No.
