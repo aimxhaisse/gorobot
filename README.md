@@ -29,9 +29,12 @@ be on the same computer. There can be several grockets for one grobot.
 
   * bin/ stores binaries once compiled (grobot and grocket)
   * api/ stores sources of the go API (used by mods to dialog with gorobot)
-  * grobot/ stores sources for the IRC robot
   * mods/ stores sources for modules (each module is a package, to run a module add it to the grocket)
+  * grobot/ stores sources for the IRC robot
   * grocket/ stores sources for a launcher of modules
+  * build is the script to build everything
+  * scripts/ is the directory containing bash commands used by mods/scripts
+  * logs/ is the directory containing logs
   * grobot.json is the default configuration file for grobot
   * grocket.json is the default configuration file for grobot
 
