@@ -71,11 +71,11 @@ func netAdminReadFromCon(con *net.TCPConn, chac chan api.Action) {
 func netAdmin(config Config, chac chan api.Action) {
 	a, err := net.ResolveTCPAddr("tcp", "localhost:"+config.LocalPort)
 	if err != nil {
-		log.Panic("Can't resolve to localhost\n")
+		log.Fatalf("Can't resolve to localhost: %v\n", err)
 	}
 	listener, err := net.ListenTCP("tcp", a)
 	if err != nil {
-		log.Panic("Can't open admin port\n")
+		log.Fatalf("Can't open admin port: %v\n", err)
 	}
 	for {
 		con, err := listener.AcceptTCP()

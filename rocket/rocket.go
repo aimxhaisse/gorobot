@@ -23,12 +23,12 @@ type Config struct {
 func newConfig(path string) *Config {
 	file, e := ioutil.ReadFile(path)
 	if e != nil {
-		log.Panic("Configuration error: %v\n", e)
+		log.Fatalf("Configuration error: %v\n", e)
 	}
 	var config Config
 	err := json.Unmarshal(file, &config)
 	if err != nil {
-		log.Panic("Configuration error: %s\n", err)
+		log.Fatalf("Configuration error: %s\n", err)
 	}
 	return &config
 }

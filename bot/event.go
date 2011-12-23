@@ -49,7 +49,7 @@ func ExtractEvent(line string) *api.Event {
 	if m := re_event_nick.FindStringSubmatch(line); len(m) == 3 {
 		return newEventNICK(line, m[1], m[2])
 	}
-	log.Printf("ignored message: %s", line)
+	log.Printf("Ignored message: %s", line)
 	return nil
 }
 

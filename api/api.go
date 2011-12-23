@@ -72,12 +72,12 @@ type Action struct {
 func ImportFrom(hostname string, moduleUUID string) (chan Action, chan Event) {
 	imp, err := netchan.Import("tcp", hostname)
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("Can't import module %s: %v", moduleUUID, err)
 	}
 	chac := make(chan Action)
 	err = imp.Import("actions", chac, netchan.Send, -1)
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("Can't import module %s: %v", moduleUUID, err)
 	}
 
 	id := Action{Type: A_NEWMODULE, Data: moduleUUID}
@@ -89,7 +89,7 @@ func ImportFrom(hostname string, moduleUUID string) (chan Action, chan Event) {
 	chev := make(chan Event)
 	err = imp.Import("events-"+moduleUUID, chev, netchan.Recv, -1)
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("Can't import module %s: %v", moduleUUID, err)
 	}
 	return chac, chev
 }
@@ -112,7 +112,7 @@ func ExportActions(exp *netchan.Exporter) chan Action {
 	chac := make(chan Action)
 	err := exp.Export("actions", chac, netchan.Recv)
 	if err != nil {
-		log.Panic(err)
+		log.Fatalf("Can't export Actions channel: %v", err)
 	}
 	return chac
 }
@@ -125,7 +125,7 @@ func ExportEvents(exp *netchan.Exporter, moduleUUID string) chan Event {
 		exp.Hangup("events-" + moduleUUID)
 		err := exp.Export("events-"+moduleUUID, chev, netchan.Send)
 		if err != nil {
-			log.Panic(err)
+			log.Fatalf("Can't export Events channel for %s: %v", moduleUUID, err)
 		}
 	}
 	return chev

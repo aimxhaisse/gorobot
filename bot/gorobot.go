@@ -21,10 +21,10 @@ type GoRobot struct {
 
 func NewGoRobot(config string) *GoRobot {
 	robot := GoRobot{
-	Config:  NewConfig(config),
-	LogMap:  make(map[string]*os.File),
-	Irc:     NewIrc(),
-	Modules: make(map[string]chan api.Event),
+		Config:  NewConfig(config),
+		LogMap:  make(map[string]*os.File),
+		Irc:     NewIrc(),
+		Modules: make(map[string]chan api.Event),
 	}
 	robot.Exp = api.InitExport(robot.Config.Module.Interface)
 	robot.Actions = api.ExportActions(robot.Exp)
@@ -34,11 +34,11 @@ func NewGoRobot(config string) *GoRobot {
 }
 
 func (robot *GoRobot) InitLog(config ConfigLogs) {
-	if (config.Enable == true) {
+	if config.Enable == true {
 		_, err := os.Open(config.Directory)
-		if (err != nil) {
+		if err != nil {
 			err = os.Mkdir(config.Directory, 0755)
-			if (err != nil) {
+			if err != nil {
 				log.Fatalf("Can't create log directory: %v", err)
 			}
 		}
