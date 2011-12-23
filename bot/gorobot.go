@@ -21,10 +21,10 @@ type GoRobot struct {
 
 func NewGoRobot(config string) *GoRobot {
 	robot := GoRobot{
-		Config:  NewConfig(config),
-		LogMap:  make(map[string]*os.File),
-		Irc:     NewIrc(),
-		Modules: make(map[string]chan api.Event),
+	Config:  NewConfig(config),
+	LogMap:  make(map[string]*os.File),
+	Irc:     NewIrc(),
+	Modules: make(map[string]chan api.Event),
 	}
 	robot.Exp = api.InitExport(robot.Config.Module.Interface)
 	robot.Actions = api.ExportActions(robot.Exp)

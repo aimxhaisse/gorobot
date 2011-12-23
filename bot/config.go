@@ -50,12 +50,12 @@ type ConfigChannel struct {
 func NewConfig(path string) *Config {
 	file, e := ioutil.ReadFile(path)
 	if e != nil {
-		log.Panic("Configuration error: %v\n", e)
+		log.Panic("Configuration error: %s\n", e)
 	}
 	var config Config
 	e = json.Unmarshal(file, &config)
 	if e != nil {
-		log.Panic("Configuration error: %v\n", e)
+		log.Panic("Configuration error: %s\n", e)
 	}
 
 	for kserv, serv := range config.Servers {
@@ -63,6 +63,48 @@ func NewConfig(path string) *Config {
 			config.Servers[kserv].Channels[kchannel].Name = kchannel
 		}
 	}
+
+	return &config
+}
+
+// Returns a default configuration file
+func DefaultConfig() *Config {
+	var config Config
+
+	config.AutoRejoinOnKick = true
+	config.CronTimeout = 60
+	config.AutoRunModules = false
+
+	config.Logs.Enable = true
+	config.Logs.Directory = "/tmp/gorobot-logs/"
+	config.Logs.RecordEvents = true
+	config.Logs.RecordMemoryUsage = true
+	config.Logs.RecordStatistics = true
+
+	config.Module.Interface = "localhost:3111"
+	config.Module.AutoRunModules = true
+	config.Module.AutoRun = []string {"rocket"}
+
+	freenode := ConfigServer{
+	Name: "freenode",
+	Host: "irc.freenode.net",
+	FloodControl: true,
+	Nickname: "m1ch3l",
+	Realname: "m1ch3l",
+	Username: "m1ch3l",
+	Password: "",
+	Channels: make(map[string]*ConfigChannel),
+	}
+
+	sbrk := ConfigChannel{
+	Name: "#sbrk",
+	Password: "",
+	Master: true,
+	}
+	freenode.Channels["sbrk"] = &sbrk
+
+	config.Servers = make(map[string]*ConfigServer)
+	config.Servers["freenode"] = &freenode
 
 	return &config
 }
