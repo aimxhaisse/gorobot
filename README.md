@@ -5,13 +5,15 @@ GoRobot
 
 GoRobot is an IRC robot aiming at being highly modular without any
 need to disconnect.  To meet that purpose, it is composed of two
-binaries :
+binaries:
 
   * grobot, the core server which maintains connections
   * grocket, a module composed of submodules that connects to grobot
 
 Communication is made with the use of netchan, thus they don't need to
 be on the same computer. There can be several grockets for one grobot.
+
+GoRobot tries to follow weekly builds of go.
 
 ## Features:
 
@@ -28,7 +30,7 @@ be on the same computer. There can be several grockets for one grobot.
 ## What are these folders?
 
   * bin/ stores binaries once compiled (grobot and grocket)
-  * api/ stores sources of the go API (used by mods to dialog with gorobot)
+  * api/ stores sources of the go API (used by mods to dialog with grobot)
   * mods/ stores sources for modules (each module is a package, to run a module add it to the grocket)
   * grobot/ stores sources for the IRC robot
   * grocket/ stores sources for a launcher of modules
@@ -47,23 +49,28 @@ git clone git://github.com/aimxhaisse/gorobot.git gorobot && cd gorobot
 ed grobot.json
 ed grocket.json
 
-# in one term
+# in a term
 grobot
 
 # in another term
 grocket
 ```
+
+You can also build it using go-gb.
+
 ## Commands
 
 ### How it works
 
-Commands are implemented in the mods/scripts module automatically launched by grocket.
+Commands are implemented in the mods/scripts module automatically
+launched by grocket.  They don't need to run on the same server as
+grobot.
 
 Commands can be added in folders scripts/{admin,public,private}.
 
   * Private commands are executed when talking in private with the bot.
   * Public commands are executed on all channels.
-  * Admin commands are executed on master channels (see gorobot.json).
+  * Admin commands are executed on master channels (see grobot.json).
 
 ### Available commands
 
@@ -95,9 +102,10 @@ The port is a local port opened by the module "scripts", it accepts raw IRC comm
 <server> <priority> RAW_COMMAND
 ```
 
-Server is the server where the command has to be executed, priority is a number (1, 2 or 3)
-indicating the priority of the command. This priority is meaningful on servers having
-flood control (you may want to kick someone before printing 42 lines).
+Server is the server where the command has to be executed, priority is
+a number (1, 2 or 3) indicating the priority of the command. This
+priority is meaningful on servers having flood control (you may want
+to kick someone before printing 42 lines).
 
 Example of a bash command:
 

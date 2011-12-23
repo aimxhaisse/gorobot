@@ -163,7 +163,6 @@ func writerSendFlood(after *time.Time, ahead *time.Duration, before *time.Time, 
 	// present messages and penalize the client by 2 seconds for each message" (doc irssi)
 	*after = time.Now()
 	*ahead -= after.Sub(*before)
-	fmt.Printf("ahead in seconds = %d\n", ahead.Seconds())
 	if ahead.Seconds() < 0 {
 		*ahead = time.Duration(0 * time.Second)
 	} else if ahead.Seconds() > 10 {
