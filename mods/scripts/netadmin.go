@@ -1,16 +1,17 @@
 package scripts
-
+// Package scripts implements a module to run shell commands
+//
 // Shell module can open the administration to send IRC commands using
 // the following format:
-
+//
 // SERVER PRIORITY IRC_COMMAND
-
 // Where:
+//
 // -> server is the alias to the server (ie: freenode)
 // -> priority is an integer indicating the priority of the command
 //    if it's a message (ie: 1, 2, or 3 ; higher is better)
 // -> irc_command is a raw IRC command
-
+//
 // examples of usages within shelll scripts:
 // echo "freenode 1 PRIVMSG aimxhaisse :kenavo" | nc -q 0 localhost $port > /dev/null
 
