@@ -83,7 +83,7 @@ func DefaultConfig() *Config {
 
 	config.Module.Interface = "localhost:3111"
 	config.Module.AutoRunModules = true
-	config.Module.AutoRun = []string{"rocket"}
+	config.Module.AutoRun = []string{}
 
 	freenode := ConfigServer{
 		Name:         "freenode",

@@ -12,9 +12,7 @@
  "Module": {
   "Interface": "localhost:3111",
   "AutoRunModules": true,
-  "AutoRun": [
-   "rocket"
-  ]
+  "AutoRun": []
  },
  "Servers": {
   "freenode": {
