@@ -9,24 +9,21 @@
 package scripts
 
 import (
-	"github.com/aimxhaisse/gorobot/api"
-	"regexp"
-	"exec"
-	"os"
+	"api"
 	"fmt"
-	"strings"
 	"log"
+	"os"
+	"os/exec"
+	"regexp"
+	"strings"
 )
 
 // avoid characters such as "../" to disallow commands like "!../admin/kick"
 var re_cmd = regexp.MustCompile("^!([a-zA-Z0-9]+)( .*)?")
 
 func fileExists(cmd string) bool {
-	stat, err := os.Stat(cmd)
-	if err == nil {
-		return stat.IsRegular()
-	}
-	return false
+	_, err := os.Stat(cmd)
+	return err == nil
 }
 
 func cmdPath(config Config, cmd string, admin bool, private bool) string {
@@ -51,23 +48,23 @@ func cmdPath(config Config, cmd string, admin bool, private bool) string {
 }
 
 func execCmd(config Config, path string, ev api.Event) {
-        log.Printf("Executing [%s]\n", path)
+	log.Printf("Executing [%s]\n", path)
 
-        in_params := strings.Split(ev.Data, " ")
+	in_params := strings.Split(ev.Data, " ")
 
-        command := exec.Command(path,
-                config.LocalPort,
-                ev.Server,
-                ev.Channel,
-                ev.User)
+	command := exec.Command(path,
+		config.LocalPort,
+		ev.Server,
+		ev.Channel,
+		ev.User)
 
-        for _, v := range in_params[1:] {
-                command.Args = append(command.Args, v)
+	for _, v := range in_params[1:] {
+		command.Args = append(command.Args, v)
 	}
 
-        err := command.Run()
-        if err == nil {
-                command.Wait()
+	err := command.Run()
+	if err == nil {
+		command.Wait()
 	}
 }
 

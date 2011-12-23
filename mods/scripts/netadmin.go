@@ -15,11 +15,11 @@ package scripts
 // echo "freenode 1 PRIVMSG aimxhaisse :kenavo" | nc -q 0 localhost $port > /dev/null
 
 import (
-	"github.com/aimxhaisse/gorobot/api"
+	"api"
 	"log"
 	"net"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 // creates a new api.action from what was sent on the admin port

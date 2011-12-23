@@ -3,20 +3,19 @@
 package rocket
 
 import (
-	"github.com/aimxhaisse/gorobot/api"
-	"github.com/aimxhaisse/gorobot/mods/scripts"
-	"github.com/aimxhaisse/gorobot/mods/radio"
-	"github.com/aimxhaisse/gorobot/mods/broadcast"
+	"api"
+	"encoding/json"
 	"io/ioutil"
 	"log"
-	"json"
+	"mods/broadcast"
+	"mods/radio"
+	"mods/scripts"
 	"time"
 )
 
 type Config struct {
 	Scripts   scripts.Config
 	Radio     radio.Config
-	Rss       rss.Config
 	Broadcast broadcast.Config
 }
 
@@ -42,7 +41,6 @@ func main() {
 		chac, chev := api.ImportFrom(config.Scripts.RobotInterface, config.Scripts.ModuleName)
 		scripts.Scripts(chac, chev, config.Scripts)
 	}()
-
 
 	// module radio
 	go func() {

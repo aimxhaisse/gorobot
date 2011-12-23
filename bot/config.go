@@ -1,9 +1,9 @@
 package main
 
 import (
-	"log"
-	"json"
+	"encoding/json"
 	"io/ioutil"
+	"log"
 )
 
 type Config struct {

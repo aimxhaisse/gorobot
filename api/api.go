@@ -2,8 +2,8 @@
 package api
 
 import (
-	"netchan"
 	"log"
+	"old/netchan"
 	"time"
 )
 

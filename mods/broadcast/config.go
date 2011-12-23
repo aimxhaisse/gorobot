@@ -1,9 +1,9 @@
 package broadcast
 
 import (
-	"json"
-	"log"
+	"encoding/json"
 	"io/ioutil"
+	"log"
 )
 
 type Config struct {

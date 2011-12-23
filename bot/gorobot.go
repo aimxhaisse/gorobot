@@ -1,13 +1,13 @@
 package main
 
 import (
-	"github.com/aimxhaisse/gorobot/api"
-	"netchan"
-	"os"
+	"api"
 	"fmt"
 	"log"
+	"old/netchan"
+	"os"
+	"os/exec"
 	"time"
-	"exec"
 )
 
 type GoRobot struct {
@@ -127,10 +127,10 @@ func ScheduleCron(cron chan int, timeout int64) {
 	if timeout <= 0 {
 		timeout = 60
 	}
-	timeout = timeout * 1e9
+	duration := time.Duration(timeout)
 	for {
 		cron <- 42
-		time.Sleep(timeout)
+		time.Sleep(duration * time.Second)
 	}
 }
 

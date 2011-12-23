@@ -1,14 +1,13 @@
 package main
 
 import (
-	"github.com/aimxhaisse/gorobot/api"
-	"net"
-	"log"
-	"fmt"
+	"api"
 	"bufio"
-	"time"
-	"os"
+	"fmt"
+	"log"
+	"net"
 	"strings"
+	"time"
 )
 
 // IRC Server
@@ -127,9 +126,8 @@ func (serv *Server) SendRawCommand(cmd string, priority int) {
 func reader(destroy chan int, serv_name string, connection net.Conn, chev chan api.Event) {
 	r := bufio.NewReader(connection)
 	for {
-		var err os.Error
 		var line string
-
+		var err error
 		if line, err = r.ReadString('\n'); err != nil {
 			chev <- api.Event{
 				Server: serv_name,
@@ -149,7 +147,7 @@ func reader(destroy chan int, serv_name string, connection net.Conn, chev chan a
 	}
 }
 
-func writerSendNoFloodControl(str string, connection net.Conn) bool {
+func writerSendNoFlood(str string, connection net.Conn) bool {
 	raw := []byte(str)
 	log.Printf("\x1b[1;35m%s\x1b[0m", strings.TrimRight(str, "\r\t\n"))
 	if _, err := connection.Write(raw); err != nil {
@@ -160,16 +158,16 @@ func writerSendNoFloodControl(str string, connection net.Conn) bool {
 	return true
 }
 
-func writerSendFloodControl(after *int64, ahead *int64, before *int64, str string, connection net.Conn) bool {
+func writerSendFlood(after *time.Time, ahead *time.Duration, before *time.Time, str string, connection net.Conn) bool {
 	// "while the timer is less than ten seconds ahead of the current time, parse any
 	// present messages and penalize the client by 2 seconds for each message" (doc irssi)
-	*after = time.Nanoseconds()
-	*ahead -= (*after - *before)
-	if *ahead < 0 {
-		*ahead = 0
-	} else if *ahead > 10e9 {
-		time.Sleep(*ahead - 10e9)
-		*ahead = 10e9
+	*after = time.Now()
+	*ahead = *ahead - after.Sub(*before)
+	if ahead.Seconds() < 0 {
+		*ahead = time.Duration(0 * time.Second)
+	} else if ahead.Seconds() > 10 {
+		time.Sleep(time.Duration(ahead.Seconds() - float64((10 * time.Second))))
+		*ahead = time.Duration(10 * time.Second)
 	}
 	raw := []byte(str)
 	log.Printf("\x1b[1;35m%s\x1b[0m", strings.TrimRight(str, "\r\t\n"))
@@ -178,23 +176,16 @@ func writerSendFloodControl(after *int64, ahead *int64, before *int64, str strin
 		log.Printf("can't write on socket: %v", err)
 		return false
 	}
-	*ahead += 2e9
-	*before = time.Nanoseconds()
+	*ahead += 2 * time.Second
+	*before = time.Now()
 	return true
-}
-
-func writerDispatch(after *int64, ahead *int64, before *int64, str string, connection net.Conn, flood_control bool) bool {
-	if flood_control {
-		return writerSendFloodControl(after, ahead, before, str, connection)
-	}
-	return writerSendNoFloodControl(str, connection)
 }
 
 func writer(destroy chan int, connection net.Conn, chin map[int]chan string, flood_control bool) {
-	var after int64 = 0
-	var ahead int64 = 0
-	before := time.Nanoseconds()
+	var after time.Time
+	var ahead time.Duration
 
+	before := time.Now()
 	for {
 		select {
 		case <-destroy:
@@ -213,4 +204,11 @@ func writer(destroy chan int, connection net.Conn, chin map[int]chan string, flo
 			}
 		}
 	}
+}
+
+func writerDispatch(after *time.Time, ahead *time.Duration, before *time.Time, str string, connection net.Conn, flood_control bool) bool {
+	if flood_control {
+		return writerSendFlood(after, ahead, before, str, connection)
+	}
+	return writerSendNoFlood(str, connection)
 }

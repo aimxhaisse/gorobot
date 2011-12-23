@@ -1,9 +1,9 @@
 package radio
 
 import (
-	"json"
-	"log"
+	"encoding/json"
 	"io/ioutil"
+	"log"
 )
 
 type Config struct {

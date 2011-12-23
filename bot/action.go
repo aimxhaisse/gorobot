@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/aimxhaisse/gorobot/api"
+	"api"
 	"regexp"
 	"strings"
 )

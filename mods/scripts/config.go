@@ -1,7 +1,7 @@
 package scripts
 
 import (
-	"json"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 )

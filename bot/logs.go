@@ -1,19 +1,16 @@
 package main
 
 import (
-	"github.com/aimxhaisse/gorobot/api"
-	"os"
+	"api"
 	"fmt"
 	"log"
-	"time"
+	"os"
 	"runtime"
+	"time"
 )
 
 func (robot *GoRobot) writeLog(file string, msg string) {
-	currentTime := time.LocalTime()
-	if currentTime == nil {
-		return
-	}
+	currentTime := time.Now()
 	strTime := currentTime.String()
 	fh, ok := robot.LogMap[file]
 	if !ok {

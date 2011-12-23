@@ -2,7 +2,7 @@
 package example
 
 import (
-	"github.com/aimxhaisse/gorobot/api"
+	"api"
 )
 
 // Example is a gorobot module which responds to the !hej command
