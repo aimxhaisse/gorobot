@@ -26,7 +26,7 @@ import (
 // creates a new api.action from what was sent on the admin port
 func netAdminCraftAction(output string) api.Action {
 	var a api.Action
-	shellapi := strings.Split(output, " ")
+	shellapi := strings.SplitN(output, " ", 3)
 	a.Type = api.A_RAW
 	if len(shellapi) == 3 {
 		a.Server = shellapi[0]
@@ -68,7 +68,7 @@ func netAdminReadFromCon(con *net.TCPConn, chac chan api.Action) {
 	}
 }
 
-// open the admin port and directly send RAW commands to the michel
+// opens the admin port and directly send RAW commands to grobot
 func netAdmin(config Config, chac chan api.Action) {
 	a, err := net.ResolveTCPAddr("tcp", "localhost:"+config.LocalPort)
 	if err != nil {
@@ -81,7 +81,7 @@ func netAdmin(config Config, chac chan api.Action) {
 	for {
 		con, err := listener.AcceptTCP()
 		if err == nil {
-			netAdminReadFromCon(con, chac)
+			go netAdminReadFromCon(con, chac)
 		}
 	}
 }
