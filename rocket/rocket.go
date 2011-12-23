@@ -1,9 +1,10 @@
 // package rocket launches some of the available modules of gorobot
 // feel free to modify it to your needs
-package rocket
+package main
 
 import (
 	"api"
+	"os"
 	"encoding/json"
 	"io/ioutil"
 	"log"
@@ -11,7 +12,11 @@ import (
 	"mods/radio"
 	"mods/scripts"
 	"time"
+	"flag"
 )
+
+var cfg *string = flag.String("config", "rocket.json", "path to a json configuration file")
+var newcfg *bool = flag.Bool("generate-config", false, "generate a default configuration file")
 
 type Config struct {
 	Scripts   scripts.Config
@@ -20,7 +25,7 @@ type Config struct {
 }
 
 // Returns a new configuration from file pointed by path
-func newConfig(path string) *Config {
+func NewConfig(path string) *Config {
 	file, e := ioutil.ReadFile(path)
 	if e != nil {
 		log.Fatalf("Configuration error: %v\n", e)
@@ -33,30 +38,75 @@ func newConfig(path string) *Config {
 	return &config
 }
 
+// Returns  a default configuration
+func DefaultConfig() *Config {
+	cfg := Config{
+	Scripts: scripts.Config{
+		ModuleName: "mod-scripts",
+		AdminScripts: "scripts/admin",
+		PublicScripts: "scripts/public",
+		PrivateScripts: "scripts/private",
+		LocalPort: "3112",
+		RobotInterface: "localhost:3111",
+		},
+	Radio: radio.Config{
+		ModuleName: "mod-radio",
+		RobotInterface: "localhost:3111",
+		MPDServer: "localhost:6600",
+		MPDPassword: "",
+		Broadcast: make(map[string]string),
+		},
+	Broadcast: broadcast.Config{
+		ModuleName: "mod-broadcast",
+		RobotInterface: "localhost:3111",
+		Targets: make(map[string][]string),
+		},
+	}
+	cfg.Radio.Broadcast["freenode"] = "#sbrk"
+	cfg.Broadcast.Targets["freenode"] = []string{"#sbrk"}
+	return &cfg
+}
+
 func main() {
-	config := newConfig("./rocket.json")
+	flag.Parse()
 
-	// module scripts
-	go func() {
-		chac, chev := api.ImportFrom(config.Scripts.RobotInterface, config.Scripts.ModuleName)
-		scripts.Scripts(chac, chev, config.Scripts)
-	}()
+	if *newcfg == true {
+		file, err := os.Create(*cfg)
+		if err != nil {
+			log.Fatalf("Can't create configuration file: %v", err)
+		}
+		config := DefaultConfig()
+		data, err := json.MarshalIndent(*config, "", " ")
+		if err != nil {
+			log.Fatalf("Can't create configuration file: %v", err)
+		}
+		file.Write(data)
+		file.Close()
+	} else {
+		config := NewConfig(*cfg)
 
-	// module radio
-	go func() {
-		chac, chev := api.ImportFrom(config.Radio.RobotInterface, config.Radio.ModuleName)
-		radio.Radio(chac, chev, config.Radio)
-	}()
+		// module scripts
+		go func() {
+			chac, chev := api.ImportFrom(config.Scripts.RobotInterface, config.Scripts.ModuleName)
+			scripts.Scripts(chac, chev, config.Scripts)
+		}()
 
-	// module broadcast
-	go func() {
-		chac, chev := api.ImportFrom(config.Broadcast.RobotInterface, config.Broadcast.ModuleName)
-		broadcast.Broadcast(chac, chev, config.Broadcast)
-	}()
+		// module radio
+		go func() {
+			chac, chev := api.ImportFrom(config.Radio.RobotInterface, config.Radio.ModuleName)
+			radio.Radio(chac, chev, config.Radio)
+		}()
 
-	// add you own
+		// module broadcast
+		go func() {
+			chac, chev := api.ImportFrom(config.Broadcast.RobotInterface, config.Broadcast.ModuleName)
+			broadcast.Broadcast(chac, chev, config.Broadcast)
+		}()
 
-	for {
-		time.Sleep(1.e9)
+		// add you own
+
+		for {
+			time.Sleep(1.e9)
+		}
 	}
 }
