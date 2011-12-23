@@ -9,6 +9,7 @@ import (
 	"time"
 )
 
+// Writes the string to the log file, creates the log file if it doesn't exists
 func (robot *GoRobot) writeLog(file string, msg string) {
 	currentTime := time.Now()
 	strTime := currentTime.String()

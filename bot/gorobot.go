@@ -28,8 +28,21 @@ func NewGoRobot(config string) *GoRobot {
 	}
 	robot.Exp = api.InitExport(robot.Config.Module.Interface)
 	robot.Actions = api.ExportActions(robot.Exp)
+	robot.InitLog(robot.Config.Logs)
 	robot.Irc.Connect(robot.Config.Servers)
 	return &robot
+}
+
+func (robot *GoRobot) InitLog(config ConfigLogs) {
+	if (config.Enable == true) {
+		_, err := os.Open(config.Directory)
+		if (err != nil) {
+			err = os.Mkdir(config.Directory, 0755)
+			if (err != nil) {
+				log.Fatalf("Can't create log directory: %v", err)
+			}
+		}
+	}
 }
 
 func (robot *GoRobot) SendEvent(event *api.Event) {
