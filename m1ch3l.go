@@ -1,5 +1,12 @@
 package main
 
+import (
+	"encoding/json"
+	"flag"
+	"log"
+	"io/ioutil"
+)
+
 type EventType int
 
 // Types of Event
@@ -72,7 +79,6 @@ type Config struct {
 type ConfigLogs struct {
 	Enable       bool   // Enable logging
 	Directory    string // Directory to store logs
-	RecordEvents bool   // Record events
 }
 
 // Config for an IRC serv to connect to
@@ -94,5 +100,26 @@ type ConfigChannel struct {
 	Master   bool   // Enable admin commands on that channel
 }
 
+// Flag settings
+var (
+	configPath = flag.String("c", "m1ch3l.json", "path to the configuration file (e.g, m1ch3l.json)")
+)
+
+// Creates a new Config from a config file
+func newConfig(path string) *Config {
+	file, e := ioutil.ReadFile(path)
+	if e != nil {
+		log.Fatalf("Config error: %v", e)
+	}
+	var cfg Config
+	e = json.Unmarshal(file, &cfg)
+	if e != nil {
+		log.Fatalf("Config error: %v", e)
+	}
+	return &cfg
+}
+
 func main() {
+	flag.Parse()
+	_ = newConfig(*configPath)
 }

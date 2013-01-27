@@ -1,0 +1,26 @@
+{
+ "AutoRejoinOnKick": true,
+ "CronTimeout": 60,
+ "Logs": {
+  "Enable": true,
+  "Directory": "./logs/"
+ },
+ "Servers": {
+  "freenode": {
+   "Name": "freenode",
+   "Host": "irc.freenode.net:6667",
+   "FloodControl": true,
+   "Nickname": "m1ch3l",
+   "Realname": "m1ch3l",
+   "Username": "m1ch3l",
+   "Password": "",
+   "Channels": {
+    "#sbrk": {
+     "Name": "#sbrk",
+     "Password": "",
+     "Master": true
+    }
+   }
+  }
+ }
+}
