@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"log"
 	"io/ioutil"
+	"log"
 )
 
 type EventType int
@@ -70,15 +70,14 @@ type Action struct {
 // Main config of m1ch3l
 type Config struct {
 	AutoRejoinOnKick bool                     // Rejoin channel when kicked
-	CronTimeout      int64                    // Timeout to perform cron actions such as reconnecting to disconnected servers
 	Logs             ConfigLogs               // Log config
 	Servers          map[string]*ConfigServer // Servers to connects to
 }
 
 // Config for logs
 type ConfigLogs struct {
-	Enable       bool   // Enable logging
-	Directory    string // Directory to store logs
+	Enable    bool   // Enable logging
+	Directory string // Directory to store logs
 }
 
 // Config for an IRC serv to connect to
@@ -109,12 +108,12 @@ var (
 func newConfig(path string) *Config {
 	file, e := ioutil.ReadFile(path)
 	if e != nil {
-		log.Fatalf("Config error: %v", e)
+		log.Fatalf("config error: %v", e)
 	}
 	var cfg Config
 	e = json.Unmarshal(file, &cfg)
 	if e != nil {
-		log.Fatalf("Config error: %v", e)
+		log.Fatalf("config error: %v", e)
 	}
 	return &cfg
 }

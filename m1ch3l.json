@@ -1,6 +1,5 @@
 {
  "AutoRejoinOnKick": true,
- "CronTimeout": 60,
  "Logs": {
   "Enable": true,
   "Directory": "./logs/"

@@ -15,6 +15,7 @@ type Bot struct {
 	Actions chan Action           // Read actions from modules
 }
 
+// NewBot creates a new IRC bot with the given config
 func NewBot(cfg *Config) *Bot {
 	b := Bot{
 		Config:  cfg,
@@ -23,12 +24,37 @@ func NewBot(cfg *Config) *Bot {
 		Modules: make(map[string]chan Event),
 		Actions: make(chan Action),
 	}
-	b.InitLog(b.Config.Logs)
+	b.initLog(b.Config.Logs)
 	b.Irc.Connect(b.Config.Servers)
 	return &b
 }
 
-func (robot *Bot) InitLog(config ConfigLogs) {
+// Run is the main loop of the IRC bot
+func (b *Bot) Run() {
+	for {
+		select {
+		case _ = <-time.Tick(60 * time.Second):
+			b.Irc.AutoReconnect()
+		case action, ok := <-b.Actions:
+			if !ok {
+				log.Printf("action channel closed, bye bye")
+				return
+			}
+			b.handleAction(&action)
+		case event, ok := <-b.Irc.Events:
+			if !ok {
+				log.Printf("event channel closed, bye bye")
+			}
+			srv := b.Irc.GetServer(event.Server)
+			if srv != nil {
+				b.handleEvent(srv, &event)
+			}
+		}
+	}
+}
+
+// initLog initializes the log directory
+func (b *Bot) initLog(config ConfigLogs) {
 	if config.Enable == true {
 		_, err := os.Open(config.Directory)
 		if err != nil {
@@ -40,21 +66,9 @@ func (robot *Bot) InitLog(config ConfigLogs) {
 	}
 }
 
-func (robot *Bot) SendEvent(event *Event) {
-	for _, chev := range robot.Modules {
-		go func(chev chan Event, event Event) {
-			chev <- event
-		}(chev, *event)
-	}
-	robot.LogEvent(event)
-}
-
-func (robot *Bot) Cron() {
-	robot.Irc.AutoReconnect()
-}
-
-func (robot *Bot) AutoJoin(s string) {
-	serv := robot.Irc.GetServer(s)
+// autoJoin joins the configured chans for the given server
+func (b *Bot) autoJoin(s string) {
+	serv := b.Irc.GetServer(s)
 	if serv != nil {
 		for k, _ := range serv.Config.Channels {
 			serv.JoinChannel(k)
@@ -62,23 +76,19 @@ func (robot *Bot) AutoJoin(s string) {
 	}
 }
 
-func (robot *Bot) HandleNotice(serv *Server, event *Event) {
-	switch event.CmdId {
-	case 1:
-		robot.AutoJoin(serv.Config.Name)
-	}
-}
-
-func (robot *Bot) HandleEvent(serv *Server, event *Event) {
+// HandleEvent processes an event from a server
+func (b *Bot) handleEvent(serv *Server, event *Event) {
 	switch event.Type {
 	case E_KICK:
-		if serv.Config.Nickname == event.Data && robot.Config.AutoRejoinOnKick {
+		if serv.Config.Nickname == event.Data && b.Config.AutoRejoinOnKick {
 			serv.JoinChannel(event.Channel)
 		}
 	case E_PING:
 		serv.SendMeRaw[PRIORITY_HIGH] <- fmt.Sprintf("PONG :%s\r\n", event.Data)
 	case E_NOTICE:
-		robot.HandleNotice(serv, event)
+		if event.CmdId == 1 {
+			b.autoJoin(serv.Config.Name)
+		}
 	case E_DISCONNECT:
 		serv.Disconnect()
 	case E_PRIVMSG:
@@ -86,14 +96,22 @@ func (robot *Bot) HandleEvent(serv *Server, event *Event) {
 			event.AdminCmd = serv.Config.Channels[event.Channel].Master
 		}
 	}
-	robot.SendEvent(event)
+	// Dispatch the event to modules
+	for _, chev := range b.Modules {
+		go func(chev chan Event, event Event) {
+			chev <- event
+		}(chev, *event)
+	}
+	b.LogEvent(event)
 }
 
-func (robot *Bot) NewModule(ac *Action) {
-	robot.Modules[ac.Data] = make(chan Event)
+// NewModule registers a new module
+func (b *Bot) newModule(ac *Action) {
+	b.Modules[ac.Data] = make(chan Event)
 }
 
-func (robot *Bot) HandleAction(ac *Action) {
+// HandleAction processes an action from a module
+func (b *Bot) handleAction(ac *Action) {
 	// if the command is RAW, we need to parse it first to be able
 	// to correctly handle it.
 	if ac.Type == A_RAW {
@@ -110,60 +128,22 @@ func (robot *Bot) HandleAction(ac *Action) {
 
 	switch ac.Type {
 	case A_NEWMODULE:
-		robot.NewModule(ac)
+		b.newModule(ac)
 	case A_SAY:
-		if serv := robot.Irc.GetServer(ac.Server); serv != nil {
+		if serv := b.Irc.GetServer(ac.Server); serv != nil {
 			serv.Say(ac)
 		}
 	case A_JOIN:
-		if serv := robot.Irc.GetServer(ac.Server); serv != nil {
+		if serv := b.Irc.GetServer(ac.Server); serv != nil {
 			serv.JoinChannel(ac.Channel)
 		}
 	case A_PART:
-		if serv := robot.Irc.GetServer(ac.Server); serv != nil {
+		if serv := b.Irc.GetServer(ac.Server); serv != nil {
 			serv.LeaveChannel(ac.Channel, ac.Data)
 		}
 	case A_KICK:
-		if serv := robot.Irc.GetServer(ac.Server); serv != nil {
+		if serv := b.Irc.GetServer(ac.Server); serv != nil {
 			serv.KickUser(ac.Channel, ac.User, ac.Data)
-		}
-	}
-}
-
-func ScheduleCron(cron chan int, timeout int64) {
-	if timeout <= 0 {
-		timeout = 60
-	}
-	duration := time.Duration(timeout)
-	for {
-		cron <- 42
-		time.Sleep(duration * time.Second)
-	}
-}
-
-func (robot *Bot) Run() {
-	cron := make(chan int)
-
-	go ScheduleCron(cron, robot.Config.CronTimeout)
-
-	for {
-		select {
-		case _ = <-cron:
-			robot.Cron()
-		case action, ok := <-robot.Actions:
-			if !ok {
-				log.Printf("action channel closed, bye bye")
-				return
-			}
-			robot.HandleAction(&action)
-		case event, ok := <-robot.Irc.Events:
-			if !ok {
-				log.Printf("event channel closed, bye bye")
-			}
-			srv := robot.Irc.GetServer(event.Server)
-			if srv != nil {
-				robot.HandleEvent(srv, &event)
-			}
 		}
 	}
 }
