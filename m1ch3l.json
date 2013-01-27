@@ -8,7 +8,7 @@
  "Servers": {
   "freenode": {
    "Name": "freenode",
-   "Host": "irc.freenode.net:6667",
+   "Host": "localhost:6667",
    "FloodControl": true,
    "Nickname": "m1ch3l",
    "Realname": "m1ch3l",

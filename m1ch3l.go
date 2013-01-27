@@ -121,5 +121,7 @@ func newConfig(path string) *Config {
 
 func main() {
 	flag.Parse()
-	_ = newConfig(*configPath)
+	cfg := newConfig(*configPath)
+	bot := NewBot(cfg)
+	bot.Run()
 }
