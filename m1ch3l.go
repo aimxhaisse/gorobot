@@ -60,5 +60,39 @@ type Action struct {
 	Raw      string     // If Type = RAW, send this directly over the server
 }
 
+// Main config of m1ch3l
+type Config struct {
+	AutoRejoinOnKick bool                     // Rejoin channel when kicked
+	CronTimeout      int64                    // Timeout to perform cron actions such as reconnecting to disconnected servers
+	Logs             ConfigLogs               // Log config
+	Servers          map[string]*ConfigServer // Servers to connects to
+}
+
+// Config for logs
+type ConfigLogs struct {
+	Enable       bool   // Enable logging
+	Directory    string // Directory to store logs
+	RecordEvents bool   // Record events
+}
+
+// Config for an IRC serv to connect to
+type ConfigServer struct {
+	Name         string                    // Alias of the server
+	Host         string                    // Address of the server
+	FloodControl bool                      // Enable flood control
+	Nickname     string                    // Nickname of the IRC robot
+	Realname     string                    // Real name of the IRC robot
+	Username     string                    // Username of the IRC robot
+	Password     string                    // Password of the IRC server
+	Channels     map[string]*ConfigChannel // List of channels to join
+}
+
+// Config for an IRC channel to join
+type ConfigChannel struct {
+	Name     string // Name of the channel
+	Password string // Password of the channel
+	Master   bool   // Enable admin commands on that channel
+}
+
 func main() {
 }
