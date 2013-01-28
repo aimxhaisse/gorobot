@@ -1,25 +1,32 @@
 {
- "AutoRejoinOnKick": true,
- "Logs": {
-  "Enable": true,
-  "Directory": "./logs/"
- },
- "Servers": {
-  "freenode": {
-   "Name": "freenode",
-   "Host": "localhost:6667",
-   "FloodControl": true,
-   "Nickname": "m1ch3l",
-   "Realname": "m1ch3l",
-   "Username": "m1ch3l",
-   "Password": "",
-   "Channels": {
-    "#sbrk": {
-     "Name": "#sbrk",
-     "Password": "",
-     "Master": true
+    "AutoRejoinOnKick": true,
+    "Logs": {
+	"Enable": true,
+	"Directory": "./logs/"
+    },
+    "Servers": {
+	"freenode": {
+	    "Name": "freenode",
+	    "Host": "irc.freenode.net:6667",
+	    "FloodControl": true,
+	    "Nickname": "m1ch3l",
+	    "Realname": "m1ch3l",
+	    "Username": "m1ch3l",
+	    "Password": "",
+	    "Channels": {
+		"#sbrk": {
+		    "Name": "#sbrk",
+		    "Password": "",
+		    "Master": true
+		}
+	    }
+	}
+    },
+    "Broadcast": {
+	"Targets": {
+	    "freenode": [
+		"#sbrk"
+	    ]
+	}
     }
-   }
-  }
- }
 }

@@ -33,8 +33,6 @@ const (
 	A_OP                // Op a user (requires server, channel, user)
 	A_RAW               // Send a raw IRC command (requires server), not yet implemented
 	A_SENDNOTICE        // Send a notice (requires server), not yet implemented
-	A_NEWMODULE         // This is sent by a module after it connects for the first time to the bot. Modules should not care about this type
-
 )
 
 // Events are sent by the server to each module
@@ -72,6 +70,7 @@ type Config struct {
 	AutoRejoinOnKick bool                     // Rejoin channel when kicked
 	Logs             ConfigLogs               // Log config
 	Servers          map[string]*ConfigServer // Servers to connects to
+	Broadcast	 BroadcastConfig	  // Configuration of the broadcast module
 }
 
 // Config for logs

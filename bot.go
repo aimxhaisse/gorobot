@@ -26,6 +26,10 @@ func NewBot(cfg *Config) *Bot {
 	}
 	b.initLog(b.Config.Logs)
 	b.Irc.Connect(b.Config.Servers)
+
+	b.Modules["broadcast"] = make(chan Event)
+	go Broadcast(b.Actions, b.Modules["broadcast"], cfg.Broadcast)
+
 	return &b
 }
 
@@ -127,8 +131,6 @@ func (b *Bot) handleAction(ac *Action) {
 	}
 
 	switch ac.Type {
-	case A_NEWMODULE:
-		b.newModule(ac)
 	case A_SAY:
 		if serv := b.Irc.GetServer(ac.Server); serv != nil {
 			serv.Say(ac)
