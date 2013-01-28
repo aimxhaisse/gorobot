@@ -28,5 +28,11 @@
 		"#sbrk"
 	    ]
 	}
+    },
+    "Scripts": {
+	"AdminScripts": "scripts/admin",
+	"PublicScripts": "scripts/public",
+	"PrivateScripts": "scripts/private",
+	"LocalPort": "3112"
     }
 }

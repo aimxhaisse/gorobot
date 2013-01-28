@@ -30,6 +30,9 @@ func NewBot(cfg *Config) *Bot {
 	b.Modules["broadcast"] = make(chan Event)
 	go Broadcast(b.Actions, b.Modules["broadcast"], cfg.Broadcast)
 
+	b.Modules["scripts"] = make(chan Event)
+	go Scripts(b.Actions, b.Modules["scripts"], cfg.Scripts)
+
 	return &b
 }
 

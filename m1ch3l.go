@@ -70,7 +70,8 @@ type Config struct {
 	AutoRejoinOnKick bool                     // Rejoin channel when kicked
 	Logs             ConfigLogs               // Log config
 	Servers          map[string]*ConfigServer // Servers to connects to
-	Broadcast	 BroadcastConfig	  // Configuration of the broadcast module
+	Broadcast        BroadcastConfig          // Configuration of the broadcast module
+	Scripts          ScriptsConfig            // Configuration of the scripts module
 }
 
 // Config for logs
