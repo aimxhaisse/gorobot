@@ -10,8 +10,8 @@ import (
 // Events are built from the output of the IRC server, and are sent to modules
 // Please keep this is in order of use, as some expression may overlap others
 var re_server_notice = regexp.MustCompile("^:[^ ]+ NOTICE [^:]+ :(.*)")
-var re_event_names = regexp.MustCompile("^:[^ ]+ 353 ([^ ]+) [@+=] [^ ]+ :(.*)")
-var re_event_names_end = regexp.MustCompile("^:[^ ]+ 366 ([^ ]+) [^ ]+ :.*")
+var re_event_names = regexp.MustCompile("^:[^ ]+ 353 ([^ ]+) [@+=] ([^ ]+) :(.*)")
+var re_event_names_end = regexp.MustCompile("^:[^ ]+ 366 ([^ ]+) ([^ ]+) :.*")
 var re_server_message = regexp.MustCompile("^:[^ ]+ ([0-9]+) [^:]+ :(.*)")
 var re_server_ping = regexp.MustCompile("^PING :(.*)")
 var re_event_join = regexp.MustCompile("^:([^!]+)![^ ]* JOIN :(.+)")
@@ -25,13 +25,13 @@ func ExtractEvent(line string) *Event {
 	if m := re_server_notice.FindStringSubmatch(line); len(m) == 2 {
 		return newEventNOTICE(line, m[1], 0)
 	}
-	if m := re_event_names.FindStringSubmatch(line); len(m) == 3 {
+	if m := re_event_names.FindStringSubmatch(line); len(m) == 4 {
 		log.Printf("re_event_names")
-		return newEventNAMES(line, m[1], m[2])
+		return newEventNAMES(line, m[1], m[2], m[3])
 	}
-	if m := re_event_names_end.FindStringSubmatch(line); len(m) == 2 {
+	if m := re_event_names_end.FindStringSubmatch(line); len(m) == 3 {
 		log.Printf("re_event_names_end")
-		return newEventENDOFNAMES(line, m[1])
+		return newEventENDOFNAMES(line, m[1], m[2])
 	}
 	if m := re_server_message.FindStringSubmatch(line); len(m) == 3 {
 		cmd_id, _ := strconv.Atoi(m[1])
@@ -138,19 +138,21 @@ func newEventNICK(line string, user string, newuser string) *Event {
 	return event
 }
 
-func newEventNAMES(line string, user string, names string) *Event {
+func newEventNAMES(line string, user string, channel string, names string) *Event {
 	event := new(Event)
 	event.Raw = line
 	event.Type = E_NAMES
 	event.Data = names
 	event.User = user
+	event.Channel = channel
 	return event
 }
 
-func newEventENDOFNAMES(line string, user string) *Event {
+func newEventENDOFNAMES(line string, user string, channel string) *Event {
 	event := new(Event)
 	event.Raw = line
 	event.Type = E_ENDOFNAMES
 	event.User = user
+	event.Channel = channel
 	return event
 }

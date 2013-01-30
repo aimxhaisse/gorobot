@@ -35,11 +35,13 @@ func Stats(chac chan Action, chev chan Event, config StatsConfig) {
 			chac <- a
 
 		case ev := <-chev:
-			if ev.Type == E_NAMES {
-				nb_users = nb_users + len(strings.Fields(ev.Data))
-			} else if ev.Type == E_ENDOFNAMES {
-				file.WriteString(fmt.Sprintf("%s - %d users\n", time.Now().String(), nb_users))
-				nb_users = 0
+			if ev.Channel == config.Channel && ev.Server == config.Server {
+				if ev.Type == E_NAMES {
+					nb_users = nb_users + len(strings.Fields(ev.Data))
+				} else if ev.Type == E_ENDOFNAMES {
+					file.WriteString(fmt.Sprintf("%s - %d users\n", time.Now().String(), nb_users))
+					nb_users = 0
+				}
 			}
 		}
 	}
