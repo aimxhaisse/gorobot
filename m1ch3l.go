@@ -20,6 +20,8 @@ const (
 	E_NICK              // A user changed nick (origin is old nick, data is the new nick)
 	E_PING              // A ping has been sent by the server
 	E_KICK              // A user has been kicked (user is the admin, data is the target)
+	E_NAMES		    // List of names
+	E_ENDOFNAMES	    // End of list of names
 )
 
 type ActionType int
@@ -32,7 +34,7 @@ const (
 	A_PART              // Leave a channel (requires server, channel, optionally data)
 	A_OP                // Op a user (requires server, channel, user)
 	A_RAW               // Send a raw IRC command (requires server), not yet implemented
-	A_SENDNOTICE        // Send a notice (requires server), not yet implemented
+	A_NAMES		    // Send a NAMES command (requires channel)
 )
 
 // Events are sent by the server to each module
@@ -72,6 +74,7 @@ type Config struct {
 	Servers          map[string]*ConfigServer // Servers to connects to
 	Broadcast        BroadcastConfig          // Configuration of the broadcast module
 	Scripts          ScriptsConfig            // Configuration of the scripts module
+	Stats		 StatsConfig		  // Configuration of the stats module
 }
 
 // Config for logs

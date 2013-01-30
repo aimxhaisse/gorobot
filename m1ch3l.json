@@ -14,8 +14,8 @@
 	    "Username": "m1ch3l",
 	    "Password": "",
 	    "Channels": {
-		"#sbrk": {
-		    "Name": "#sbrk",
+		"##sbrk": {
+		    "Name": "##sbrk",
 		    "Password": "",
 		    "Master": true
 		}
@@ -34,5 +34,11 @@
 	"PublicScripts": "scripts/public",
 	"PrivateScripts": "scripts/private",
 	"LocalPort": "3112"
+    },
+    "Stats": {
+        "Timeout": 600,
+        "Server": "freenode",
+        "Channel": "##sbrk",
+	"OutputFile": "stats.log"
     }
 }

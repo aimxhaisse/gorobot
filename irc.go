@@ -76,6 +76,12 @@ func (serv *Server) Say(ac *Action) {
 	}
 }
 
+func (serv *Server) Names(ac *Action) {
+	if len(ac.Channel) > 0 {
+		serv.SendRawCommand(fmt.Sprintf("NAMES %s\r\n", ac.Channel), ac.Priority)
+        }
+}
+
 // Disconnect disconnects from the server
 func (serv *Server) Disconnect() {
 	log.Printf("disconnected from %s (%s)", serv.Config.Name, serv.Config.Host)
