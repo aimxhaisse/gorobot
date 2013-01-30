@@ -26,12 +26,12 @@ func ExtractEvent(line string) *Event {
 		return newEventNOTICE(line, m[1], 0)
 	}
 	if m := re_event_names.FindStringSubmatch(line); len(m) == 3 {
-	  log.Printf("re_event_names")
-	  return newEventNAMES(line, m[1], m[2])
+		log.Printf("re_event_names")
+		return newEventNAMES(line, m[1], m[2])
 	}
 	if m := re_event_names_end.FindStringSubmatch(line); len(m) == 2 {
-	  log.Printf("re_event_names_end")
-	  return newEventENDOFNAMES(line, m[1])
+		log.Printf("re_event_names_end")
+		return newEventENDOFNAMES(line, m[1])
 	}
 	if m := re_server_message.FindStringSubmatch(line); len(m) == 3 {
 		cmd_id, _ := strconv.Atoi(m[1])

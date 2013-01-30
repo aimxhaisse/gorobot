@@ -33,7 +33,7 @@ func NewBot(cfg *Config) *Bot {
 	b.Modules["scripts"] = make(chan Event)
 	go Scripts(b.Actions, b.Modules["scripts"], cfg.Scripts)
 
-	b.Modules["stats"] =  make(chan Event)
+	b.Modules["stats"] = make(chan Event)
 	go Stats(b.Actions, b.Modules["stats"], cfg.Stats)
 
 	return &b
@@ -153,8 +153,8 @@ func (b *Bot) handleAction(ac *Action) {
 		if serv := b.Irc.GetServer(ac.Server); serv != nil {
 			serv.KickUser(ac.Channel, ac.User, ac.Data)
 		}
-         case A_NAMES:	    
-	        if serv := b.Irc.GetServer(ac.Server); serv != nil {
+	case A_NAMES:
+		if serv := b.Irc.GetServer(ac.Server); serv != nil {
 			serv.Names(ac)
 		}
 	}

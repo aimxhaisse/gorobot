@@ -16,7 +16,7 @@ if (!$sock)
 
 function	send_message($str)
 {
-    global	$sock, $priority, $channel, $user;
+    global	$sock, $server, $priority, $channel, $user;
 
     fwrite($sock, sprintf("%s %d PRIVMSG %s :%s -> %s\n", $server, $priority, $channel, $user, $str));
 }
@@ -30,7 +30,7 @@ function	send_private_message($str)
 
 function	send_command($str)
 {
-    global	$sock, $priority, $channel, $user;
+    global	$sock, $server, $priority;
 
     fwrite($sock, sprintf("%s %d %s\n", $server, $priority, $str));
 }

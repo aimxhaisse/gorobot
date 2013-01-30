@@ -24,7 +24,7 @@ if ($argc < 9) {
 
     $m = implode(" ", $argv);
     $message = sprintf("%s -> mission accomplished (or not)", $user);
-    $pre = sprintf("%s 3 KICK %s %s :%s", $s, $c, $u, $m);
+    $pre = sprintf("%s 3 KICK %s %s :%s\r\n", $s, $c, $u, $m);
 }
 
 // send the cmd to m1ch3l

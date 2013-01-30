@@ -3,12 +3,12 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"os/exec"
 	"regexp"
 	"strconv"
 	"strings"
-	"net"
 )
 
 type ScriptsConfig struct {
