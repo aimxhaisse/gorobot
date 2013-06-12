@@ -75,7 +75,6 @@ type Config struct {
 	Servers          map[string]*ConfigServer // Servers to connects to
 	Broadcast        BroadcastConfig          // Configuration of the broadcast module
 	Scripts          ScriptsConfig            // Configuration of the scripts module
-	Stats            StatsConfig              // Configuration of the stats module
 }
 
 // Config for logs

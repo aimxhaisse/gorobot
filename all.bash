@@ -11,7 +11,7 @@ USER="mxs"
 CHDIR="root"			# directory where we chdir/chroot
 PID="$PROJECT.pid"		# relative to $CHDIR
 BIN="$PROJECT"			# relative to $CHDIR
-LOG="$PROJECT.log"		# relative to $CHDIR
+LOG="m1ch3l.log"		# relative to $CHDIR
 CONFIG="m1ch3l.json"		# relative to $CHDIR
 LOGS="logs"			# relative to $CHDIR
 
