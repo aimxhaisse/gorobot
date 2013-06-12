@@ -5,6 +5,7 @@ import (
 	"flag"
 	"io/ioutil"
 	"log"
+	"os"
 )
 
 type EventType int
@@ -118,6 +119,13 @@ func newConfig(path string) *Config {
 	if e != nil {
 		log.Fatalf("config error: %v", e)
 	}
+        
+	// redirect logging to a file
+        writer, err := os.OpenFile("m1ch3l.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+        if err != nil {
+                log.Fatalf("Unable to open file log: %v", err)
+        }
+        log.SetOutput(writer)
 	return &cfg
 }
 

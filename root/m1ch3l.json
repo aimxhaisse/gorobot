@@ -34,11 +34,5 @@
 	"PublicScripts": "scripts/public",
 	"PrivateScripts": "scripts/private",
 	"LocalPort": "3112"
-    },
-    "Stats": {
-        "Timeout": 600,
-        "Server": "freenode",
-        "Channel": "##sbrk",
-	"OutputFile": "stats.log"
     }
 }
