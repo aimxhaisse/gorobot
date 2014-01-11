@@ -8,7 +8,7 @@ import (
 )
 
 // Writes the string to the log file, creates the log file if it doesn't exists
-func (robot *Bot) writeLog(file string, msg string) {
+func (robot *Bot) writeLog(file string, what string, msg string) {
 	currentTime := time.Now()
 	strTime := currentTime.String()
 	fh, ok := robot.LogMap[file]
@@ -20,7 +20,7 @@ func (robot *Bot) writeLog(file string, msg string) {
 		}
 		robot.LogMap[file] = fh
 	}
-	fh.WriteString(fmt.Sprintf("%s - %s\n", strTime, msg))
+	fh.WriteString(fmt.Sprintf("%s %s %s\n", strTime, what, msg))
 }
 
 func (robot *Bot) logEventPRIVMSG(ev *Event) {
@@ -32,23 +32,24 @@ func (robot *Bot) logEventPRIVMSG(ev *Event) {
 		file = fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.User)
 	}
 
-	robot.writeLog(file, fmt.Sprintf("%s: %s", ev.User, ev.Data))
+	robot.writeLog(file, "PRIVMSG", fmt.Sprintf("%s: %s", ev.User, ev.Data))
 }
 
 func (robot *Bot) logEventJOIN(ev *Event) {
 	file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.Channel)
-	robot.writeLog(file, fmt.Sprintf("%s has joined %s", ev.User, ev.Channel))
+	robot.writeLog(file, "JOIN", fmt.Sprintf("%s has joined %s", ev.User, ev.Channel))
 }
 
 func (robot *Bot) logEventPART(ev *Event) {
 	file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.Channel)
-	robot.writeLog(file, fmt.Sprintf("%s has left %s", ev.User, ev.Channel))
+	robot.writeLog(file, "PART", fmt.Sprintf("%s has left %s", ev.User, ev.Channel))
 }
 
 func (robot *Bot) logEventKICK(ev *Event) {
 	file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.Channel)
-	robot.writeLog(file, fmt.Sprintf("%s has been kicked from %s by %s", ev.Data, ev.Channel, ev.User))
+	robot.writeLog(file, "KICK", fmt.Sprintf("%s has been kicked from %s by %s", ev.Data, ev.Channel, ev.User))
 }
+
 
 // LogEvent logs events
 func (robot *Bot) LogEvent(ev *Event) {

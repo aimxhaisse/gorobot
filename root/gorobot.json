@@ -15,7 +15,7 @@
 	    "Password": "",
 	    "Channels": {
 		"##sbrk": {
-		    "Name": "#gorobot",
+		    "Name": "##sbrk",
 		    "Password": "",
 		    "Master": true
 		}
@@ -25,7 +25,7 @@
     "Broadcast": {
 	"Targets": {
 	    "freenode": [
-		"#sbrk"
+		"##buyed"
 	    ]
 	}
     },
