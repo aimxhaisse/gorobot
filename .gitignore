@@ -1,5 +1,7 @@
-*~
-*#
-.#*
 logs/*
 bin/config.json
+*.pid
+*.log
+m1ch3l
+daemonize
+gorobot

@@ -59,6 +59,20 @@ func (robot *Bot) LogCommand(server string, channel string, from string, cmd str
 	}
 }
 
+func (robot *Bot) logActionSAY(ac *Action) { 
+	if srv_cfg, ok := robot.Config.Servers[ac.Server]; ok {
+		file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ac.Server, ac.Channel)
+		robot.writeLog(file, "PRIVMSG", fmt.Sprintf("%s %s %s", srv_cfg.Nickname, ac.Channel, ac.Data))
+	}
+}
+
+func (robot *Bot) logActionKICK(ac *Action) {
+	if srv_cfg, ok := robot.Config.Servers[ac.Server]; ok {
+		file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ac.Server, ac.Channel)
+		robot.writeLog(file, "KICK", fmt.Sprintf("%s %s %s", srv_cfg.Nickname, ac.Channel, ac.Data))
+	}
+}
+
 // LogEvent logs events
 func (robot *Bot) LogEvent(ev *Event) {
 	if robot.Config.Logs.Enable {
@@ -71,6 +85,18 @@ func (robot *Bot) LogEvent(ev *Event) {
 			robot.logEventPART(ev)
 		case E_KICK:
 			robot.logEventKICK(ev)
+		}
+	}
+}
+
+// LogAction logs action
+func (robot *Bot) LogAction(ac *Action) {
+	if robot.Config.Logs.Enable {
+		switch ac.Type {
+		case A_SAY:
+			robot.logActionSAY(ac)
+		case A_KICK:
+			robot.logActionKICK(ac)
 		}
 	}
 }

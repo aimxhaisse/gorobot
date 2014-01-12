@@ -158,4 +158,5 @@ func (b *Bot) handleAction(ac *Action) {
 			serv.Names(ac)
 		}
 	}
+	b.LogAction(ac)
 }
