@@ -11,6 +11,10 @@ import (
 	"strings"
 )
 
+type CommandLogger interface {
+	LogCommand(server string, channel string, from string, cmd string)
+}
+
 type ScriptsConfig struct {
 	AdminScripts   string
 	PublicScripts  string
@@ -66,6 +70,8 @@ func execCmd(config ScriptsConfig, path string, ev Event) {
 	if err == nil {
 		command.Wait()
 	}
+
+
 }
 
 // creates a new action from what was sent on the admin port
@@ -131,7 +137,7 @@ func netAdmin(config ScriptsConfig, chac chan Action) {
 	}
 }
 
-func Scripts(chac chan Action, chev chan Event, config ScriptsConfig) {
+func Scripts(chac chan Action, chev chan Event, logger CommandLogger, config ScriptsConfig) {
 	go netAdmin(config, chac)
 	for {
 		e, ok := <-chev
@@ -148,6 +154,7 @@ func Scripts(chac chan Action, chev chan Event, config ScriptsConfig) {
 					e.AdminCmd,
 					len(e.Channel) == 0)
 				if len(path) > 0 {
+					logger.LogCommand(e.Server, e.Channel, e.User, m[1])
 					go execCmd(config, path, e)
 				}
 			}

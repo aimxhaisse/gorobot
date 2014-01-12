@@ -5,11 +5,13 @@ import (
 	"log"
 	"os"
 	"time"
+	"sync"
 )
 
 type Bot struct {
 	Config  *Config               // Main config of the bot
 	LogMap  map[string]*os.File   // Log files
+	LogLock sync.Mutex	      // Mutex for log
 	Irc     *Irc                  // Current IRC state
 	Modules map[string]chan Event // Loaded modules
 	Actions chan Action           // Read actions from modules
@@ -20,6 +22,7 @@ func NewBot(cfg *Config) *Bot {
 	b := Bot{
 		Config:  cfg,
 		LogMap:  make(map[string]*os.File),
+		LogLock: sync.Mutex{},
 		Irc:     NewIrc(),
 		Modules: make(map[string]chan Event),
 		Actions: make(chan Action),
@@ -31,7 +34,7 @@ func NewBot(cfg *Config) *Bot {
 	go Broadcast(b.Actions, b.Modules["broadcast"], cfg.Broadcast)
 
 	b.Modules["scripts"] = make(chan Event)
-	go Scripts(b.Actions, b.Modules["scripts"], cfg.Scripts)
+	go Scripts(b.Actions, b.Modules["scripts"], &b, cfg.Scripts)
 
 	return &b
 }

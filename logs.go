@@ -11,6 +11,8 @@ import (
 func (robot *Bot) writeLog(file string, what string, msg string) {
 	currentTime := time.Now()
 	strTime := currentTime.String()
+	robot.LogLock.Lock()
+	defer robot.LogLock.Unlock()
 	fh, ok := robot.LogMap[file]
 	if !ok {
 		fh, _ = os.OpenFile(file, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0666)
@@ -32,24 +34,30 @@ func (robot *Bot) logEventPRIVMSG(ev *Event) {
 		file = fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.User)
 	}
 
-	robot.writeLog(file, "PRIVMSG", fmt.Sprintf("%s: %s", ev.User, ev.Data))
+	robot.writeLog(file, "PRIVMSG", fmt.Sprintf("%s %s", ev.User, ev.Data))
 }
 
 func (robot *Bot) logEventJOIN(ev *Event) {
 	file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.Channel)
-	robot.writeLog(file, "JOIN", fmt.Sprintf("%s has joined %s", ev.User, ev.Channel))
+	robot.writeLog(file, "JOIN", fmt.Sprintf("%s %s", ev.User, ev.Channel))
 }
 
 func (robot *Bot) logEventPART(ev *Event) {
 	file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.Channel)
-	robot.writeLog(file, "PART", fmt.Sprintf("%s has left %s", ev.User, ev.Channel))
+	robot.writeLog(file, "PART", fmt.Sprintf("%s %s", ev.User, ev.Channel))
 }
 
 func (robot *Bot) logEventKICK(ev *Event) {
 	file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ev.Server, ev.Channel)
-	robot.writeLog(file, "KICK", fmt.Sprintf("%s has been kicked from %s by %s", ev.Data, ev.Channel, ev.User))
+	robot.writeLog(file, "KICK", fmt.Sprintf("%s %s %s", ev.User, ev.Channel, ev.Data))
 }
 
+func (robot *Bot) LogCommand(server string, channel string, from string, cmd string) {
+	if robot.Config.Logs.Enable {
+		file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, server, channel)
+		robot.writeLog(file, "CMD", fmt.Sprintf("%s %s", from, cmd))
+	}
+}
 
 // LogEvent logs events
 func (robot *Bot) LogEvent(ev *Event) {
