@@ -19,7 +19,7 @@ USER gorobot
 ADD . /home/gorobot/gorobot/
 WORKDIR /home/gorobot/gorobot/
 
-RUN sed -i s/mxs/$USER/ all.bash && \
+RUN sed -i s/mxs/gorobot/ all.bash && \
     ./all.bash build
 
 # admin port for commands
