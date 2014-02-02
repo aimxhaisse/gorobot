@@ -137,7 +137,8 @@ case $1 in
 	
 	# build the website
 	ok "building $PROJECT..."
-	go build -o $CHDIR/$PROJECT
+	go build -o $PROJECT
+	cp $PROJECT $CHDIR/$PROJECT
 	warn-upon-failure $? "unable to build $PROJECT"
 	ok "$PROJECT built (or not)..."
 	exit 0

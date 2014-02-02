@@ -31,7 +31,4 @@ RUN sed -i s/mxs/$USERNAME/ ./all.bash && \
 EXPOSE 3112
 
 # here we go
-CMD touch ./root/gorobot.log && \
-    chown -R $USERNAME . && \
-    ./all.bash start && \
-    tail -F ./root/gorobot.log
+CMD ./start.sh
