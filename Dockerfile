@@ -2,6 +2,7 @@ FROM ubuntu:latest
 MAINTAINER s. rannou <mxs@sbrk.org>, Manfred Touron <m@42.am>
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV USERNAME gorobot
 
 # deps
 RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list && \
@@ -11,19 +12,26 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt
     golang git binutils gcc netcat bc
 
 # user
-RUN groupadd gorobot && \
-    useradd -m gorobot -g gorobot
-USER gorobot
+RUN groupadd $USERNAME && \
+    useradd -m $USERNAME -g $USERNAME
 
 # build
-ADD . /home/gorobot/gorobot/
+ADD . /tmp/gorobot/
+RUN mv /tmp/gorobot /home/$USERNAME/gorobot && \
+    mkdir -p /home/$USERNAME/gorobot/root/logs && \
+    touch /home/$USERNAME/gorobot/root/gorobot.log && \
+    chown -R $USERNAME /home/$USERNAME/gorobot
+# $USERNME not expanded in WORKDIR
 WORKDIR /home/gorobot/gorobot/
 
-RUN sed -i s/mxs/gorobot/ all.bash && \
+RUN sed -i s/mxs/$USERNAME/ ./all.bash && \
     ./all.bash build
 
 # admin port for commands
 EXPOSE 3112
 
 # here we go
-CMD ./all.bash start && tail -F ./root/gorobot.log
+CMD touch ./root/gorobot.log && \
+    chown -R $USERNAME . && \
+    ./all.bash start && \
+    tail -F ./root/gorobot.log
