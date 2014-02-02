@@ -68,7 +68,7 @@ type Action struct {
 	Raw      string     // If Type = RAW, send this directly over the server
 }
 
-// Main config of m1ch3l
+// Main config of gorobot
 type Config struct {
 	AutoRejoinOnKick bool                     // Rejoin channel when kicked
 	Logs             ConfigLogs               // Log config
@@ -104,7 +104,7 @@ type ConfigChannel struct {
 
 // Flag settings
 var (
-	configPath = flag.String("c", "m1ch3l.json", "path to the configuration file (e.g, m1ch3l.json)")
+	configPath = flag.String("c", "gorobot.json", "path to the configuration file (e.g, gorobot.json)")
 )
 
 // Creates a new Config from a config file
@@ -120,13 +120,14 @@ func newConfig(path string) *Config {
 	}
         
 	// redirect logging to a file
-        writer, err := os.OpenFile("m1ch3l.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+        writer, err := os.OpenFile("gorobot.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
         if err != nil {
                 log.Fatalf("Unable to open file log: %v", err)
         }
         log.SetOutput(writer)
 	return &cfg
 }
+
 
 func main() {
 	flag.Parse()
