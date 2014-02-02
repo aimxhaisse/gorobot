@@ -88,6 +88,7 @@ case $1 in
     "start")
 	ok "starting $PROJECT"
 	mkdir -p $CHDIR/$LOGS
+	touch $CHDIR/$LOG
 	./daemonize -p $PID -u $USER -c $CHDIR -- ./$PROJECT -c $CONFIG
 	warn-upon-failure $? "Can't start the daemon, check your config" || exit 1
 	ok "daemon started"
