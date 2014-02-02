@@ -1,18 +1,19 @@
 #!/usr/bin/env bash
 #
 # author: s. rannou <mxs@sbrk.org>
+# contributor: Manfred Touron <m@42.am>
 
 PROJECT="gorobot"
 
 # user to run as
-USER="mxs"
+USER="gorobot"
 
 # edit these to your needs if you know what you are doing
 CHDIR="root"			# directory where we chdir/chroot
 PID="$PROJECT.pid"		# relative to $CHDIR
 BIN="$PROJECT"			# relative to $CHDIR
-LOG="m1ch3l.log"		# relative to $CHDIR
-CONFIG="m1ch3l.json"		# relative to $CHDIR
+LOG="gorobot.log"		# relative to $CHDIR
+CONFIG="gorobot.json"		# relative to $CHDIR
 LOGS="logs"			# relative to $CHDIR
 
 cd $(dirname $0)
@@ -87,6 +88,7 @@ case $1 in
     "start")
 	ok "starting $PROJECT"
 	mkdir -p $CHDIR/$LOGS
+	touch $CHDIR/$LOG
 	./daemonize -p $PID -u $USER -c $CHDIR -- ./$PROJECT -c $CONFIG
 	warn-upon-failure $? "Can't start the daemon, check your config" || exit 1
 	ok "daemon started"
