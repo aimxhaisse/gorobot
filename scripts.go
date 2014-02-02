@@ -121,9 +121,9 @@ func netAdminReadFromCon(con *net.TCPConn, chac chan Action) {
 
 // opens the admin port and directly send RAW commands to grobot
 func netAdmin(config ScriptsConfig, chac chan Action) {
-	a, err := net.ResolveTCPAddr("tcp", "localhost:"+config.LocalPort)
+	a, err := net.ResolveTCPAddr("tcp", config.LocalPort)
 	if err != nil {
-		log.Fatalf("Can't resolve to localhost: %v\n", err)
+		log.Fatalf("Can't resolve: %v\n", err)
 	}
 	listener, err := net.ListenTCP("tcp", a)
 	if err != nil {
