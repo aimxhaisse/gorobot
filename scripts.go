@@ -55,9 +55,10 @@ func execCmd(config ScriptsConfig, path string, ev Event) {
 	log.Printf("Executing [%s]\n", path)
 
 	in_params := strings.Split(ev.Data, " ")
+	dynamic_hostname := strings.Split(config.LocalPort, ":")
 
 	command := exec.Command(path,
-		config.LocalPort,
+		dynamic_hostname[1],
 		ev.Server,
 		ev.Channel,
 		ev.User)
