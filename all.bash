@@ -6,7 +6,7 @@
 PROJECT="gorobot"
 
 # user to run as
-USER="gorobot"
+USER="mxs"
 
 # edit these to your needs if you know what you are doing
 CHDIR="root"			# directory where we chdir/chroot

@@ -1,4 +1,6 @@
 {
+    "HTTPInterface": "*",
+    "HTTPPort": 5004,
     "AutoRejoinOnKick": true,
     "Logs": {
 	"Enable": true,
@@ -9,13 +11,13 @@
 	    "Name": "freenode",
 	    "Host": "irc.freenode.net:6667",
 	    "FloodControl": true,
-	    "Nickname": "gorobot",
-	    "Realname": "gorobot",
-	    "Username": "gorobot",
+	    "Nickname": "m1sh3l",
+	    "Realname": "m1sh3l",
+	    "Username": "m1sh3l",
 	    "Password": "",
 	    "Channels": {
 		"##sbrk": {
-		    "Name": "##sbrk",
+		    "Name": "##m1ch3l-dev",
 		    "Password": "",
 		    "Master": true
 		}
@@ -25,7 +27,7 @@
     "Broadcast": {
 	"Targets": {
 	    "freenode": [
-		"##buyed"
+		"##m1ch3l-dev"
 	    ]
 	}
     },
