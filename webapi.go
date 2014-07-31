@@ -26,23 +26,41 @@ type WebAPIConfig struct {
 	HTTPServerName   string                   // Internal name of the server (should not conflict with server aliases)
 }
 
-func WebAPI(cfg *WebAPIConfig, ev chan Event, ac chan Action) {
-	in_session := make(map[string][]Action)
+type WebAPIHandler struct {
+	Sessions	map[string][]Action
+	Events		chan Event
+	Actions		chan Action
+}
 
-	listen_on = fmt.Sprintf("%s:%d", cfg.HTTPInterface, cfg.HTTPPort)
-	if http.ListenAndServe(listen_on) != nil {
-		log.Printf("webapi is not able to listen on %s, bye bye", listen_on)
-		return
+func NewWebAPIHandler(ev chan Event, ac chan Action) *WebAPIHandler {
+	return &WebAPIHandler{
+		make(map[string][]Action),
+		ev,
+		ac,
 	}
+}
 
+func (h *WebAPIHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Printf("received a request")
+}
+
+func (h *WebAPIHandler) Loop() {
 	for {
 		select {
-		case action, ok := <-ac:
+		case action, ok := <-h.Actions:
 			if !ok {
 				log.Printf("webapi action channel closed, bye bye")
 				return
 			}
-			in_session[action.User] = append(in_session[action.User], action)
+			h.Sessions[action.User] = append(h.Sessions[action.User], action)
 		}
+	}
+}
+
+func WebAPI(cfg *WebAPIConfig, ev chan Event, ac chan Action) {
+	listen_on := fmt.Sprintf("%s:%d", cfg.HTTPInterface, cfg.HTTPPort)
+	if http.ListenAndServe(listen_on, NewWebAPIHandler(ev, ac)) != nil {
+		log.Printf("webapi is not able to listen on %s, bye bye", listen_on)
+		return
 	}
 }
