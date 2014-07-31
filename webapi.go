@@ -1,7 +1,7 @@
 package main
 
 import (
-	"time"
+	"log"
 )
 
 // Some context around this WebAPI.
@@ -25,7 +25,16 @@ type WebAPIConfig struct {
 }
 
 func WebAPI(cfg *WebAPIConfig, ev chan Event, ac chan Action) {
+	in_session := make(map[string][]Action)
+
 	for {
-		time.Sleep(1e9)
+		select {
+		case action, ok := <-ac:
+			if !ok {
+				log.Printf("webapi action channel closed, bye bye")
+				return
+			}
+			in_session[action.User] = append(in_session[action.User], action)
+		}
 	}
 }
