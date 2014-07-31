@@ -15,6 +15,7 @@ type Bot struct {
 	Irc     *Irc                  // Current IRC state
 	Modules map[string]chan Event // Loaded modules
 	Actions chan Action           // Read actions from modules
+	WebAPI  *WebAPI		      // WebAPI
 }
 
 // NewBot creates a new IRC bot with the given config
