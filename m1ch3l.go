@@ -71,12 +71,11 @@ type Action struct {
 // Main config of gorobot
 type Config struct {
 	AutoRejoinOnKick bool                     // Rejoin channel when kicked
-	HTTPInterface    string			  // HTTP interface to use
-	HTTPPort	 int			  // HTTP port to use
 	Logs             ConfigLogs               // Log config
 	Servers          map[string]*ConfigServer // Servers to connects to
 	Broadcast        BroadcastConfig          // Configuration of the broadcast module
 	Scripts          ScriptsConfig            // Configuration of the scripts module
+	WebAPI		 WebAPIConfig		  // Configuration of the WebAPI module
 }
 
 // Config for logs

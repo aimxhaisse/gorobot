@@ -17,18 +17,14 @@ import (
 // knows which actions are interesting (just like a regular IRC server,
 // really).
 
-type WebAPI struct {
+// Config for the WebAPI
+type WebAPIConfig struct {
+	HTTPInterface    string			  // HTTP interface to use
+	HTTPPort	 int			  // HTTP port to use
+	HTTPServerName   string                   // Internal name of the server (should not conflict with server aliases)
 }
 
-func NewWebAPI(cfg *Config, chev chan Event) *WebAPI {
-	r := &WebAPI{}
-
-	go r.pollEvents(chev)
-
-	return r
-}
-
-func (w *WebAPI) pollEvents(chev chan Event) {
+func WebAPI(cfg *WebAPIConfig, ev chan Event, ac chan Action) {
 	for {
 		time.Sleep(1e9)
 	}

@@ -9,13 +9,13 @@ import (
 )
 
 type Bot struct {
-	Config  *Config               // Main config of the bot
-	LogMap  map[string]*os.File   // Log files
-	LogLock sync.Mutex	      // Mutex for log
-	Irc     *Irc                  // Current IRC state
-	Modules map[string]chan Event // Loaded modules
-	Actions chan Action           // Read actions from modules
-	WebAPI  *WebAPI		      // WebAPI
+	Config         *Config               // Main config of the bot
+	LogMap         map[string]*os.File   // Log files
+	LogLock        sync.Mutex	      // Mutex for log
+	Irc            *Irc                  // Current IRC state
+	Modules        map[string]chan Event // Loaded modules
+	Actions        chan Action           // Read actions from modules
+	WebAPIActions  chan Action           // These are special actions that should be handled by the WebAPI
 }
 
 // NewBot creates a new IRC bot with the given config
@@ -27,6 +27,7 @@ func NewBot(cfg *Config) *Bot {
 		Irc:     NewIrc(),
 		Modules: make(map[string]chan Event),
 		Actions: make(chan Action),
+		WebAPIActions: make(chan Action),
 	}
 	b.initLog(b.Config.Logs)
 	b.Irc.Connect(b.Config.Servers)
@@ -36,6 +37,9 @@ func NewBot(cfg *Config) *Bot {
 
 	b.Modules["scripts"] = make(chan Event)
 	go Scripts(b.Actions, b.Modules["scripts"], &b, cfg.Scripts)
+
+	b.Modules["webapi"] = make(chan Event)
+	go WebAPI(&cfg.WebAPI, b.Modules["webapi"], b.WebAPIActions)
 
 	return &b
 }
@@ -137,27 +141,32 @@ func (b *Bot) handleAction(ac *Action) {
 		}
 	}
 
-	switch ac.Type {
-	case A_SAY:
-		if serv := b.Irc.GetServer(ac.Server); serv != nil {
-			serv.Say(ac)
-		}
-	case A_JOIN:
-		if serv := b.Irc.GetServer(ac.Server); serv != nil {
-			serv.JoinChannel(ac.Channel)
-		}
-	case A_PART:
-		if serv := b.Irc.GetServer(ac.Server); serv != nil {
-			serv.LeaveChannel(ac.Channel, ac.Data)
-		}
-	case A_KICK:
-		if serv := b.Irc.GetServer(ac.Server); serv != nil {
-			serv.KickUser(ac.Channel, ac.User, ac.Data)
-		}
-	case A_NAMES:
-		if serv := b.Irc.GetServer(ac.Server); serv != nil {
-			serv.Names(ac)
+	if ac.Server == b.Config.WebAPI.HTTPServerName {
+		b.WebAPIActions <- *ac
+	} else {
+		switch ac.Type {
+		case A_SAY:
+			if serv := b.Irc.GetServer(ac.Server); serv != nil {
+				serv.Say(ac)
+			}
+		case A_JOIN:
+			if serv := b.Irc.GetServer(ac.Server); serv != nil {
+				serv.JoinChannel(ac.Channel)
+			}
+		case A_PART:
+			if serv := b.Irc.GetServer(ac.Server); serv != nil {
+				serv.LeaveChannel(ac.Channel, ac.Data)
+			}
+		case A_KICK:
+			if serv := b.Irc.GetServer(ac.Server); serv != nil {
+				serv.KickUser(ac.Channel, ac.User, ac.Data)
+			}
+		case A_NAMES:
+			if serv := b.Irc.GetServer(ac.Server); serv != nil {
+				serv.Names(ac)
+			}
 		}
 	}
+
 	b.LogAction(ac)
 }
