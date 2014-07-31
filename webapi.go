@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"net/http"
+	"fmt"
 )
 
 // Some context around this WebAPI.
@@ -26,6 +28,12 @@ type WebAPIConfig struct {
 
 func WebAPI(cfg *WebAPIConfig, ev chan Event, ac chan Action) {
 	in_session := make(map[string][]Action)
+
+	listen_on = fmt.Sprintf("%s:%d", cfg.HTTPInterface, cfg.HTTPPort)
+	if http.ListenAndServe(listen_on) != nil {
+		log.Printf("webapi is not able to listen on %s, bye bye", listen_on)
+		return
+	}
 
 	for {
 		select {
