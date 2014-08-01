@@ -1,6 +1,4 @@
 {
-    "HTTPInterface": "*",
-    "HTTPPort": 5004,
     "AutoRejoinOnKick": true,
     "Logs": {
 	"Enable": true,
@@ -36,5 +34,10 @@
 	"PublicScripts": "scripts/public",
 	"PrivateScripts": "scripts/private",
 	"LocalPort": "localhost:3112"
+    },
+    "WebAPI": {
+	"HTTPInterface": "",
+	"HTTPPort": 5004,
+	"HTTPServerName": "webchat"
     }
 }

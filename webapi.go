@@ -42,6 +42,7 @@ func NewWebAPIHandler(ev chan Event, ac chan Action) *WebAPIHandler {
 
 func (h *WebAPIHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Printf("received a request")
+	fmt.Fprintf(w, "Welcome to the home page!")
 }
 
 func (h *WebAPIHandler) Loop() {
@@ -59,6 +60,7 @@ func (h *WebAPIHandler) Loop() {
 
 func WebAPI(cfg *WebAPIConfig, ev chan Event, ac chan Action) {
 	listen_on := fmt.Sprintf("%s:%d", cfg.HTTPInterface, cfg.HTTPPort)
+	log.Printf("WebAPI listens on %s", listen_on)
 	if http.ListenAndServe(listen_on, NewWebAPIHandler(ev, ac)) != nil {
 		log.Printf("webapi is not able to listen on %s, bye bye", listen_on)
 		return
