@@ -38,8 +38,7 @@ func NewBot(cfg *Config) *Bot {
 	b.Modules["scripts"] = make(chan Event)
 	go Scripts(b.Actions, b.Modules["scripts"], &b, cfg.Scripts)
 
-	b.Modules["webapi"] = make(chan Event)
-	go WebAPI(&cfg.WebAPI, b.Modules["webapi"], b.WebAPIActions)
+	go WebAPI(&cfg.WebAPI, b.Irc.Events, b.WebAPIActions)
 
 	return &b
 }
@@ -63,6 +62,14 @@ func (b *Bot) Run() {
 			srv := b.Irc.GetServer(event.Server)
 			if srv != nil {
 				b.handleEvent(srv, &event)
+			} else if event.Server == b.Config.WebAPI.HTTPServerName {
+				log.Printf("")
+				// Dispatch the event to modules
+				for _, chev := range b.Modules {
+					go func(chev chan Event, event Event) {
+						chev <- event
+					}(chev, event)
+				}
 			}
 		}
 	}

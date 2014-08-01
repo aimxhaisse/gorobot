@@ -71,8 +71,6 @@ func execCmd(config ScriptsConfig, path string, ev Event) {
 	if err == nil {
 		command.Wait()
 	}
-
-
 }
 
 // creates a new action from what was sent on the admin port

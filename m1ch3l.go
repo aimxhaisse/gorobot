@@ -129,7 +129,6 @@ func newConfig(path string) *Config {
 	return &cfg
 }
 
-
 func main() {
 	flag.Parse()
 	cfg := newConfig(*configPath)

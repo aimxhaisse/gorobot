@@ -14,5 +14,4 @@ do
 done
 bite="${bite}D"
 
-echo $@ > /tmp/test
-echo "$se 1 PRIVMSG $ch :${us}> $bite" | nc -q 1 localhost $po
+echo "$se 1 PRIVMSG $us :${us}> $bite" | nc -q 1 localhost $po
