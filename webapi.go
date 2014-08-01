@@ -104,6 +104,7 @@ func (h *WebAPIHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		go func (event chan Event, srv_name string, login string, data string) {
 			event <- Event{false, srv_name, "", login, E_PRIVMSG, data, "", 42}
 		}(h.Events, h.Config.HTTPServerName, req.Login, req.Data)
+		h.sendResponse(w, "RC_OK", make([]string, 0))
 	}
 }
 
