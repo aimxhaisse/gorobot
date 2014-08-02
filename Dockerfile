@@ -13,7 +13,7 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu saucy main universe" > /etc/apt/s
 
 # user
 RUN groupadd $USERNAME && \
-    useradd -m $USERNAME -g $USERNAME
+    useradd -m $USERNAME -g $USERNAME -u 1013 -g 1013
 
 # build
 ADD . /tmp/gorobot/
