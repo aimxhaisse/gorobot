@@ -74,7 +74,7 @@ func (h *WebAPIHandler) sendResponse(w http.ResponseWriter, rc string, messages 
 func (h *WebAPIHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	content := make([]byte, 1024)
 	n, err := r.Body.Read(content)
-	if err != nil {
+	if err != nil || n == 0 {
 		h.sendResponse(w, "RC_NOK", make([]string, 0))
 		return
 	}
