@@ -1,15 +1,15 @@
-FROM ubuntu:latest
+FROM ubuntu:saucy
 MAINTAINER s. rannou <mxs@sbrk.org>, Manfred Touron <m@42.am>
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV USERNAME gorobot
 
 # deps
-RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list && \
+RUN echo "deb http://archive.ubuntu.com/ubuntu saucy main universe" > /etc/apt/sources.list && \
     apt-get update && \
     apt-get upgrade && \
     apt-get install -qq -y \
-    golang git binutils gcc netcat bc
+    git netcat golang bc build-essential
 
 # user
 RUN groupadd $USERNAME && \
