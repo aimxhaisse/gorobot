@@ -75,7 +75,7 @@ type Config struct {
 	Servers          map[string]*ConfigServer // Servers to connects to
 	Broadcast        BroadcastConfig          // Configuration of the broadcast module
 	Scripts          ScriptsConfig            // Configuration of the scripts module
-	WebAPI		 WebAPIConfig		  // Configuration of the WebAPI module
+	WebAPI           WebAPIConfig             // Configuration of the WebAPI module
 }
 
 // Config for logs
@@ -119,13 +119,13 @@ func newConfig(path string) *Config {
 	if e != nil {
 		log.Fatalf("config error: %v", e)
 	}
-        
+
 	// redirect logging to a file
-        writer, err := os.OpenFile("gorobot.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
-        if err != nil {
-                log.Fatalf("Unable to open file log: %v", err)
-        }
-        log.SetOutput(writer)
+	writer, err := os.OpenFile("gorobot.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		log.Fatalf("Unable to open file log: %v", err)
+	}
+	log.SetOutput(writer)
 	return &cfg
 }
 

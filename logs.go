@@ -59,7 +59,7 @@ func (robot *Bot) LogCommand(server string, channel string, from string, cmd str
 	}
 }
 
-func (robot *Bot) logActionSAY(ac *Action) { 
+func (robot *Bot) logActionSAY(ac *Action) {
 	if srv_cfg, ok := robot.Config.Servers[ac.Server]; ok {
 		file := fmt.Sprintf("%s/%s-%s.log", robot.Config.Logs.Directory, ac.Server, ac.Channel)
 		robot.writeLog(file, "PRIVMSG", fmt.Sprintf("%s %s %s", srv_cfg.Nickname, ac.Channel, ac.Data))

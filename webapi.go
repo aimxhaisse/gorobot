@@ -1,10 +1,10 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
-	"fmt"
-	"encoding/json"
 	"sync"
 )
 
@@ -23,28 +23,28 @@ import (
 
 // Config for the WebAPI
 type WebAPIConfig struct {
-	HTTPInterface    string			  // HTTP interface to use
-	HTTPPort	 int			  // HTTP port to use
-	HTTPServerName   string                   // Internal name of the server (should not conflict with server aliases)
+	HTTPInterface  string // HTTP interface to use
+	HTTPPort       int    // HTTP port to use
+	HTTPServerName string // Internal name of the server (should not conflict with server aliases)
 }
 
 type WebAPIHandler struct {
-	Config		WebAPIConfig
-	Sessions	map[string][]Action
-	SessionsLock	sync.Mutex
-	Events		chan Event
-	Actions		chan Action
+	Config       WebAPIConfig
+	Sessions     map[string][]Action
+	SessionsLock sync.Mutex
+	Events       chan Event
+	Actions      chan Action
 }
 
 type WebAPIRequest struct {
-	Action		string
-	Login		string
-	Data		string
+	Action string
+	Login  string
+	Data   string
 }
 
 type WebAPIResponse struct {
-	ReturnCode	string
-	Messages	[]string
+	ReturnCode string
+	Messages   []string
 }
 
 func NewWebAPIHandler(cfg WebAPIConfig, ev chan Event, ac chan Action) *WebAPIHandler {
@@ -60,7 +60,7 @@ func NewWebAPIHandler(cfg WebAPIConfig, ev chan Event, ac chan Action) *WebAPIHa
 func (h *WebAPIHandler) sendResponse(w http.ResponseWriter, rc string, messages []string) {
 	rsp := WebAPIResponse{
 		ReturnCode: rc,
-		Messages: messages,
+		Messages:   messages,
 	}
 	w.Header().Add("content-type", "application/json")
 	b, err := json.Marshal(&rsp)
@@ -98,10 +98,10 @@ func (h *WebAPIHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			h.sendResponse(w, "RC_OK", msgs)
 		} else {
 			h.SessionsLock.Unlock()
-			h.sendResponse(w, "RC_OK", make([]string, 0))			
+			h.sendResponse(w, "RC_OK", make([]string, 0))
 		}
 	} else if req.Action == "SAY" {
-		go func (event chan Event, srv_name string, login string, data string) {
+		go func(event chan Event, srv_name string, login string, data string) {
 			event <- Event{false, srv_name, "", login, E_PRIVMSG, data, "", 42}
 		}(h.Events, h.Config.HTTPServerName, req.Login, req.Data)
 		h.sendResponse(w, "RC_OK", make([]string, 0))

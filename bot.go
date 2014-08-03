@@ -4,29 +4,29 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 	"sync"
+	"time"
 )
 
 type Bot struct {
-	Config         *Config               // Main config of the bot
-	LogMap         map[string]*os.File   // Log files
-	LogLock        sync.Mutex	      // Mutex for log
-	Irc            *Irc                  // Current IRC state
-	Modules        map[string]chan Event // Loaded modules
-	Actions        chan Action           // Read actions from modules
-	WebAPIActions  chan Action           // These are special actions that should be handled by the WebAPI
+	Config        *Config               // Main config of the bot
+	LogMap        map[string]*os.File   // Log files
+	LogLock       sync.Mutex            // Mutex for log
+	Irc           *Irc                  // Current IRC state
+	Modules       map[string]chan Event // Loaded modules
+	Actions       chan Action           // Read actions from modules
+	WebAPIActions chan Action           // These are special actions that should be handled by the WebAPI
 }
 
 // NewBot creates a new IRC bot with the given config
 func NewBot(cfg *Config) *Bot {
 	b := Bot{
-		Config:  cfg,
-		LogMap:  make(map[string]*os.File),
-		LogLock: sync.Mutex{},
-		Irc:     NewIrc(),
-		Modules: make(map[string]chan Event),
-		Actions: make(chan Action),
+		Config:        cfg,
+		LogMap:        make(map[string]*os.File),
+		LogLock:       sync.Mutex{},
+		Irc:           NewIrc(),
+		Modules:       make(map[string]chan Event),
+		Actions:       make(chan Action),
 		WebAPIActions: make(chan Action),
 	}
 	b.initLog(b.Config.Logs)
