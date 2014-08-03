@@ -12,8 +12,8 @@ RUN echo "deb http://archive.ubuntu.com/ubuntu saucy main universe" > /etc/apt/s
     git netcat golang bc build-essential
 
 # user
-RUN groupadd $USERNAME && \
-    useradd -m $USERNAME -g $USERNAME -u 1013 -g 1013
+RUN groupadd $USERNAME -g 1013 && \
+    useradd -m $USERNAME -u 1013 -g 1013
 
 # build
 ADD . /tmp/gorobot/
