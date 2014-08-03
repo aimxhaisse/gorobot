@@ -39,5 +39,11 @@
 	"HTTPInterface": "",
 	"HTTPPort": 5004,
 	"HTTPServerName": "webchat"
+    },
+    "Markov": {
+	"PrivateMessages": {
+	    "AlwaysRespondToQuestions": true,
+	    "Verbosity": 95
+	}
     }
 }
