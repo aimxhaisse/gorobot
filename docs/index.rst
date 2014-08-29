@@ -6,12 +6,28 @@
 Welcome to m1ch3l's documentation!
 ==================================
 
-Contents:
+m1ch3l, also know as gorobot, is an IRC robot with the following
+features:
+
+* support of multiple servers
+* support of multiple channels
+* support of private conversations
+* flood control to be able to print pokemons in ASCII art without
+  being G-lined
+* administration commands via a dedicated set IRC channels (admin channels)
+* JSON configuration
+* external scripts that can be invoked via IRC (!commands)
+* support of Docker
+
+The official m1ch3l lurks in the shadows of freenode, but there are
+probably some others hanging around in the wild, we don't know how
+many.
+
+Contents
+========
 
 .. toctree::
    :maxdepth: 2
-
-
 
 Indices and tables
 ==================
