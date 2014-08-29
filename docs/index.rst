@@ -29,6 +29,27 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+Configuration
+-------------
+
+First Start
+-----------
+
+Adding a Custom Command
+-----------------------
+
+Advanced Configuration
+----------------------
+
+Broadcast Module
+................
+
+Markov Module
+.............
+
+FQA
+---
+
 Indices and tables
 ==================
 
