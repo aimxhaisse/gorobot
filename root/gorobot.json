@@ -41,9 +41,12 @@
 	"HTTPServerName": "webchat"
     },
     "Markov": {
+	"PrefixLen": 3,
+	"MaxWords": 15,
 	"PrivateMessages": {
 	    "AlwaysRespondToQuestions": true,
-	    "Verbosity": 95
+	    "Verbosity": 95,
+	    "Record": true
 	}
     }
 }
