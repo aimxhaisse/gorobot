@@ -38,9 +38,6 @@ func NewBot(cfg *Config) *Bot {
 	b.Modules["scripts"] = make(chan Event)
 	go Scripts(b.Actions, b.Modules["scripts"], &b, cfg.Scripts)
 
-	b.Modules["markov"] = make(chan Event)
-	go Markov(b.Actions, b.Modules["markov"], cfg.Markov)
-
 	go WebAPI(&cfg.WebAPI, b.Irc.Events, b.WebAPIActions)
 
 	return &b

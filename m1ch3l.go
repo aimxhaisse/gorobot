@@ -76,7 +76,6 @@ type Config struct {
 	Broadcast        BroadcastConfig          // Configuration of the broadcast module
 	Scripts          ScriptsConfig            // Configuration of the scripts module
 	WebAPI           WebAPIConfig             // Configuration of the WebAPI module
-	Markov           MarkovConfig             // Configuration of the markov module
 }
 
 // Config for logs
