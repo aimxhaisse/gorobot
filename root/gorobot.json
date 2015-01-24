@@ -39,5 +39,5 @@
 	"HTTPInterface": "",
 	"HTTPPort": 5004,
 	"HTTPServerName": "webchat"
-    },
+    }
 }
