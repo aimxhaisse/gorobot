@@ -50,6 +50,9 @@ func (serv *Server) Init(chev chan Event, flood_control bool) {
 	go reader(destroy, serv.Config.Name, serv.Socket, chev)
 	go writer(destroy, serv.Socket, serv.SendMeRaw, flood_control)
 	serv.Connected = true
+	if len(serv.Config.Password) > 0 {
+		serv.SendRawCommand(fmt.Sprintf("PASS %s\r\n", serv.Config.Password), PRIORITY_HIGH)
+	}
 	serv.SendRawCommand(fmt.Sprintf("NICK %s\r\n", serv.Config.Nickname), PRIORITY_HIGH)
 	serv.SendRawCommand(fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n", serv.Config.Username, serv.Config.Realname), PRIORITY_HIGH)
 	log.Printf("connected to %s (%s)", serv.Config.Name, serv.Config.Host)
