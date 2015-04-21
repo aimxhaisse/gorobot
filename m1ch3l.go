@@ -86,14 +86,15 @@ type ConfigLogs struct {
 
 // Config for an IRC serv to connect to
 type ConfigServer struct {
-	Name         string                    // Alias of the server
-	Host         string                    // Address of the server
-	FloodControl bool                      // Enable flood control
-	Nickname     string                    // Nickname of the IRC robot
-	Realname     string                    // Real name of the IRC robot
-	Username     string                    // Username of the IRC robot
-	Password     string                    // Password of the IRC server
-	Channels     map[string]*ConfigChannel // List of channels to join
+	Name             string                    // Alias of the server
+	Host             string                    // Address of the server
+	FloodControl     bool                      // Enable flood control
+	Nickname         string                    // Nickname of the IRC robot
+	Realname         string                    // Real name of the IRC robot
+	Username         string                    // Username of the IRC robot
+	Password         string                    // Password of the IRC server
+	NickServPassword string                    // Password to identify to NickServ
+	Channels         map[string]*ConfigChannel // List of channels to join
 }
 
 // Config for an IRC channel to join

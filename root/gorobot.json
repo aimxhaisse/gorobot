@@ -12,9 +12,10 @@
 	    "Nickname": "m1sh3l",
 	    "Realname": "m1sh3l",
 	    "Username": "m1sh3l",
-	    "Password": "",
+	    "NickServPassword": "ouinon",
+	    "Password": "ouinon",
 	    "Channels": {
-		"##sbrk": {
+		"##m1ch3l-dev": {
 		    "Name": "##m1ch3l-dev",
 		    "Password": "",
 		    "Master": true
@@ -33,11 +34,11 @@
 	"AdminScripts": "scripts/admin",
 	"PublicScripts": "scripts/public",
 	"PrivateScripts": "scripts/private",
-	"LocalPort": "localhost:3112"
+	"LocalPort": "localhost:3113"
     },
     "WebAPI": {
 	"HTTPInterface": "",
-	"HTTPPort": 5004,
+	"HTTPPort": 5005,
 	"HTTPServerName": "webchat"
     }
 }
