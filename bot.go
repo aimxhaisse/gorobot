@@ -110,6 +110,11 @@ func (b *Bot) handleEvent(serv *Server, event *Event) {
 	case E_NOTICE:
 		if event.CmdId == 1 {
 			b.autoJoin(serv.Config.Name)
+			if len(serv.Config.NickServPassword) > 0 {
+				nickserv := "NickServ"
+				auth := fmt.Sprintf("identify %s", serv.Config.NickServPassword)
+				serv.Say(newActionPRIVMSG(&serv.Config.Name, &nickserv, &auth))
+			}
 		}
 	case E_DISCONNECT:
 		serv.Disconnect()
