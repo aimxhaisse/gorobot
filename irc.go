@@ -55,6 +55,9 @@ func (serv *Server) Init(chev chan Event, flood_control bool) {
 	}
 	serv.SendRawCommand(fmt.Sprintf("NICK %s\r\n", serv.Config.Nickname), PRIORITY_HIGH)
 	serv.SendRawCommand(fmt.Sprintf("USER %s 0.0.0.0 0.0.0.0 :%s\r\n", serv.Config.Username, serv.Config.Realname), PRIORITY_HIGH)
+	if len(serv.Config.NickServPassword) > 0 {
+		serv.SendRawCommand(fmt.Sprintf("PRIVMSG NickServ :identify %s %s\r\n", serv.Config.Nickname, serv.Config.NickServPassword), PRIORITY_HIGH)
+	}
 	log.Printf("connected to %s (%s)", serv.Config.Name, serv.Config.Host)
 }
 
