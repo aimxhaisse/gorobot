@@ -110,10 +110,16 @@ func (b *Bot) handleEvent(serv *Server, event *Event) {
 	case E_NOTICE:
 		if event.CmdId == 1 {
 			b.autoJoin(serv.Config.Name)
+
 			if len(serv.Config.NickServPassword) > 0 {
+				log.Printf("authenticating to NickServ")
 				nickserv := "NickServ"
 				auth := fmt.Sprintf("identify %s", serv.Config.NickServPassword)
-				serv.Say(newActionPRIVMSG(&serv.Config.Name, &nickserv, &auth))
+				ac := newActionPRIVMSG(&serv.Config.Name, &nickserv, &auth)
+				ac.Priority = PRIORITY_HIGH
+				serv.Say(ac)
+			} else {
+				log.Printf("no NickServ auth specified")
 			}
 		}
 	case E_DISCONNECT:
