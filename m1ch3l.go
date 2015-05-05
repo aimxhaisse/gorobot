@@ -74,6 +74,7 @@ type Config struct {
 	Logs             ConfigLogs               // Log config
 	Servers          map[string]*ConfigServer // Servers to connects to
 	Broadcast        BroadcastConfig          // Configuration of the broadcast module
+	Pathwar          PathwarConfig		  // Configuration of the pathwar module
 	Scripts          ScriptsConfig            // Configuration of the scripts module
 	WebAPI           WebAPIConfig             // Configuration of the WebAPI module
 }

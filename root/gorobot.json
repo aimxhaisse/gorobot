@@ -30,6 +30,14 @@
 	    ]
 	}
     },
+    "Pathwar": {
+	"EndPoint": "",
+	"Targets": {
+	    "freenode": [
+		"##m1ch3l-dev"
+	    ]
+	}
+    },
     "Scripts": {
 	"AdminScripts": "scripts/admin",
 	"PublicScripts": "scripts/public",
