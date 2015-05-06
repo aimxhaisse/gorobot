@@ -63,6 +63,8 @@ func execCmd(config ScriptsConfig, path string, ev Event) {
 		ev.Channel,
 		ev.User)
 
+	command.Env = os.Environ()
+
 	for _, v := range in_params[1:] {
 		command.Args = append(command.Args, v)
 	}
