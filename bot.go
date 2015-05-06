@@ -36,7 +36,7 @@ func NewBot(cfg *Config) *Bot {
 	b.Modules["broadcast"] = make(chan Event)
 	go Broadcast(b.Actions, b.Modules["broadcast"], cfg.Broadcast)
 
-	// go Pathwar(b.Actions, cfg.Pathwar)
+	go Pathwar(b.Actions, cfg.Pathwar)
 
 	b.Modules["scripts"] = make(chan Event)
 	go Scripts(b.Actions, b.Modules["scripts"], &b, cfg.Scripts)

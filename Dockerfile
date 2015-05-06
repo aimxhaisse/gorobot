@@ -2,7 +2,6 @@ FROM ubuntu:14.04
 MAINTAINER s. rannou <mxs@sbrk.org>, Manfred Touron <m@42.am>
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV USERNAME gorobot
 
 # deps
 RUN apt-get update && \
@@ -13,7 +12,7 @@ RUN apt-get update && \
 # build
 RUN mkdir /usr/src/app
 ADD . /usr/src/app
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app/
 RUN go build
 
 # admin port for commands
